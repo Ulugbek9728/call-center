@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Exo:ital,wght@1,500&family=Josefin+Sans&display=swap');
+
+$mainColor: #02A36D;
+
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Josefin Sans', sans-serif;
+
+  a {
+    text-decoration: none!important;
+  }
+}
+
+.home{
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  .liner {
+    z-index: 0;
+    position: absolute;
+    right: 0;
+    top: -150px;
+    transform: rotate(25deg);
+    width: 700px;
+    height: 1000px;
+    background: linear-gradient(#02A36D, #ffffff);
+    border-radius: 0 0 50px 50px;
+  }
+
+  .navbar {
+    .navbar-brand {
+      img {
+        width: 100px;
+      }
+    }
+
+    .nav-link {
+      font-size: 25px;
+      font-weight: 600;
+      //color: $mainColor;
+    }
+  }
+
+  .righte {
+    z-index: 1;
+
+    .title {
+      margin-top: 100px;
+      font-size: 50px;
+      font-weight: 700;
+    }
+
+    .text {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+
+    a {
+      display: flex;
+      margin-top: 40px;
+      padding: 10px 40px;
+      width: 300px;
+      border-radius: 0 20px;
+      background-color: #02A36D;
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      transition: 0.2s linear;
+
+
+      &:hover {
+        color: #02A36D;
+        background: white;
+        border: 1px solid #02A36D;
+        transition: 0.2s linear;
+      }
+    }
+  }
+
+  .gif {
+    background: none;
+    margin-top: 100px;
+
+  }
+}
+
+
+

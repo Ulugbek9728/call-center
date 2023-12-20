@@ -1,0 +1,20 @@
+$mainColor: #02A36D;
+
+.ant-layout-sider-dark{
+  background: $mainColor!important;
+  color: white;
+}
+.ant-menu{
+  background: $mainColor!important;
+
+  .ant-menu-item-active{
+    background:rgba(255, 255, 255, 0.5)!important;
+  }
+  .ant-menu-item-selected{
+    background:white!important;
+    color: black;
+  }
+}
+.ant-layout-header{
+  background: $mainColor!important;
+}
