@@ -1,45 +1,60 @@
 import React from 'react';
 import {
-    AppstoreOutlined, BarChartOutlined,
-    CloudOutlined, ShopOutlined,
-    TeamOutlined, UploadOutlined,
-    UserOutlined, VideoCameraOutlined,
+    UploadOutlined,
+    UserOutlined,
 } from '@ant-design/icons';
 
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu,Input, Avatar,Space } from 'antd';
+import "../style/admin.scss";
+import {Route, Routes, useNavigate} from "react-router-dom";
+import One from "./One";
 
-import "../style/admin.scss"
-
+const { Search } = Input;
 
 const { Header, Content, Sider } = Layout;
 const items = [
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-    BarChartOutlined,
+    {
+        label:"One",
+        key:"1",
+        icon:<UserOutlined />
+    },
+    {
+        label:"Two",
+        key:"2",
+        icon:<UploadOutlined />
+    },
 
-].map((icon, index) => ({
-    key: String(index + 1),
-    icon: React.createElement(icon),
-    label: `nav ${index + 1}`,
-}));
+];
+
+
 
 
 function Admin(props) {
-    const {
-        token: { colorBgContainer, borderRadiusLG },} = theme.useToken();
+    const navigate = useNavigate();
+
     return (
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
-                <Menu  mode="inline" defaultSelectedKeys={['1']} items={items} />
+                <Menu  mode="inline" defaultSelectedKeys={['1']} items={items}
+                       onClick={(into)=>{
+                           if (into.key === "1"){ navigate("/operatorAdmin/");}
+                       }}/>
             </Sider>
-            <Layout className="site-layout"
-                style={{
+            <Layout className="site-layout" style={{
                     marginLeft: 200,
-                }}
-            >
+                }}>
                 <Header>
-                    <span className="HeaderTitle text-light">TTJ Admin paneli</span>
+
+
+                    <div className='d-flex justify-content-end'>
+                        <Space direction="vertical" size={16}>
+                            <Space wrap size={16}>
+                                userName userLastName
+                                <Avatar size={54} icon={<UserOutlined />} />
+                            </Space>
+
+                        </Space>
+                    </div>
                 </Header>
                 <Content
                     style={{
@@ -47,31 +62,11 @@ function Admin(props) {
                         overflow: 'initial',
                     }}
                 >
-                    <div
-                        style={{
-                            padding: 24,
-                            textAlign: 'center',
-                            background: colorBgContainer,
-                            borderRadius: borderRadiusLG,
-                        }}
-                    >
-                        <p>long content</p>
-                        {
-                            // indicates very long content
-                            Array.from(
-                                {
-                                    length: 100,
-                                },
-                                (_, index) => (
-                                    <React.Fragment key={index}>
-                                        {index % 20 === 0 && index ? 'more' : '...'}
-                                        <br />
-                                    </React.Fragment>
-                                ),
-                            )
-                        }
-                    </div>
+                    <Routes>
 
+                        <Route path={"/"} element={ <One/>}/>
+
+                    </Routes>
                 </Content>
             </Layout>
         </Layout>

@@ -1,20 +1,33 @@
-$mainColor: #02A36D;
+$mainColor: #e2f3e8;
+$textColor: #02A36D;
 
 .ant-layout-sider-dark{
-  background: $mainColor!important;
-  color: white;
+  background: white!important;
+  color: black;
 }
 .ant-menu{
-  background: $mainColor!important;
+  background: white!important;
 
   .ant-menu-item-active{
     background:rgba(255, 255, 255, 0.5)!important;
   }
   .ant-menu-item-selected{
-    background:white!important;
-    color: black;
+    background:$mainColor!important;
+    color: $textColor!important;
   }
 }
 .ant-layout-header{
-  background: $mainColor!important;
+  background: white!important;
+  color: $textColor!important;
+  .ant-space-item{
+    display: flex;
+    align-items: center;
+  }
+}
+.modalAddNew{
+  width: 90%!important;
+
+  .ant-modal-content{
+
+  }
 }

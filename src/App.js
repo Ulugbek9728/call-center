@@ -9,7 +9,7 @@ function App() {
       <ToastContainer/>
         <Routes>
             <Route path={"/"} element={ <Home/>}/>
-            <Route path={"/operatorAdmin"} element={ <Admin/>}/>
+            <Route path={"/operatorAdmin/*"} element={ <Admin/>}/>
 
         </Routes>
     </div>
