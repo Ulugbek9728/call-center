@@ -1,13 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     UploadOutlined,
     UserOutlined,
 } from '@ant-design/icons';
+import {useSearchParams} from 'react-router-dom';
+import axios from "axios";
 
 import { Layout, Menu,Input, Avatar,Space } from 'antd';
 import "../style/admin.scss";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import One from "./One";
+import {ApiName} from "../APIname";
+import data from "bootstrap/js/src/dom/data";
+import {useDispatch, useSelector} from "react-redux";
 
 const { Search } = Input;
 
@@ -31,6 +36,11 @@ const items = [
 
 function Admin(props) {
     const navigate = useNavigate();
+    const [fulInfo, setfulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    console.log(fulInfo)
+
+
+
 
     return (
         <Layout>
@@ -49,8 +59,17 @@ function Admin(props) {
                     <div className='d-flex justify-content-end'>
                         <Space direction="vertical" size={16}>
                             <Space wrap size={16}>
-                                userName userLastName
-                                <Avatar size={54} icon={<UserOutlined />} />
+                                {
+                                    fulInfo?.fullName
+                                }
+                                {
+                                    fulInfo===''? <Avatar size={54} icon={<UserOutlined />} />:
+                                        <div className="img">
+                                            <img src={fulInfo?.imageUrl} alt=""/>
+                                        </div>
+                                }
+
+
                             </Space>
 
                         </Space>

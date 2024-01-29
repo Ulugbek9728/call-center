@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {Input, Space, Table, Select, Modal, message, Upload, Button } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {Input, Space, Table, Select, Modal, message, Upload, Button} from 'antd';
+import {UploadOutlined} from '@ant-design/icons';
 
 
-const { Search,TextArea } = Input;
+const {Search, TextArea} = Input;
 
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
@@ -13,6 +13,11 @@ function One(props) {
 
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [ariza, setAriza] = useState({
+        FISH:'',
+        ArizaTuri:'Ariza',
+        text:''
+    });
 
     const columns = [
         {
@@ -38,7 +43,7 @@ function One(props) {
     for (let i = 0; i < 100; i++) {
         data.push({
             key: i,
-            m :`${i+1}`,
+            m: `${i + 1}`,
             name: `Edward King ${i}`,
             age: 32,
             address: `London, Park Lane no. ${i}`,
@@ -108,24 +113,29 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button className='btn btn-success' onClick={()=>{setOpen(true)}}>
+                <button className='btn btn-success' onClick={() => {
+                    setOpen(true)
+                }}>
                     Add New
                 </button>
             </div>
             <Modal className='modalAddNew'
-                title="Ariza qo'shish" open={open} onOk={handleOk}
-                confirmLoading={confirmLoading} onCancel={()=>setOpen(false)}>
+                   title="Ariza qo'shish" open={open} onOk={handleOk}
+                   confirmLoading={confirmLoading} onCancel={() => setOpen(false)}>
 
                 <div className='d-flex justify-content-between'>
                     <div className="border w-50 p-3 mx-3">
                         <form>
                             <div className="mb-3 mt-3">
                                 <label form="FISH" className="form-label">Familya Ism Sharif</label>
-                                <input type="text" className="form-control" id="FISH" placeholder="F.I.SH" name="email"/>
+                                <input type="text" value={ariza?.FISH} className="form-control" id="FISH" placeholder="F.I.SH" name="email"
+                                       onChange={(e)=>{
+                                           setAriza({...ariza, FISH: e.target.value})}}/>
                             </div>
                             <div className="mb-3">
                                 <label form="pwd" className="form-label">Tel</label>
-                                <input type="text" className="form-control" id="pwd" placeholder="+998(**) *** ** **" name="pswd"/>
+                                <input type="text" className="form-control" id="pwd" placeholder="+998(**) *** ** **"
+                                       name="pswd"/>
                             </div>
                             <div className="mb-3">
                                 <label form="ID" className="form-label">Markaz / Bo'lim</label>
@@ -138,7 +148,9 @@ function One(props) {
                             </div>
                             <div className="mb-3">
                                 <label form="xujjat" className="form-label">Xujjat turi</label>
-                                <select className="form-select">
+                                <select className="form-select"
+                                        onChange={(e)=>{
+                                            setAriza({...ariza, ArizaTuri: e.target.value})}}>
                                     <option>Xujjat turi</option>
                                     <option>Ariza</option>
                                     <option>Bildirgi</option>
@@ -146,15 +158,32 @@ function One(props) {
                                     <option>Xat</option>
                                 </select>
                             </div>
-                            <label htmlFor="comment">Comments:</label>
-                            <textarea className="form-control" rows="10" id="comment" name="text"></textarea>
+                            <label htmlFor="comment">Ariza mazmuni:</label>
+                            <textarea className="form-control" rows="10" id="comment" name="text" value={ariza.text}
+                                      onChange={(e)=>{
+                                          setAriza({...ariza, text: e.target.value})}}/>
                         </form>
                         <Upload {...propss}>
-                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                            <Button icon={<UploadOutlined/>}>Click to Upload</Button>
                         </Upload>
 
                     </div>
-                    <div className="border w-50 p-3 mx-3">123</div>
+                    <div className="border w-50  mx-3 d-flex justify-content-center">
+                        <div className="border w-75 px-5 py-3">
+                            <div className="d-flex">
+                                <div className="w-50"></div>
+                                <div className="w-50 contentAriza">
+                                    Islom karimov nomidagi Toshkent davlat texnika universiteti rektori M.S.Turabdjanovga
+                                    <span> R.T.T.M boshlig'i</span> <span>{ariza?.FISH}</span> dan
+                                </div>
+                            </div>
+                            <h4 className="ariza text-center mt-3">
+                                {ariza?.ArizaTuri}
+                            </h4>
+                            <p className="contentAriza">{ariza.text}</p>
+
+                        </div>
+                    </div>
                 </div>
             </Modal>
 
@@ -163,9 +192,10 @@ function One(props) {
                 columns={columns}
                 dataSource={data}
                 pagination={pageSize}
-                onChange={(e)=>{
-                   setPageSize(e.pageSize)}}
-                scroll={{y: 600,}}
+                onChange={(e) => {
+                    setPageSize(e.pageSize)
+                }}
+                scroll={{y: 650,}}
             />
         </div>
     );

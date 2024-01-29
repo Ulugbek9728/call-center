@@ -18,17 +18,9 @@ $mainColor: #02A36D;
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
-  .liner {
-    z-index: 0;
-    position: absolute;
-    right: 0;
-    top: -150px;
-    transform: rotate(25deg);
-    width: 700px;
-    height: 1000px;
-    background: linear-gradient(#02A36D, #ffffff);
-    border-radius: 0 0 50px 50px;
-  }
+
+  background: linear-gradient( 120deg, rgb(255,255,255)-5%, #ffffff, rgba(2, 163, 109, 0.8));
+
 
   .navbar {
     .navbar-brand {
@@ -63,26 +55,18 @@ $mainColor: #02A36D;
       justify-content: center;
       margin-top: 40px;
       padding: 10px 40px;
-      width: 300px;
-      border-radius: 0 20px;
+      border-radius: 5px 20px;
       background-color: #02A36D;
       color: white;
       font-size: 20px;
       font-weight: 600;
       letter-spacing: 1.5px;
       transition: 0.2s linear;
-
-
-      &:hover {
-        color: #02A36D;
-        background: white;
-        border: 1px solid #02A36D;
-        transition: 0.2s linear;
-      }
     }
   }
 
   .gif {
+    border-radius: 32%;
     background: none;
     margin-top: 100px;
 

@@ -22,12 +22,28 @@ $textColor: #02A36D;
   .ant-space-item{
     display: flex;
     align-items: center;
+
+    .img{
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img{
+        width: 100%;
+      }
+    }
   }
 }
 .modalAddNew{
   width: 90%!important;
 
   .ant-modal-content{
+    .contentAriza{
+      text-align: justify;
+    }
 
   }
 }
