@@ -1,15 +1,22 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Input, Space, Table, Select, Modal, message, Upload, Button} from 'antd';
 import {UploadOutlined} from '@ant-design/icons';
+import {ApiName} from "../APIname";
+import axios from "axios";
 
 
-const {Search, TextArea} = Input;
+const {Search} = Input;
 
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 
 function One(props) {
     const [pageSize, setPageSize] = useState('');
+    const [Department, setDepartment] = useState([]);
+    const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    console.log(fulInfo)
+
+
 
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -18,6 +25,36 @@ function One(props) {
         ArizaTuri:'Ariza',
         text:''
     });
+
+
+
+    useEffect(() => {
+        DepartmenGet()
+        arizaGetList()
+    }, []);
+
+    function DepartmenGet() {
+        axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`,{
+
+        }).then((response) => {
+            console.log(response)
+            setDepartment(response.data);
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    function arizaGetList() {
+        axios.get(`${ApiName}/api/application`,{
+            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+
+        }).then((response) => {
+            console.log(response)
+            // setDepartment(response.data);
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
 
     const columns = [
         {
@@ -139,12 +176,18 @@ function One(props) {
                             </div>
                             <div className="mb-3">
                                 <label form="ID" className="form-label">Markaz / Bo'lim</label>
-                                <select className="form-select">
-                                    <option>Markaz / Bo'lim</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                </select>
+                                <br/>
+                                <Select className='w-100'
+                                    showSearch
+                                    onChange={(e) => {}}
+                                    placeholder="Markaz / Bo'lim"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    options={Department && Department.map((item, index) =>({value:item.id, label:item.name}))}
+                                />
                             </div>
                             <div className="mb-3">
                                 <label form="xujjat" className="form-label">Xujjat turi</label>
