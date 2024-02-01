@@ -14,18 +14,26 @@ function One(props) {
     const [pageSize, setPageSize] = useState('');
     const [Department, setDepartment] = useState([]);
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
-    console.log(fulInfo)
-
-
 
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [ariza, setAriza] = useState({
-        FISH:'',
-        ArizaTuri:'Ariza',
-        text:''
+        fullName:'',
+        applicationType:'Ariza',
+        phone:'',
+        description:'',
+        toDepartment: {
+            id: '',
+            nam: '',
+            code: "",
+            structureType: {
+                code: "",
+                name: ""
+            }
+        },
+        files: []
     });
-
+    const [ArizaList, setArizaList] = useState([]);
 
 
     useEffect(() => {
@@ -37,10 +45,10 @@ function One(props) {
         axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`,{
 
         }).then((response) => {
-            console.log(response)
+            // console.log(response)
             setDepartment(response.data);
         }).catch((error) => {
-            console.log(error)
+            // console.log(error)
         });
     }
 
@@ -49,67 +57,112 @@ function One(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
 
         }).then((response) => {
-            console.log(response)
-            // setDepartment(response.data);
+            console.log(response.data.data.content)
+            setArizaList(response.data.data.content)
         }).catch((error) => {
-            console.log(error)
+            // console.log(error)
         });
     }
 
     const columns = [
         {
             title: '№',
-            dataIndex: 'm',
+            dataIndex: '',
             width: 50,
-        }, {
-            title: 'Name',
+        },
+        {
+            title: 'File turi',
+            dataIndex: 'documentType',
+            width: 150,
+        },
+        {
+            title: 'FISH',
             dataIndex: 'name',
             width: 150,
         },
+
         {
-            title: 'Age',
-            dataIndex: 'age',
-            width: 150,
-        },
-        {
-            title: 'Address',
-            dataIndex: 'address',
+            title: 'Tel raqami',
+            dataIndex: 'phone',
         },
     ];
-    const data = [];
-    for (let i = 0; i < 100; i++) {
-        data.push({
-            key: i,
-            m: `${i + 1}`,
-            name: `Edward King ${i}`,
-            age: 32,
-            address: `London, Park Lane no. ${i}`,
-        });
-    }
+
     const handleChange = (value) => {
         console.log(`selected ${value}`);
     };
+
+    const handleChangeDepartme = (e) => {
+        const result = Department.filter((word) => word.id === e);
+        setAriza({...ariza, toDepartment: result[0]})
+    };
     const handleOk = () => {
         setConfirmLoading(true);
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 2000);
+        axios.post(`${ApiName}/api/application`, ariza, {
+            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+        }).then((response) => {
+            console.log(response);
+            if (response.data.message==="Success"){
+                setTimeout(() => {
+                    setOpen(false);
+                    setConfirmLoading(false);
+                    setAriza({fullName:'',
+                        applicationType:'Ariza',
+                        phone:'',
+                        description:'',
+                        toDepartment: {
+                            id: '',
+                            nam: '',
+                            code: "",
+                            structureType: {
+                                code: "",
+                                name: ""
+                            }
+                        },
+                        files: []})
+                }, 2000);
+
+
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+
+
     };
+
     const propss = {
+
         name: 'file',
-        action: '#',
+        action: `${ApiName}/api/v1/attach/upload`,
+
         headers: {
-            authorization: 'authorization-text',
+            authorization: `Bearer ${fulInfo.accessToken}`,
         },
         onChange(info) {
-            if (info.file.status !== 'uploading') {
-                console.log(info.file, info.fileList);
+            if (info.file.status === 'removed') {
+             const result=ariza.files.filter((idAll) => idAll.id !== info.file.response.id);
+                setAriza({...ariza, files: result})
+
+                axios.delete(`${ApiName}/api/v1/attach/${info.file.response.id}`, {
+                    headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+                }).then((res) => {
+                    console.log(res)
+                    message.success("File o'chirildi")
+                }).catch((error) => {
+                    console.log(error)
+                    message.error(`${info.file.name} file delete failed.`);
+                })
             }
+
             if (info.file.status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully`);
+                console.log(info.file.response)
+               ariza.files.push({
+                       fileId:info.file.response.id,
+               }
+                   )
+                message.success(`${info.file.name} File uploaded successfully`);
             } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`);
+                message.error(`${info.file.name} File upload failed.`);
             }
         },
     };
@@ -165,21 +218,22 @@ function One(props) {
                         <form>
                             <div className="mb-3 mt-3">
                                 <label form="FISH" className="form-label">Familya Ism Sharif</label>
-                                <input type="text" value={ariza?.FISH} className="form-control" id="FISH" placeholder="F.I.SH" name="email"
+                                <input type="text" value={ariza?.fullName} className="form-control" id="FISH" placeholder="F.I.SH" name="email"
                                        onChange={(e)=>{
-                                           setAriza({...ariza, FISH: e.target.value})}}/>
+                                           setAriza({...ariza, fullName: e.target.value})}}/>
                             </div>
                             <div className="mb-3">
                                 <label form="pwd" className="form-label">Tel</label>
-                                <input type="text" className="form-control" id="pwd" placeholder="+998(**) *** ** **"
-                                       name="pswd"/>
+                                <input type="text" value={ariza?.phone} className="form-control" id="pwd" placeholder="+998(**) *** ** **" name="pswd"
+                                       onChange={(e)=>{
+                                           setAriza({...ariza, phone: e.target.value})}}/>
                             </div>
                             <div className="mb-3">
                                 <label form="ID" className="form-label">Markaz / Bo'lim</label>
                                 <br/>
                                 <Select className='w-100'
                                     showSearch
-                                    onChange={(e) => {}}
+                                    onChange={(e) => {handleChangeDepartme(e)}}
                                     placeholder="Markaz / Bo'lim"
                                     optionFilterProp="children"
                                     filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
@@ -193,7 +247,7 @@ function One(props) {
                                 <label form="xujjat" className="form-label">Xujjat turi</label>
                                 <select className="form-select"
                                         onChange={(e)=>{
-                                            setAriza({...ariza, ArizaTuri: e.target.value})}}>
+                                            setAriza({...ariza, applicationType: e.target.value})}}>
                                     <option>Xujjat turi</option>
                                     <option>Ariza</option>
                                     <option>Bildirgi</option>
@@ -202,9 +256,9 @@ function One(props) {
                                 </select>
                             </div>
                             <label htmlFor="comment">Ariza mazmuni:</label>
-                            <textarea className="form-control" rows="10" id="comment" name="text" value={ariza.text}
+                            <textarea className="form-control" rows="10" id="comment" name="text" value={ariza.description}
                                       onChange={(e)=>{
-                                          setAriza({...ariza, text: e.target.value})}}/>
+                                          setAriza({...ariza, description: e.target.value})}}/>
                         </form>
                         <Upload {...propss}>
                             <Button icon={<UploadOutlined/>}>Click to Upload</Button>
@@ -217,23 +271,22 @@ function One(props) {
                                 <div className="w-50"></div>
                                 <div className="w-50 contentAriza">
                                     Islom karimov nomidagi Toshkent davlat texnika universiteti rektori M.S.Turabdjanovga
-                                    <span> R.T.T.M boshlig'i</span> <span>{ariza?.FISH}</span> dan
+                                    <span> R.T.T.M boshlig'i</span> <span>{ariza?.fullName}</span> dan
                                 </div>
                             </div>
                             <h4 className="ariza text-center mt-3">
-                                {ariza?.ArizaTuri}
+                                {ariza?.applicationType}
                             </h4>
-                            <p className="contentAriza">{ariza.text}</p>
+                            <p className="contentAriza">{ariza.description}</p>
 
                         </div>
                     </div>
                 </div>
             </Modal>
 
-
             <Table
                 columns={columns}
-                dataSource={data}
+                dataSource={ArizaList}
                 pagination={pageSize}
                 onChange={(e) => {
                     setPageSize(e.pageSize)
