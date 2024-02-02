@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Input, Space, Table, Select, Modal, message, Upload, Button} from 'antd';
-import {UploadOutlined} from '@ant-design/icons';
+import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps} from 'antd';
+import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 
@@ -16,12 +16,13 @@ function One(props) {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
 
     const [open, setOpen] = useState(false);
+    const [edite, setEdite] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [ariza, setAriza] = useState({
-        fullName:'',
-        applicationType:'Ariza',
-        phone:'',
-        description:'',
+        fullName: '',
+        applicationType: 'Ariza',
+        phone: '',
+        description: '',
         toDepartment: {
             id: '',
             nam: '',
@@ -34,6 +35,10 @@ function One(props) {
         files: []
     });
     const [ArizaList, setArizaList] = useState([]);
+    const handleChangeDepartme = (e) => {
+        const result = Department.filter((word) => word.id === e);
+        setAriza({...ariza, toDepartment: result[0]})
+    };
 
 
     useEffect(() => {
@@ -42,9 +47,7 @@ function One(props) {
     }, []);
 
     function DepartmenGet() {
-        axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`,{
-
-        }).then((response) => {
+        axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
             // console.log(response)
             setDepartment(response.data);
         }).catch((error) => {
@@ -53,7 +56,7 @@ function One(props) {
     }
 
     function arizaGetList() {
-        axios.get(`${ApiName}/api/application`,{
+        axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
 
         }).then((response) => {
@@ -67,23 +70,39 @@ function One(props) {
     const columns = [
         {
             title: '№',
-            dataIndex: '',
             width: 50,
+            render: (item, record, index) => (<>{index + 1}</>)
         },
         {
             title: 'File turi',
             dataIndex: 'documentType',
             width: 150,
         },
+        Table.EXPAND_COLUMN,
+
+        {
+            title: "Bo'lim / Markaz",
+            render: (item, record, index) => (<>{item.toDepartment?.name}</>),
+        },
         {
             title: 'FISH',
             dataIndex: 'name',
-            width: 150,
         },
 
         {
             title: 'Tel raqami',
             dataIndex: 'phone',
+        },
+        {
+            title: "seeAll",
+            render: (item, record, index) => (
+                <button className='btn btn-outline-success' onClick={(e) => {
+                    console.log(item);
+                    setEdite(true)
+                    setOpen(true)
+                }}>
+                    See
+                </button>),
         },
     ];
 
@@ -91,41 +110,45 @@ function One(props) {
         console.log(`selected ${value}`);
     };
 
-    const handleChangeDepartme = (e) => {
-        const result = Department.filter((word) => word.id === e);
-        setAriza({...ariza, toDepartment: result[0]})
-    };
     const handleOk = () => {
         setConfirmLoading(true);
-        axios.post(`${ApiName}/api/application`, ariza, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
-        }).then((response) => {
-            console.log(response);
-            if (response.data.message==="Success"){
-                setTimeout(() => {
-                    setOpen(false);
-                    setConfirmLoading(false);
-                    setAriza({fullName:'',
-                        applicationType:'Ariza',
-                        phone:'',
-                        description:'',
-                        toDepartment: {
-                            id: '',
-                            nam: '',
-                            code: "",
-                            structureType: {
+        // eslint-disable-next-line no-unused-expressions
+        edite ? setTimeout(() => {
+                setOpen(false);
+                setConfirmLoading(false);
+                setEdite(false)
+            }, 2000) :
+            axios.post(`${ApiName}/api/application`, ariza, {
+                headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+            }).then((response) => {
+                console.log(response);
+                if (response.data.message === "Success") {
+                    setTimeout(() => {
+                        setOpen(false);
+                        setConfirmLoading(false);
+                        setAriza({
+                            fullName: '',
+                            applicationType: 'Ariza',
+                            phone: '',
+                            description: '',
+                            toDepartment: {
+                                id: '',
+                                nam: '',
                                 code: "",
-                                name: ""
-                            }
-                        },
-                        files: []})
-                }, 2000);
+                                structureType: {
+                                    code: "",
+                                    name: ""
+                                }
+                            },
+                            files: []
+                        })
+                    }, 2000);
 
 
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
+                }
+            }).catch((error) => {
+                console.log(error)
+            })
 
 
     };
@@ -140,7 +163,7 @@ function One(props) {
         },
         onChange(info) {
             if (info.file.status === 'removed') {
-             const result=ariza.files.filter((idAll) => idAll.id !== info.file.response.id);
+                const result = ariza.files.filter((idAll) => idAll.id !== info.file.response.id);
                 setAriza({...ariza, files: result})
 
                 axios.delete(`${ApiName}/api/v1/attach/${info.file.response.id}`, {
@@ -156,10 +179,10 @@ function One(props) {
 
             if (info.file.status === 'done') {
                 console.log(info.file.response)
-               ariza.files.push({
-                       fileId:info.file.response.id,
-               }
-                   )
+                ariza.files.push({
+                        fileId: info.file.response.id,
+                    }
+                )
                 message.success(`${info.file.name} File uploaded successfully`);
             } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} File upload failed.`);
@@ -210,55 +233,106 @@ function One(props) {
                 </button>
             </div>
             <Modal className='modalAddNew'
-                   title="Ariza qo'shish" open={open} onOk={handleOk}
-                   confirmLoading={confirmLoading} onCancel={() => setOpen(false)}>
+                   title={edite ? "Ariza" : "Ariza qo'shish"} open={open} onOk={handleOk}
+                   confirmLoading={confirmLoading} onCancel={() => {
+                setOpen(false);
+                setEdite(false)
+                setAriza({
+                    fullName: '',
+                    applicationType: 'Ariza',
+                    phone: '',
+                    description: '',
+                    toDepartment: {
+                        id: '',
+                        nam: '',
+                        code: "",
+                        structureType: {
+                            code: "",
+                            name: ""
+                        }
+                    },
+                    files: []
+                })
+            }}>
 
                 <div className='d-flex justify-content-between'>
                     <div className="border w-50 p-3 mx-3">
                         <form>
                             <div className="mb-3 mt-3">
                                 <label form="FISH" className="form-label">Familya Ism Sharif</label>
-                                <input type="text" value={ariza?.fullName} className="form-control" id="FISH" placeholder="F.I.SH" name="email"
-                                       onChange={(e)=>{
-                                           setAriza({...ariza, fullName: e.target.value})}}/>
+                                <input type="text" value={ariza?.fullName} className="form-control" id="FISH"
+                                       placeholder="F.I.SH" name="email"
+                                       onChange={(e) => {
+                                           setAriza({...ariza, fullName: e.target.value})
+                                       }}/>
                             </div>
                             <div className="mb-3">
                                 <label form="pwd" className="form-label">Tel</label>
-                                <input type="text" value={ariza?.phone} className="form-control" id="pwd" placeholder="+998(**) *** ** **" name="pswd"
-                                       onChange={(e)=>{
-                                           setAriza({...ariza, phone: e.target.value})}}/>
+                                <input type="text" value={ariza?.phone} className="form-control" id="pwd"
+                                       placeholder="+998(**) *** ** **" name="pswd"
+                                       onChange={(e) => {
+                                           setAriza({...ariza, phone: e.target.value})
+                                       }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="ID" className="form-label">Markaz / Bo'lim</label>
+                                <label form="ID" className="form-label">Markaz / Bo'lim ga yuborish</label>
                                 <br/>
                                 <Select className='w-100'
-                                    showSearch
-                                    onChange={(e) => {handleChangeDepartme(e)}}
-                                    placeholder="Markaz / Bo'lim"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                    }
-                                    options={Department && Department.map((item, index) =>({value:item.id, label:item.name}))}
+                                        showSearch
+                                        value={ariza.toDepartment?.id}
+
+                                        onChange={(e) => {
+                                            handleChangeDepartme(e)
+                                        }}
+                                        placeholder="Markaz / Bo'lim"
+                                        optionFilterProp="children"
+
+                                        filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                        filterSort={(optionA, optionB) =>
+                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                        }
+                                        options={Department && Department.map((item, index) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        }))}
                                 />
                             </div>
                             <div className="mb-3">
                                 <label form="xujjat" className="form-label">Xujjat turi</label>
-                                <select className="form-select"
-                                        onChange={(e)=>{
-                                            setAriza({...ariza, applicationType: e.target.value})}}>
-                                    <option>Xujjat turi</option>
-                                    <option>Ariza</option>
-                                    <option>Bildirgi</option>
-                                    <option>Tushuntirish xati</option>
-                                    <option>Xat</option>
-                                </select>
+
+                                    <Select
+                                        className='w-100'
+                                        onChange={(e) => {
+                                            setAriza({...ariza, applicationType: e})
+                                        }}
+                                        style={{
+                                            width: 120,
+                                        }}
+                                        allowClear
+                                        options={[
+                                            {
+                                                value: 'Ariza',
+
+                                            },
+                                            {
+                                                value: 'Bildirgi'
+                                            },
+                                            {
+                                                value: 'Tushuntirish xati',
+                                            },
+                                            {
+                                                value: 'Xat',
+                                            },
+                                            ]}
+                                    />
+
                             </div>
                             <label htmlFor="comment">Ariza mazmuni:</label>
-                            <textarea className="form-control" rows="10" id="comment" name="text" value={ariza.description}
-                                      onChange={(e)=>{
-                                          setAriza({...ariza, description: e.target.value})}}/>
+                            <textarea className="form-control" rows="10" id="comment" name="text"
+                                      value={ariza.description}
+                                      onChange={(e) => {
+                                          setAriza({...ariza, description: e.target.value})
+                                      }}/>
                         </form>
                         <Upload {...propss}>
                             <Button icon={<UploadOutlined/>}>Click to Upload</Button>
@@ -266,11 +340,12 @@ function One(props) {
 
                     </div>
                     <div className="border w-50  mx-3 d-flex justify-content-center">
-                        <div className="border w-75 px-5 py-3">
+                        <div className="border shadow w-75 px-5 py-3">
                             <div className="d-flex">
                                 <div className="w-50"></div>
                                 <div className="w-50 contentAriza">
-                                    Islom karimov nomidagi Toshkent davlat texnika universiteti rektori M.S.Turabdjanovga
+                                    Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
+                                    M.S.Turabdjanovga
                                     <span> R.T.T.M boshlig'i</span> <span>{ariza?.fullName}</span> dan
                                 </div>
                             </div>
@@ -286,12 +361,37 @@ function One(props) {
 
             <Table
                 columns={columns}
-                dataSource={ArizaList}
                 pagination={pageSize}
-                onChange={(e) => {
-                    setPageSize(e.pageSize)
+                expandable={{
+                    expandedRowRender: (record) => (
+                        <Steps
+
+                            status="error"
+                            items={[
+                                {
+                                    title: 'Start',
+                                    status: 'finish',
+
+                                },
+                                {
+                                    title: 'In Progress',
+                                    status: 'finish',
+                                },
+                                {
+                                    title: 'Waiting',
+                                    status: 'process',
+                                    icon: <LoadingOutlined/>,
+                                },
+                                {
+                                    title: 'Finished',
+                                    status: 'wait',
+                                },
+                            ]}
+                        />)
                 }}
-                scroll={{y: 650,}}
+                dataSource={ArizaList?.map(item => {
+                    return {...item, key: item.id}
+                })}
             />
         </div>
     );

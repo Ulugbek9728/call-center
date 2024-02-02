@@ -21,11 +21,9 @@ function Auth(props) {
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
                 navigate("/admin")
             }
-            console.log(response)
         }).catch((error) => {
             console.log(error);
             navigate("/admin")
-
         })
     }
     return (

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
     UploadOutlined,
     UserOutlined,
+    DownloadOutlined,
 } from '@ant-design/icons';
 
 
@@ -16,14 +17,14 @@ const { } = Input;
 const { Header, Content, Sider } = Layout;
 const items = [
     {
-        label:"One",
+        label:"Yuborilgan arizalar",
         key:"1",
-        icon:<UserOutlined />
+        icon:<UploadOutlined />
     },
     {
-        label:"Two",
+        label:"Kelgan arizalar",
         key:"2",
-        icon:<UploadOutlined />
+        icon:<DownloadOutlined />
     },
 
 ];
@@ -41,7 +42,7 @@ function Admin(props) {
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu  mode="inline" defaultSelectedKeys={['1']} items={items}
                        onClick={(into)=>{
-                           if (into.key === "1"){ navigate("/operatorAdmin/");}
+                           if (into.key === "1"){ navigate("/admin");}
                        }}/>
             </Sider>
             <Layout className="site-layout" style={{
