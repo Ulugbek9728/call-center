@@ -39,10 +39,22 @@ $textColor: #02A36D;
 }
 .modalAddNew{
   width: 90%!important;
+  height: 820px!important;
+  padding: 0;
 
   .ant-modal-content{
-    .contentAriza{
-      text-align: justify;
+
+    height: 100%;
+    .ant-modal-body{
+      height: 90%;
+      .ariza{
+        font-size: 14px;
+        width: 500px;
+        height: 680px!important;
+        margin-right: 30px;
+        text-align: justify;
+
+      }
     }
 
   }

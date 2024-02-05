@@ -1,8 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
+import { useReactToPrint } from 'react-to-print';
+
 import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps} from 'antd';
 import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
+
 
 
 const {Search} = Input;
@@ -11,6 +14,9 @@ const {Search} = Input;
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 
 function One(props) {
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({content: () => componentRef.current,});
+
     const [pageSize, setPageSize] = useState('');
     const [Department, setDepartment] = useState([]);
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
@@ -60,10 +66,10 @@ function One(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
 
         }).then((response) => {
-            console.log(response.data.data.content)
             setArizaList(response.data.data.content)
+            console.log(response.data.data.content)
         }).catch((error) => {
-            // console.log(error)
+            console.log(error)
         });
     }
 
@@ -75,7 +81,7 @@ function One(props) {
         },
         {
             title: 'File turi',
-            dataIndex: 'documentType',
+            dataIndex: 'applicationType',
             width: 150,
         },
         Table.EXPAND_COLUMN,
@@ -86,7 +92,7 @@ function One(props) {
         },
         {
             title: 'FISH',
-            dataIndex: 'name',
+            dataIndex: 'fullName',
         },
 
         {
@@ -98,6 +104,7 @@ function One(props) {
             render: (item, record, index) => (
                 <button className='btn btn-outline-success' onClick={(e) => {
                     console.log(item);
+                    setAriza(item)
                     setEdite(true)
                     setOpen(true)
                 }}>
@@ -105,6 +112,9 @@ function One(props) {
                 </button>),
         },
     ];
+    console.log(new Date().getFullYear())
+    console.log(new Date().getMonth()+1)
+    console.log(new Date().getDate())
 
     const handleChange = (value) => {
         console.log(`selected ${value}`);
@@ -254,9 +264,8 @@ function One(props) {
                     files: []
                 })
             }}>
-
                 <div className='d-flex justify-content-between'>
-                    <div className="border w-50 p-3 mx-3">
+                    {edite ? "" : <div className="border w-50 p-3 mx-3">
                         <form>
                             <div className="mb-3 mt-3">
                                 <label form="FISH" className="form-label">Familya Ism Sharif</label>
@@ -279,7 +288,7 @@ function One(props) {
                                 <br/>
                                 <Select className='w-100'
                                         showSearch
-                                        value={ariza.toDepartment?.id}
+                                        value={ariza.toDepartment?.name}
 
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
@@ -300,31 +309,33 @@ function One(props) {
                             <div className="mb-3">
                                 <label form="xujjat" className="form-label">Xujjat turi</label>
 
-                                    <Select
-                                        className='w-100'
-                                        onChange={(e) => {
-                                            setAriza({...ariza, applicationType: e})
-                                        }}
-                                        style={{
-                                            width: 120,
-                                        }}
-                                        allowClear
-                                        options={[
-                                            {
-                                                value: 'Ariza',
+                                <Select
+                                    className='w-100'
+                                    value={ariza.documentType}
 
-                                            },
-                                            {
-                                                value: 'Bildirgi'
-                                            },
-                                            {
-                                                value: 'Tushuntirish xati',
-                                            },
-                                            {
-                                                value: 'Xat',
-                                            },
-                                            ]}
-                                    />
+                                    onChange={(e) => {
+                                        setAriza({...ariza, applicationType: e})
+                                    }}
+                                    style={{
+                                        width: 120,
+                                    }}
+                                    allowClear
+                                    options={[
+                                        {
+                                            value: 'Ariza',
+
+                                        },
+                                        {
+                                            value: 'Bildirgi'
+                                        },
+                                        {
+                                            value: 'Tushuntirish xati',
+                                        },
+                                        {
+                                            value: 'Xat',
+                                        },
+                                    ]}
+                                />
 
                             </div>
                             <label htmlFor="comment">Ariza mazmuni:</label>
@@ -338,24 +349,40 @@ function One(props) {
                             <Button icon={<UploadOutlined/>}>Click to Upload</Button>
                         </Upload>
 
-                    </div>
-                    <div className="border w-50  mx-3 d-flex justify-content-center">
-                        <div className="border shadow w-75 px-5 py-3">
-                            <div className="d-flex">
-                                <div className="w-50"></div>
-                                <div className="w-50 contentAriza">
-                                    Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                    M.S.Turabdjanovga
-                                    <span> R.T.T.M boshlig'i</span> <span>{ariza?.fullName}</span> dan
+                    </div>}
+                    <div className="w-50 border d-flex">
+                        <div className=" ariza border shadow d-flex justify-content-center" >
+                            <div ref={componentRef} className="px-5 py-3">
+                                <div className="d-flex">
+                                    <div className="w-50"></div>
+                                    <div className="w-50 contentAriza">
+                                        Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
+                                        M.S.Turabdjanovga <span>{ariza.fullName}</span> dan
+                                    </div>
                                 </div>
-                            </div>
-                            <h4 className="ariza text-center mt-3">
-                                {ariza?.applicationType}
-                            </h4>
-                            <p className="contentAriza">{ariza.description}</p>
+                                <h4 className="text-center mt-3">
+                                    {ariza.applicationType}
+                                </h4>
+                                <p className="contentAriza">{ariza.description}</p>
 
+                            </div>
                         </div>
+                        <button style={{height: 50, width: 200}} className='btn btn-success' onClick={handlePrint}>Ma'lumotlarni yuklash</button>
                     </div>
+
+
+
+                    {edite ?
+                        <ul className="a w-50">
+                            {ariza.files && ariza.files.map((item, index) => {
+                                return<li key={index}>
+                                    <a href={`${item.file.url}`} target={"_blank"}>File {index+1}</a>
+                                </li>
+
+                            })}
+
+                        </ul> : ""}
+
                 </div>
             </Modal>
 
