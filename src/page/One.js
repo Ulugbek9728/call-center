@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps} from 'antd';
+import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps, Skeleton } from 'antd';
 import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
@@ -17,7 +17,7 @@ function One(props) {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
-    const [pageSize, setPageSize] = useState('');
+    const [pageSize, setPageSize] = useState();
     const [Department, setDepartment] = useState([]);
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
 
@@ -41,6 +41,9 @@ function One(props) {
         files: []
     });
     const [ArizaList, setArizaList] = useState([]);
+    const [Datee, setDatee] = useState();
+
+
     const handleChangeDepartme = (e) => {
         const result = Department.filter((word) => word.id === e);
         setAriza({...ariza, toDepartment: result[0]})
@@ -54,10 +57,10 @@ function One(props) {
 
     function DepartmenGet() {
         axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
-            // console.log(response)
+            console.log(response.data)
             setDepartment(response.data);
         }).catch((error) => {
-            // console.log(error)
+            console.log(error)
         });
     }
 
@@ -67,7 +70,8 @@ function One(props) {
 
         }).then((response) => {
             setArizaList(response.data.data.content)
-            console.log(response.data.data.content)
+            // setPageSize(response.data.pageable.pageSize)
+            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -112,9 +116,6 @@ function One(props) {
                 </button>),
         },
     ];
-    console.log(new Date().getFullYear())
-    console.log(new Date().getMonth()+1)
-    console.log(new Date().getDate())
 
     const handleChange = (value) => {
         console.log(`selected ${value}`);
@@ -200,6 +201,21 @@ function One(props) {
         },
     };
 
+    useEffect(() => {
+        const date = new Date();
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+
+        if (edite=== true){
+            const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options);
+            setDatee(formattedDate)
+        }
+        else{
+            const formattedDate = date.toLocaleDateString('en-US', options);
+            setDatee(formattedDate)
+        }
+
+    }, [edite]);
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -236,9 +252,8 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button className='btn btn-success' onClick={() => {
-                    setOpen(true)
-                }}>
+                <button className='btn btn-success'
+                        onClick={() => {setOpen(true)}}>
                     Add New
                 </button>
             </div>
@@ -351,8 +366,8 @@ function One(props) {
 
                     </div>}
                     <div className="w-50 border d-flex">
-                        <div className=" ariza border shadow d-flex justify-content-center" >
-                            <div ref={componentRef} className="px-5 py-3">
+                        <div className=" ariza border shadow px-5 py-3" >
+                            <div ref={componentRef} >
                                 <div className="d-flex">
                                     <div className="w-50"></div>
                                     <div className="w-50 contentAriza">
@@ -363,9 +378,10 @@ function One(props) {
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <p className="contentAriza">{ariza.description}</p>
-
+                                <div className="contentAriza">{ariza.description!=''? ariza.description : <Skeleton />} </div>
                             </div>
+
+                            <span className='date'>sana: {Datee}</span>
                         </div>
                         <button style={{height: 50, width: 200}} className='btn btn-success' onClick={handlePrint}>Ma'lumotlarni yuklash</button>
                     </div>
@@ -382,7 +398,6 @@ function One(props) {
                             })}
 
                         </ul> : ""}
-
                 </div>
             </Modal>
 
@@ -392,7 +407,6 @@ function One(props) {
                 expandable={{
                     expandedRowRender: (record) => (
                         <Steps
-
                             status="error"
                             items={[
                                 {

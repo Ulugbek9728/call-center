@@ -17,6 +17,7 @@ function Home(props) {
                 <div className="row">
 
                     <Navbar/>
+
                     <div className="col-6">
                         <img className='gif' src="./Consent.gif" alt=""/>
                     </div>

@@ -9,7 +9,7 @@ import {
 import { Layout, Menu,Input, Avatar,Space } from 'antd';
 import "../style/admin.scss";
 import {Route, Routes, useNavigate} from "react-router-dom";
-import AddDeportment from "./addDeportment";
+import One from "./One";
 
 
 const { } = Input;
@@ -17,12 +17,12 @@ const { } = Input;
 const { Header, Content, Sider } = Layout;
 const items = [
     {
-        label:"Bo'lim qo'shish",
+        label:"Yuborilgan arizalar",
         key:"1",
         icon:<UploadOutlined />
     },
     {
-        label:"123",
+        label:"Kelgan arizalar",
         key:"2",
         icon:<DownloadOutlined />
     },
@@ -30,7 +30,7 @@ const items = [
 ];
 
 
-function Admin(props) {
+function AdminOperator(props) {
     const navigate = useNavigate();
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
 
@@ -38,12 +38,14 @@ function Admin(props) {
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu  mode="inline" defaultSelectedKeys={['1']} items={items}
-                       onClick={(into)=>{if (into.key === "1"){ navigate("/adminAll");}}}/>
+                       onClick={(into)=>{if (into.key === "1"){ navigate("/operator");}}}/>
             </Sider>
             <Layout className="site-layout" style={{
-                marginLeft: 200,
-            }}>
+                    marginLeft: 200,
+                }}>
                 <Header>
+
+
                     <div className='d-flex justify-content-end'>
                         <Space direction="vertical" size={16}>
                             <Space wrap size={16}>
@@ -68,7 +70,7 @@ function Admin(props) {
                     }}
                 >
                     <Routes>
-                        <Route path={"/"} element={ <AddDeportment/>}/>
+                        <Route path={"/"} element={ <One/>}/>
 
                     </Routes>
                 </Content>
@@ -77,4 +79,4 @@ function Admin(props) {
     );
 }
 
-export default Admin;
+export default AdminOperator;

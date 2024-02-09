@@ -17,13 +17,25 @@ function Auth(props) {
                 state: searchParams.get('state')
             }
         }).then((response) => {
+            // console.log(response.data?.data?.roles[0])
+            // console.log(response.data)
             if (response.data.isSuccess === true) {
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
-                navigate("/admin")
+                if (response.data?.data?.roles[0]==='ROLE_OPERATOR'){
+                    navigate("/operator")
+                }
+                if (response.data?.data?.roles[0]==='ROLE_ADMIN'){
+                    navigate("/adminAll")
+                }
+                // navigate("/admin")
+            }
+            else {
+                navigate("/")
+
             }
         }).catch((error) => {
             console.log(error);
-            navigate("/admin")
+
         })
     }
     return (

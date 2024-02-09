@@ -1,9 +1,10 @@
 import {ToastContainer} from "react-toastify";
 import {Route, Routes} from "react-router-dom";
 import Home from "./page/home";
-import Admin from "./page/admin";
+import AdminOperator from "./page/adminOperator";
 import Tekshirish from "./page/tekshirish";
 import Auth from "./componenta/auth";
+import Admin from "./page/admin";
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
             <Route path={"/tekshirish"} element={ <Tekshirish/>}/>
 
             <Route path={"/auth/*"} element={ <Auth/>}/>
-            <Route path={"/admin/*"} element={ <Admin/>}/>
+            <Route path={"/operator/*"} element={ <AdminOperator/>}/>
+            <Route path={"/adminAll/*"} element={ <Admin/>}/>
 
         </Routes>
     </div>
