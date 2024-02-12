@@ -57,7 +57,6 @@ function One(props) {
 
     function DepartmenGet() {
         axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
-            console.log(response.data)
             setDepartment(response.data);
         }).catch((error) => {
             console.log(error)
@@ -154,11 +153,10 @@ function One(props) {
                             files: []
                         })
                     }, 2000);
-
-
                 }
             }).catch((error) => {
                 console.log(error)
+                setConfirmLoading(false);
             })
 
 
@@ -299,7 +297,7 @@ function One(props) {
                                        }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="ID" className="form-label">Markaz / Bo'lim ga yuborish</label>
+                                <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga yuborish</label>
                                 <br/>
                                 <Select className='w-100'
                                         showSearch
@@ -308,7 +306,7 @@ function One(props) {
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
                                         }}
-                                        placeholder="Markaz / Bo'lim"
+                                        placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
                                         optionFilterProp="children"
 
                                         filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
