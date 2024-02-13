@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Input, Modal, Select, Space, Table, Radio } from "antd";
+import {Input, Modal, Select, Space, Table, Switch} from "antd";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
@@ -24,8 +24,6 @@ function AddDeportment(props) {
     const [employeeListe, setemployeeListe] = useState([]);
     const [userListe, setUserListe] = useState([]);
     const [deleteID, setDeleteID] = useState('');
-    const [value1, setValue1] = useState('teacher');
-
 
     useEffect(() => {
         DepartmenGet();
@@ -49,22 +47,22 @@ function AddDeportment(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
         }).then((response) => {
             setUserListe(response.data.content);
+            console.log(response.data.content);
         }).catch((error) => {
             console.log(error)
         });
     }
 
     const onSearch = (value, _e, info) => {
-        axios.get(`${ApiName}/api/employee/search`, {
+        axios.get(`${ApiName}/api/employee`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
             params: {
-                type: employeeType,
                 search: value
             }
 
         }).then((response) => {
+            console.log(response.data);
             setUserListe(response.data.content);
-
         }).catch((error) => {
             console.log(error)
         });
@@ -74,7 +72,7 @@ function AddDeportment(props) {
         axios.get(`${ApiName}/api/employee/search`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
             params: {
-                type: value1,
+                type: employeeType,
                 departmentId: addEmployee?.department?.id
             }
 
@@ -103,11 +101,9 @@ function AddDeportment(props) {
             login: result[0].employeeIdNumber,
             imageUrl: result[0].image,
         })
-        console.log(result)
     }
 
     const handleOk = () => {
-        console.log(addEmployee)
         axios.post(`${ApiName}/api/employee`, addEmployee, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
@@ -118,8 +114,7 @@ function AddDeportment(props) {
                 setaddEmployee({})
                 setemployeeListe([])
                 setSucsessText("Ma'lumotlar qo'shildi")
-            }
-            else {
+            } else {
                 setMessage(response.data.message)
             }
         }).catch((error) => {
@@ -128,18 +123,34 @@ function AddDeportment(props) {
         })
     };
     const handleOk1 = () => {
+        if (edite===true){
+            axios.put(`${ApiName}/api/employee`, {profileId:addEmployee.id, roles:addEmployee.roles},{
+                headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+            }).then((response) => {
+                console.log(response);
+                setSucsessText("Hodim roli o'zgardi")
+                setOpen1(false);
 
-        axios.delete(`${ApiName}/api/employee/${deleteID}`, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
-        }).then((response) => {
-            console.log(response);
-            setSucsessText("Ma'lumotlar o'chirildi")
-            setOpen1(false);
+            }).catch((error) => {
+                console.log(error)
+                setMessage("error Edite")
+            })
+        }
+        else {
+            axios.delete(`${ApiName}/api/employee/${deleteID}`, {
+                headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+            }).then((response) => {
+                console.log(response);
+                setSucsessText("Ma'lumotlar o'chirildi")
+                setOpen1(false);
 
-        }).catch((error) => {
-            console.log(error)
-            setMessage("error Delete")
-        })
+            }).catch((error) => {
+                console.log(error)
+                setMessage("error Delete")
+            })
+        }
+
+
     };
 
     useEffect(() => {
@@ -192,10 +203,15 @@ function AddDeportment(props) {
             render: (item, record, index) => (
                 <div className="">
                     <button className='btn btn-outline-warning mx-1'
-                            onClick={(e) => {
+                            onClick={() => {
+                                setOpen1(true)
                                 setEdite(true)
-                                setOpen(true)
-                            }}><EditOutlined/></button>
+                                setDeleteID(item.id)
+                                setaddEmployee(item)
+                            }}
+                    >
+                        <EditOutlined/>
+                    </button>
                     <button className='btn btn-outline-danger mx-1'
                             onClick={() => {
                                 setOpen1(true)
@@ -209,51 +225,28 @@ function AddDeportment(props) {
         },
     ];
 
-
-    const options = [
-        {
-            label: "O'qituvchi",
-            value: 'teacher',
-        },
-        {
-            label: 'Hodim',
-            value: 'employee',
-        },
-    ];
-    const onChange = ({ target: { value } }) => {
-
-        setValue1(value);
-    };
-
     return (
         <div>
 
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
-                    <Radio.Group className='mx-3' options={options} onChange={onChange} value={value1} optionType="button" />
-                    <Search
-                        placeholder="F.I.SH bo'yicha qidiruv" allowClear
-                        onSearch={onSearch}
-                        style={{width: 400,}}
-                    />
+                    <Search placeholder="F.I.SH bo'yicha qidiruv" allowClear onSearch={onSearch} style={{width: 400,}}/>
                 </Space>
-                <button className='btn btn-success'
-                        onClick={() => {
-                            setOpen(true)
-                        }}>
+                <button className='btn btn-success' onClick={() => {
+                    setOpen(true)
+                }}>
                     Add New
                 </button>
             </div>
 
             <Modal className='w-50'
-                   title={edite ? "Hodim o'zgartirish" : "Hodim qo'shish"} open={open} onOk={handleOk}
-                    onCancel={() => {
-                setOpen(false);
-                setEdite(false)
-                setemployeeListe([])
-                setaddEmployee({})
+                   title={"Hodim qo'shish"} open={open} onOk={handleOk}
+                   onCancel={() => {
+                       setOpen(false);
+                       setemployeeListe([])
+                       setaddEmployee({})
 
-            }}>
+                   }}>
                 <form>
                     <label className="form-label">Markaz / Bo'lim / Fakultet / Kafedra</label>
                     <br/>
@@ -338,17 +331,42 @@ function AddDeportment(props) {
             </Modal>
 
             <Modal className='w-25'
-                   title={"Hodimni o'chirishni tasdiqlang"} open={open1} onOk={handleOk1}
+                   title={edite === true ? "Hodimni ro'lini o'zgartirish" : "Hodimni o'chirishni tasdiqlang"}
+                   open={open1} onOk={handleOk1}
                    onCancel={() => {
                        setOpen1(false);
                    }}>
-                <h4 className='text-danger'>Hodimni o'chirmoqchimisiz !!!</h4>
+                {edite === true ? <div className="d-block">
+                        <Switch
+                            checked={addEmployee?.roles?.includes('ROLE_ADMIN')}
+                            onClick={() => {
+                                setaddEmployee({...addEmployee, roles: ['ROLE_ADMIN']})
+                            }}
+                        />
+                        <span>Admin</span> <br/>
+                        <Switch
+                            checked={addEmployee?.roles?.includes('ROLE_OPERATOR')}
+                            onClick={() => {
+                                setaddEmployee({...addEmployee, roles: ['ROLE_OPERATOR']})
+                            }}
+                        />
+                        <span>Operator</span> <br/>
+                        <Switch
+                            checked={addEmployee?.roles?.includes('ROLE_DEPARTMENT')}
+                            onClick={() => {
+                                setaddEmployee({...addEmployee, roles: ['ROLE_DEPARTMENT']})
+
+                            }}
+                        />
+                        <span>Bo'lim admin</span>
+                    </div> :
+                    <h4 className='text-danger'>Hodimni o'chirmoqchimisiz !!!</h4>}
+
             </Modal>
 
             <Table
                 columns={columns}
                 pagination={pageSize}
-
                 dataSource={userListe?.map(item => {
                     return {...item, key: item.id}
                 })}

@@ -38,7 +38,8 @@ function Admin(props) {
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu  mode="inline" defaultSelectedKeys={['1']} items={items}
-                       onClick={(into)=>{if (into.key === "1"){ navigate("/adminAll");}}}/>
+                       onClick={(into)=>{
+                           if (into.key === "1"){ navigate("/adminAll");}}}/>
             </Sider>
             <Layout className="site-layout" style={{
                 marginLeft: 200,
