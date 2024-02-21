@@ -6,7 +6,6 @@ import Home from "./page/home";
 import AdminOperator from "./page/adminOperator";
 import Tekshirish from "./page/tekshirish";
 import Auth from "./componenta/auth";
-import Admin from "./page/admin";
 
 
 function App() {
@@ -19,7 +18,8 @@ function App() {
 
             <Route path={"/auth/*"} element={ <Auth/>}/>
             <Route path={"/operator/*"} element={ <AdminOperator/>}/>
-            <Route path={"/adminAll/*"} element={ <Admin/>}/>
+            <Route path={"/department/*"} element={ <AdminOperator/>}/>
+            <Route path={"/adminAll/*"} element={ <AdminOperator/>}/>
 
         </Routes>
     </div>

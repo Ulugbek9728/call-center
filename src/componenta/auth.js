@@ -21,15 +21,18 @@ function Auth(props) {
             }
         }).then((response) => {
             // console.log(response.data?.data?.roles[0])
-            console.log(response.data)
             if (response.data.isSuccess === true) {
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
                 if (response.data?.data?.roles[0]==='ROLE_OPERATOR'){
-                    navigate("/operator")
+                    navigate("/operator/addFile")
                 }
                 if (response.data?.data?.roles[0]==='ROLE_ADMIN'){
-                    navigate("/adminAll")
+                    navigate("/adminAll/userAdd")
                 }
+                if (response.data?.data?.roles[0]==='ROLE_DEPARTMENT'){
+                    navigate("/department/addFileDepartment")
+                }
+
             }
             else {
 
@@ -56,6 +59,7 @@ function Auth(props) {
             toast.error(message)
         }
     }
+
     return (
         <div className="home">
             <div className="container">

@@ -77,7 +77,6 @@ function AddDeportment(props) {
             }
 
         }).then((response) => {
-            // console.log(response.data);
             setemployeeListe(response.data.content);
         }).catch((error) => {
             console.log(error)
@@ -127,7 +126,6 @@ function AddDeportment(props) {
             axios.put(`${ApiName}/api/employee`, {profileId:addEmployee.id, roles:addEmployee.roles},{
                 headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
             }).then((response) => {
-                console.log(response);
                 setSucsessText("Hodim roli o'zgardi")
                 setOpen1(false);
 
@@ -140,7 +138,6 @@ function AddDeportment(props) {
             axios.delete(`${ApiName}/api/employee/${deleteID}`, {
                 headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
             }).then((response) => {
-                console.log(response);
                 setSucsessText("Ma'lumotlar o'chirildi")
                 setOpen1(false);
 
@@ -188,10 +185,7 @@ function AddDeportment(props) {
             title: 'FISH',
             dataIndex: 'fullName',
         },
-        {
-            title: 'Login',
-            dataIndex: 'login',
-        },
+
         {
             title: 'Rasm',
             render: (item, record, index) => (

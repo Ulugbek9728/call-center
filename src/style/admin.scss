@@ -4,6 +4,8 @@ $textColor: #02A36D;
 .ant-layout-sider-dark{
   background: white!important;
   color: black;
+  width: 500px!important;
+
 }
 .ant-menu{
   background: white!important;
@@ -16,6 +18,8 @@ $textColor: #02A36D;
     color: $textColor!important;
   }
 }
+
+
 .ant-layout-header{
   background: white!important;
   color: $textColor!important;

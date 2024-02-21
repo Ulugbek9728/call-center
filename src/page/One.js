@@ -1,11 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react';
-import { useReactToPrint } from 'react-to-print';
+import {useReactToPrint} from 'react-to-print';
 
-import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps, Skeleton } from 'antd';
+import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps, Skeleton} from 'antd';
 import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
-
+import {toast} from "react-toastify";
 
 
 const {Search} = Input;
@@ -16,6 +16,9 @@ const onSearch = (value, _e, info) => console.log(info?.source, value);
 function One(props) {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
+
+    const [message, setMessage] = useState('');
+    const [sucsessText, setSucsessText] = useState('');
 
     const [pageSize, setPageSize] = useState();
     const [Department, setDepartment] = useState([]);
@@ -51,9 +54,12 @@ function One(props) {
 
 
     useEffect(() => {
+        if (fulInfo?.roles?.includes('ROLE_DEPARTMENT')){
+            setAriza({...ariza, fullName: fulInfo.fullName})
+        }
         DepartmenGet()
         arizaGetList()
-    }, []);
+    }, [sucsessText]);
 
     function DepartmenGet() {
         axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
@@ -65,12 +71,11 @@ function One(props) {
 
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
 
         }).then((response) => {
+            console.log(response.data.data.content)
             setArizaList(response.data.data.content)
-            // setPageSize(response.data.pageable.pageSize)
-            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -122,12 +127,12 @@ function One(props) {
 
     const handleOk = () => {
         setConfirmLoading(true);
-        // eslint-disable-next-line no-unused-expressions
+
         edite ? setTimeout(() => {
                 setOpen(false);
                 setConfirmLoading(false);
                 setEdite(false)
-            }, 2000) :
+            }, 1000) :
             axios.post(`${ApiName}/api/application`, ariza, {
                 headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
             }).then((response) => {
@@ -136,6 +141,7 @@ function One(props) {
                     setTimeout(() => {
                         setOpen(false);
                         setConfirmLoading(false);
+                        setSucsessText('File yuborildi')
                         setAriza({
                             fullName: '',
                             applicationType: 'Ariza',
@@ -152,10 +158,11 @@ function One(props) {
                             },
                             files: []
                         })
-                    }, 2000);
+                    }, 1000);
                 }
             }).catch((error) => {
                 console.log(error)
+                setMessage('File error')
                 setConfirmLoading(false);
             })
 
@@ -168,7 +175,7 @@ function One(props) {
         action: `${ApiName}/api/v1/attach/upload`,
 
         headers: {
-            authorization: `Bearer ${fulInfo.accessToken}`,
+            authorization: `Bearer ${fulInfo?.accessToken}`,
         },
         onChange(info) {
             if (info.file.status === 'removed') {
@@ -176,7 +183,7 @@ function One(props) {
                 setAriza({...ariza, files: result})
 
                 axios.delete(`${ApiName}/api/v1/attach/${info.file.response.id}`, {
-                    headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+                    headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
                 }).then((res) => {
                     console.log(res)
                     message.success("File o'chirildi")
@@ -187,7 +194,7 @@ function One(props) {
             }
 
             if (info.file.status === 'done') {
-                console.log(info.file.response)
+                console.log(info.file?.response)
                 ariza.files.push({
                         fileId: info.file.response.id,
                     }
@@ -199,20 +206,35 @@ function One(props) {
         },
     };
 
+
     useEffect(() => {
         const date = new Date();
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
 
-        if (edite=== true){
+        if (edite === true) {
             const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options);
             setDatee(formattedDate)
-        }
-        else{
+        } else {
             const formattedDate = date.toLocaleDateString('en-US', options);
             setDatee(formattedDate)
         }
 
     }, [edite]);
+
+    useEffect(() => {
+        setMessage('')
+        setSucsessText('')
+        notify();
+    }, [message, sucsessText,]);
+
+    function notify() {
+        if (sucsessText !== '') {
+            toast.success(sucsessText)
+        }
+        if (message !== '') {
+            toast.error(message)
+        }
+    }
 
     return (
         <div>
@@ -250,8 +272,7 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button className='btn btn-success'
-                        onClick={() => {setOpen(true)}}>
+                <button className='btn btn-success' onClick={() => {setOpen(true)}}>
                     Add New
                 </button>
             </div>
@@ -297,7 +318,8 @@ function One(props) {
                                        }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga yuborish</label>
+                                <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga
+                                    yuborish</label>
                                 <br/>
                                 <Select className='w-100'
                                         showSearch
@@ -364,8 +386,8 @@ function One(props) {
 
                     </div>}
                     <div className="w-50 border d-flex">
-                        <div className=" ariza border shadow px-5 py-3" >
-                            <div ref={componentRef} >
+                        <div className=" ariza border shadow px-5 py-3">
+                            <div ref={componentRef}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
                                     <div className="w-50 contentAriza">
@@ -376,21 +398,22 @@ function One(props) {
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div className="contentAriza">{ariza.description!=''? ariza.description : <Skeleton />} </div>
+                                <div className="contentAriza">{ariza.description != '' ? ariza.description :
+                                    <Skeleton/>} </div>
                             </div>
 
                             <span className='date'>sana: {Datee}</span>
                         </div>
-                        <button style={{height: 50, width: 200}} className='btn btn-success' onClick={handlePrint}>Ma'lumotlarni yuklash</button>
+                        <button style={{height: 50, width: 200}} className='btn btn-success'
+                                onClick={handlePrint}>Yuklab olish / pechat
+                        </button>
                     </div>
-
-
 
                     {edite ?
                         <ul className="a w-50">
                             {ariza.files && ariza.files.map((item, index) => {
-                                return<li key={index}>
-                                    <a href={`${item.file.url}`} target={"_blank"}>File {index+1}</a>
+                                return <li key={index}>
+                                    <a href={`${item.file.url}`} target={"_blank"}>File {index + 1}</a>
                                 </li>
 
                             })}
