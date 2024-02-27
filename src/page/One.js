@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
 
-import {Input, Space, Table, Select, Modal, message, Upload, Button, Steps, Skeleton} from 'antd';
+import {Input, Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message} from 'antd';
 import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
@@ -17,7 +17,7 @@ function One(props) {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
-    const [message, setMessage] = useState('');
+    const [messagee, setMessage] = useState('');
     const [sucsessText, setSucsessText] = useState('');
 
     const [pageSize, setPageSize] = useState();
@@ -71,7 +71,9 @@ function One(props) {
 
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
-            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+            params:{
+                isCome: false}
 
         }).then((response) => {
             console.log(response.data.data.content)
@@ -193,8 +195,7 @@ function One(props) {
                 })
             }
 
-            if (info.file.status === 'done') {
-                console.log(info.file?.response)
+           else if (info.file.status === 'done') {
                 ariza.files.push({
                         fileId: info.file.response.id,
                     }
@@ -231,7 +232,7 @@ function One(props) {
         if (sucsessText !== '') {
             toast.success(sucsessText)
         }
-        if (message !== '') {
+        if (messagee !== '') {
             toast.error(message)
         }
     }
