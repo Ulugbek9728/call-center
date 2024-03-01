@@ -1,46 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    Input,
-    Space,
-    Steps,
-    Table,
-    Modal,
-    Skeleton,
-    Collapse,
-    theme,
-    Segmented,
-    Upload,
-    Button,
-    message,
-    Select
+    Input, Space, Steps, Table, Modal, Skeleton,
+    Segmented, Upload, Button, message, Select, Empty, Drawer,
 } from "antd";
-import {LoadingOutlined, CaretRightOutlined, UploadOutlined} from "@ant-design/icons";
+
+import {LoadingOutlined, UploadOutlined, CaretRightOutlined} from "@ant-design/icons";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
 
 const {Search} = Input;
 
-const getItems = (panelStyle) => [
-    {
-        key: '1',
-        label: 'This is panel header 1',
-        children: <p>1</p>,
-        style: panelStyle,
-    },
-    {
-        key: '2',
-        label: 'This is panel header 2',
-        children: <p>2</p>,
-        style: panelStyle,
-    },
-    {
-        key: '3',
-        label: 'This is panel header 3',
-        children: <p>3</p>,
-        style: panelStyle,
-    },
-];
 
 function GetList(props) {
     const componentRef = useRef();
@@ -79,6 +49,10 @@ function GetList(props) {
     });
     const [Datee, setDatee] = useState();
     const [Department, setDepartment] = useState([]);
+    const [ItemFileListe, setItemFileListe] = useState([]);
+    const [FileDrower, setFileDrower] = useState([]);
+
+    const [open1, setOpen1] = useState(false);
 
 
     useEffect(() => {
@@ -111,12 +85,12 @@ function GetList(props) {
     }, []);
 
     useEffect(() => {
-        if (arizaSend.exchangeType==="BACK"){
-            setArizaSend({...arizaSend,
-                toDepartment:{
-                id: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.id : null,
-                name: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.name : null,
-
+        if (arizaSend.exchangeType === "BACK") {
+            setArizaSend({
+                ...arizaSend,
+                toDepartment: {
+                    id: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.id : null,
+                    name: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.name : null,
                 }
 
             })
@@ -177,13 +151,6 @@ function GetList(props) {
                 </button>),
         },
     ];
-    const {token} = theme.useToken();
-    const panelStyle = {
-        marginBottom: 24,
-        background: "#c3e7ff",
-        borderRadius: token.borderRadiusLG,
-        border: 'none',
-    };
 
     const propss = {
 
@@ -226,28 +193,34 @@ function GetList(props) {
             console.log(error)
         });
     }
+
     const handleChangeDepartme = (e) => {
         const result = Department.filter((word) => word.id === e);
-        setArizaSend({...arizaSend,
+        setArizaSend({
+            ...arizaSend,
             toDepartment: {
-            id: result[0].id,
-            name: result[0].name,
-            }})
+                id: result[0].id,
+                name: result[0].name,
+            }
+        })
     };
 
     function arizaFileList(id) {
         axios.get(`${ApiName}/api/v1/exchange-application/files-by-application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params:{
-                appId:id
+            params: {
+                appId: id
             }
 
         }).then((response) => {
-            console.log(response.data.data)
+            setItemFileListe(response.data.data)
         }).catch((error) => {
             console.log(error)
         });
     }
+
+    console.log(FileDrower)
+
 
     return (
         <div>
@@ -304,30 +277,34 @@ function GetList(props) {
                         </button>
                     </div>
 
-
-                    {/*<ul className="a w-50">*/}
-                    {/*    {ariza.files && ariza.files.map((item, index) => {*/}
-                    {/*        return <li key={index}>*/}
-                    {/*            <a href={`${item.file.url}`} target={"_blank"}>File {index + 1}</a>*/}
-                    {/*        </li>*/}
-
-                    {/*    })}*/}
-
-                    {/*</ul>*/}
-
                     <div className="w-50 px-4">
+                        <div className="border p-2" >
+                            {
+                                ItemFileListe == '' ? <Empty/> :
+                                    ItemFileListe && ItemFileListe.map((item, index) => {
+                                        return <div className="" key={index}>
+                                            <div className="card-header" onClick={() => {
+                                                setFileDrower(item)
+                                                setOpen1(true)
+                                            }}>
+                                                <h6 className="mb-0" >
+                                                    {item.exchangeApp.department.name}
+                                                </h6>
+                                                <CaretRightOutlined />
+                                            </div>
 
-                        <div className="collapseAll border">
-                            <Collapse
-                                bordered={false}
-                                defaultActiveKey={['1']}
-                                expandIcon={({isActive}) => <CaretRightOutlined rotate={isActive ? 90 : 0}/>}
-                                style={{
-                                    background: "white",
-                                }}
-                                items={getItems(panelStyle)}
-                            />
+                                            <div>
+
+
+
+                                            </div>
+                                        </div>
+                                    })
+                            }
+
+
                         </div>
+
 
                         <Segmented
                             options={[
@@ -348,7 +325,7 @@ function GetList(props) {
                                 })
                             }} block/>
 
-                        {arizaSend.exchangeType==='BACK'? '': <div className="my-3">
+                        {arizaSend.exchangeType === 'BACK' ? '' : <div className="my-3">
                             <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga
                                 yuborish</label>
                             <br/>
@@ -374,10 +351,8 @@ function GetList(props) {
                         </div>}
 
 
-
                         <label htmlFor="comment" className='mt-2'>Javob mazmuni:</label>
                         <textarea className="form-control mt-2" rows="6" id="comment" name="text"
-
                                   onChange={(e) => {
                                       setArizaSend({...arizaSend, description: e.target.value})
                                   }}
@@ -387,38 +362,59 @@ function GetList(props) {
                         </Upload>
                     </div>
 
+
                 </div>
 
-
             </Modal>
+
+            <Drawer
+                size={'large'}
+                title={`"${FileDrower?.exchangeApp?.department?.name}" dan kelgan ma'lumotlar`}
+                placement="right"
+                onClose={() => setOpen1(false)}
+                open={open1}
+            >
+                <h6> Fayillar ro'yxati</h6>
+                <ol>
+                    {FileDrower?.files && FileDrower?.files.map((item, index) => {
+                        return <li key={index}>
+                            <a href={item.file.url}
+                               target={"_blank"}>{item.file.filename}</a>
+                        </li>
+                    })}
+
+
+                </ol>
+                <h6>Ma'lumot</h6>
+                <p className='border p-3'>
+                    {FileDrower?.exchangeApp?.description}
+                </p>
+            </Drawer>
             <Table
                 columns={columns}
                 pagination={pageSize}
                 expandable={{
-                    expandedRowRender: (record) => (
-                        <Steps
-                            status="error"
-                            items={[
-                                {
-                                    title: 'Start',
-                                    status: 'finish',
-
-                                },
-                                {
-                                    title: 'In Progress',
-                                    status: 'finish',
-                                },
-                                {
-                                    title: 'Waiting',
-                                    status: 'process',
-                                    icon: <LoadingOutlined/>,
-                                },
-                                {
-                                    title: 'Finished',
-                                    status: 'wait',
-                                },
-                            ]}
-                        />)
+                    expandedRowRender: (record) => {
+                        console.log(record)
+                        return (
+                            <Steps
+                                current={record?.exchangesApp?.length}
+                                status="wait"
+                                items={
+                                    [...record?.exchangesApp?.map(item => (
+                                        {
+                                            title: item?.department?.name
+                                        }
+                                    )),
+                                        {
+                                            title: 'Finish',
+                                            icon: <LoadingOutlined/>,
+                                        }
+                                    ]
+                                }
+                            />
+                        )
+                    }
                 }}
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}
