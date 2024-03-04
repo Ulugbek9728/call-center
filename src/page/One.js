@@ -1,8 +1,8 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
 
-import {Input, Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message} from 'antd';
-import {UploadOutlined, LoadingOutlined} from '@ant-design/icons';
+import {Input, Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message, Empty, Drawer} from 'antd';
+import {UploadOutlined, LoadingOutlined, CaretRightOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
@@ -45,6 +45,26 @@ function One(props) {
     });
     const [ArizaList, setArizaList] = useState([]);
     const [Datee, setDatee] = useState();
+    const [ItemFileListe, setItemFileListe] = useState([]);
+    const [FileDrower, setFileDrower] = useState([]);
+
+    const [open1, setOpen1] = useState(false);
+
+
+    function arizaFileList(id) {
+        axios.get(`${ApiName}/api/v1/exchange-application/files-by-application`, {
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+            params: {
+                appId: id
+            }
+
+        }).then((response) => {
+            setItemFileListe(response.data.data)
+            console.log(response)
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
 
 
     const handleChangeDepartme = (e) => {
@@ -76,7 +96,6 @@ function One(props) {
                 isCome: false}
 
         }).then((response) => {
-            console.log(response.data.data.content)
             setArizaList(response.data.data.content)
         }).catch((error) => {
             console.log(error)
@@ -100,27 +119,37 @@ function One(props) {
             title: "Bo'lim / Markaz",
             render: (item, record, index) => (<>{item.toDepartment?.name}</>),
         },
+
         {
             title: 'FISH',
             dataIndex: 'fullName',
         },
-
+        {
+            title: 'File ID raqami',
+            dataIndex: 'id',
+        },
         {
             title: 'Tel raqami',
             dataIndex: 'phone',
         },
         {
-            title: "seeAll",
+            title: 'Masul hodim',
+            render: (item, record, index) => (<>{item.fromOperator?.fullName}</>),
+        },
+        {
+            title: "Batafsil",
             render: (item, record, index) => (
                 <button className='btn btn-outline-success' onClick={(e) => {
-                    console.log(item);
+                    arizaFileList(item.id)
+                    console.log(item)
                     setAriza(item)
                     setEdite(true)
                     setOpen(true)
                 }}>
-                    See
+                    Ko'rish
                 </button>),
         },
+
     ];
 
     const handleChange = (value) => {
@@ -382,7 +411,7 @@ function One(props) {
                                       }}/>
                         </form>
                         <Upload {...propss}>
-                            <Button icon={<UploadOutlined/>}>Click to Upload</Button>
+                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
                         </Upload>
 
                     </div>}
@@ -411,17 +440,53 @@ function One(props) {
                     </div>
 
                     {edite ?
-                        <ul className="a w-50">
-                            {ariza.files && ariza.files.map((item, index) => {
-                                return <li key={index}>
-                                    <a href={`${item.file.url}`} target={"_blank"}>File {index + 1}</a>
-                                </li>
+                        <div className="border p-2 mx-2 w-50">
+                            {
+                                ItemFileListe == '' ? <Empty/> :
+                                    ItemFileListe && ItemFileListe.map((item, index) => {
+                                        return <div className="" key={index}>
+                                            <div className="card-header" onClick={() => {
+                                                setFileDrower(item)
+                                                setOpen1(true)
+                                            }}>
+                                                <h6 className="mb-0">
+                                                    {item.exchangeApp.department.name}
+                                                </h6>
+                                                <CaretRightOutlined/>
+                                            </div>
 
-                            })}
-
-                        </ul> : ""}
+                                            <div>
+                                            </div>
+                                        </div>
+                                    })
+                            }
+                        </div> : ""}
                 </div>
             </Modal>
+
+            <Drawer
+                size={'large'}
+                title={`"${FileDrower?.exchangeApp?.department?.name}" dan kelgan ma'lumotlar`}
+                placement="right"
+                onClose={() => setOpen1(false)}
+                open={open1}
+            >
+                <h6> Fayillar ro'yxati</h6>
+                <ol>
+                    {FileDrower?.files && FileDrower?.files.map((item, index) => {
+                        return <li key={index}>
+                            <a href={item.file.url}
+                               target={"_blank"}>{item.file.filename}</a>
+                        </li>
+                    })}
+
+
+                </ol>
+                <h6>Ma'lumot</h6>
+                <p className='border p-3'>
+                    {FileDrower?.exchangeApp?.description}
+                </p>
+            </Drawer>
 
             <Table
                 columns={columns}
@@ -429,28 +494,22 @@ function One(props) {
                 expandable={{
                     expandedRowRender: (record) => (
                         <Steps
-                            status="error"
-                            items={[
-                                {
-                                    title: 'Start',
-                                    status: 'finish',
-
-                                },
-                                {
-                                    title: 'In Progress',
-                                    status: 'finish',
-                                },
-                                {
-                                    title: 'Waiting',
-                                    status: 'process',
-                                    icon: <LoadingOutlined/>,
-                                },
-                                {
-                                    title: 'Finished',
-                                    status: 'wait',
-                                },
-                            ]}
-                        />)
+                            current={record?.exchangesApp?.length}
+                            status="wait"
+                            items={
+                                [...record?.exchangesApp?.map(item => (
+                                    {
+                                        title: item?.department?.name
+                                    }
+                                )),
+                                    {
+                                        title: 'Finish',
+                                        icon: <LoadingOutlined/>,
+                                    }
+                                ]
+                            }
+                        />
+                        )
                 }}
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}

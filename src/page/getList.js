@@ -125,9 +125,14 @@ function GetList(props) {
             title: "Bo'lim / Markaz",
             render: (item, record, index) => (<>{item.toDepartment?.name}</>),
         },
+
         {
             title: 'FISH',
             dataIndex: 'fullName',
+        },
+        {
+            title: 'File ID raqami',
+            dataIndex: 'id',
         },
         {
             title: 'Tel raqami',
@@ -219,9 +224,6 @@ function GetList(props) {
         });
     }
 
-    console.log(FileDrower)
-
-
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -278,7 +280,7 @@ function GetList(props) {
                     </div>
 
                     <div className="w-50 px-4">
-                        <div className="border p-2" >
+                        <div className="border p-2">
                             {
                                 ItemFileListe == '' ? <Empty/> :
                                     ItemFileListe && ItemFileListe.map((item, index) => {
@@ -287,22 +289,17 @@ function GetList(props) {
                                                 setFileDrower(item)
                                                 setOpen1(true)
                                             }}>
-                                                <h6 className="mb-0" >
+                                                <h6 className="mb-0">
                                                     {item.exchangeApp.department.name}
                                                 </h6>
-                                                <CaretRightOutlined />
+                                                <CaretRightOutlined/>
                                             </div>
 
                                             <div>
-
-
-
                                             </div>
                                         </div>
                                     })
                             }
-
-
                         </div>
 
 
@@ -324,7 +321,6 @@ function GetList(props) {
                                     exchangeType: e
                                 })
                             }} block/>
-
                         {arizaSend.exchangeType === 'BACK' ? '' : <div className="my-3">
                             <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga
                                 yuborish</label>
@@ -349,7 +345,6 @@ function GetList(props) {
                                     }))}
                             />
                         </div>}
-
 
                         <label htmlFor="comment" className='mt-2'>Javob mazmuni:</label>
                         <textarea className="form-control mt-2" rows="6" id="comment" name="text"
@@ -390,6 +385,7 @@ function GetList(props) {
                     {FileDrower?.exchangeApp?.description}
                 </p>
             </Drawer>
+
             <Table
                 columns={columns}
                 pagination={pageSize}
