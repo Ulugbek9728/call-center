@@ -4,10 +4,11 @@ import {
     Segmented, Upload, Button, message, Select, Empty, Drawer,
 } from "antd";
 
-import {LoadingOutlined, UploadOutlined, CaretRightOutlined} from "@ant-design/icons";
+import {LoadingOutlined, UploadOutlined, CaretRightOutlined, ArrowRightOutlined} from "@ant-design/icons";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
+import {toast} from "react-toastify";
 
 const {Search} = Input;
 
@@ -15,6 +16,9 @@ const {Search} = Input;
 function GetList(props) {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
+
+    const [messagee, setMessage] = useState('');
+    const [sucsessText, setSucsessText] = useState('');
 
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [pageSize, setPageSize] = useState();
@@ -62,15 +66,17 @@ function GetList(props) {
     }, [Open]);
 
     const handleOk = () => {
-        // setOpen(false);
         console.log(arizaSend)
         axios.post(`${ApiName}/api/v1/exchange-application`, arizaSend, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
             console.log(response);
+            setOpen(false);
+            setSucsessText('malumotlar yuborildi')
 
         }).catch((error) => {
             console.log(error)
+            setMessage("Ma'lumot yuborilishida xato")
 
         })
     };
@@ -104,6 +110,7 @@ function GetList(props) {
 
         }).then((response) => {
             setArizaList(response.data.data.content)
+            console.log(response.data.data.content)
         }).catch((error) => {
             console.log(error)
         });
@@ -139,7 +146,7 @@ function GetList(props) {
             dataIndex: 'phone',
         },
         {
-            title: "seeAll",
+            title: "Batafsil",
             render: (item, record, index) => (
                 <button className='btn btn-outline-success' onClick={(e) => {
                     setArizaSend({
@@ -152,7 +159,7 @@ function GetList(props) {
                     arizaFileList(item.id)
                     setOpen(true)
                 }}>
-                    See
+                    Ko'rish
                 </button>),
         },
     ];
@@ -224,6 +231,21 @@ function GetList(props) {
         });
     }
 
+    useEffect(() => {
+        setMessage('')
+        setSucsessText('')
+        notify();
+    }, [message, sucsessText,]);
+
+    function notify() {
+        if (sucsessText !== '') {
+            toast.success(sucsessText)
+        }
+        if (messagee !== '') {
+            toast.error(message)
+        }
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -255,7 +277,7 @@ function GetList(props) {
                 })
             }}>
                 <div className="d-flex justify-content-between">
-                    <div className="w-50 border d-flex">
+                    <div className="w-50 border d-flex position-relative">
                         <div className=" ariza border shadow px-5 py-3">
                             <div ref={componentRef}>
                                 <div className="d-flex">
@@ -274,7 +296,9 @@ function GetList(props) {
 
                             <span className='date'>sana: {Datee}</span>
                         </div>
-                        <button style={{height: 50, width: 200}} className='btn btn-success'
+
+                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}}
+                                className='btn btn-success'
                                 onClick={handlePrint}>Yuklab olish / pechat
                         </button>
                     </div>
@@ -289,8 +313,11 @@ function GetList(props) {
                                                 setFileDrower(item)
                                                 setOpen1(true)
                                             }}>
-                                                <h6 className="mb-0">
-                                                    {item.exchangeApp.department.name}
+                                                <h6 className="mb-0 d-flex justify-content-between">
+                                                    <p className='w-50 px-3'>{item.exchangeApp.department.name} </p>
+                                                    <ArrowRightOutlined/>
+                                                    <p className='w-50 px-3'> {item.exchangeApp.toDepartment.name}</p>
+
                                                 </h6>
                                                 <CaretRightOutlined/>
                                             </div>
@@ -353,7 +380,7 @@ function GetList(props) {
                                   }}
                         />
                         <Upload {...propss}>
-                            <Button icon={<UploadOutlined/>}>Click to Upload</Button>
+                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
                         </Upload>
                     </div>
 
@@ -391,23 +418,26 @@ function GetList(props) {
                 pagination={pageSize}
                 expandable={{
                     expandedRowRender: (record) => {
-                        console.log(record)
                         return (
-                            <Steps
-                                current={record?.exchangesApp?.length}
-                                status="wait"
-                                items={
-                                    [...record?.exchangesApp?.map(item => (
-                                        {
-                                            title: item?.department?.name
-                                        }
-                                    )),
-                                        {
-                                            title: 'Finish',
-                                            icon: <LoadingOutlined/>,
-                                        }
-                                    ]
-                                }
+                            <Steps direction="vertical"
+                                   current={record?.exchangesApp?.length}
+                                   status="wait"
+                                   items={
+                                       [...record?.exchangesApp?.map(item => (
+                                           {
+                                               title: item?.department?.name,
+                                               description: item?.toDepartment?.name
+                                           }
+                                           // {
+                                           //     title: item?.toDepartment?.name
+                                           // }
+                                       )),
+                                           {
+                                               title: 'Finish',
+                                               icon: <LoadingOutlined/>,
+                                           }
+                                       ]
+                                   }
                             />
                         )
                     }

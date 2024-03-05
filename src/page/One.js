@@ -66,7 +66,6 @@ function One(props) {
         });
     }
 
-
     const handleChangeDepartme = (e) => {
         const result = Department.filter((word) => word.id === e);
         setAriza({...ariza, toDepartment: result[0]})
@@ -303,7 +302,7 @@ function One(props) {
                     />
                 </Space>
                 <button className='btn btn-success' onClick={() => {setOpen(true)}}>
-                    Add New
+                    Murojatni yaratish
                 </button>
             </div>
             <Modal className='modalAddNew'
@@ -332,7 +331,7 @@ function One(props) {
                     {edite ? "" : <div className="border w-50 p-3 mx-3">
                         <form>
                             <div className="mb-3 mt-3">
-                                <label form="FISH" className="form-label">Familya Ism Sharif</label>
+                                <label form="FISH" className="form-label">Murojatchi Familya Ism Sharif</label>
                                 <input type="text" value={ariza?.fullName} className="form-control" id="FISH"
                                        placeholder="F.I.SH" name="email"
                                        onChange={(e) => {
@@ -340,7 +339,7 @@ function One(props) {
                                        }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="pwd" className="form-label">Tel</label>
+                                <label form="pwd" className="form-label">Murojatchi Telefon raqami</label>
                                 <input type="text" value={ariza?.phone} className="form-control" id="pwd"
                                        placeholder="+998(**) *** ** **" name="pswd"
                                        onChange={(e) => {
@@ -348,8 +347,7 @@ function One(props) {
                                        }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga
-                                    yuborish</label>
+                                <label form="ID" className="form-label">Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang</label>
                                 <br/>
                                 <Select className='w-100'
                                         showSearch
@@ -372,7 +370,7 @@ function One(props) {
                                 />
                             </div>
                             <div className="mb-3">
-                                <label form="xujjat" className="form-label">Xujjat turi</label>
+                                <label form="xujjat" className="form-label">Murojat xujjat turi</label>
 
                                 <Select
                                     className='w-100'
@@ -403,7 +401,7 @@ function One(props) {
                                 />
 
                             </div>
-                            <label htmlFor="comment">Ariza mazmuni:</label>
+                            <label htmlFor="comment">Murojat mazmuni:</label>
                             <textarea className="form-control" rows="10" id="comment" name="text"
                                       value={ariza.description}
                                       onChange={(e) => {
@@ -415,8 +413,8 @@ function One(props) {
                         </Upload>
 
                     </div>}
-                    <div className="w-50 border d-flex">
-                        <div className=" ariza border shadow px-5 py-3">
+                    <div className="w-50 border d-flex position-relative">
+                        <div className=" ariza border shadow px-5 py-3" >
                             <div ref={componentRef}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
@@ -425,7 +423,7 @@ function One(props) {
                                         M.S.Turabdjanovga <span>{ariza.fullName}</span> dan
                                     </div>
                                 </div>
-                                <h4 className="text-center mt-3">
+                                <h4 className="text-center mt-5">
                                     {ariza.applicationType}
                                 </h4>
                                 <div className="contentAriza">{ariza.description != '' ? ariza.description :
@@ -434,7 +432,7 @@ function One(props) {
 
                             <span className='date'>sana: {Datee}</span>
                         </div>
-                        <button style={{height: 50, width: 200}} className='btn btn-success'
+                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}} className='btn btn-success'
                                 onClick={handlePrint}>Yuklab olish / pechat
                         </button>
                     </div>
@@ -493,7 +491,7 @@ function One(props) {
                 pagination={pageSize}
                 expandable={{
                     expandedRowRender: (record) => (
-                        <Steps
+                        <Steps direction="vertical"
                             current={record?.exchangesApp?.length}
                             status="wait"
                             items={

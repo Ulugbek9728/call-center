@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Exo:ital,wght@1,500&family=Josefin+Sans&display=swap');
 
 $mainColor: #02A36D;
+$mainFont: Josefin Sans;
 
 
 * {
   padding: 0;
   margin: 0;
-  font-family: 'Josefin Sans', sans-serif;
 
   a {
     text-decoration: none!important;
@@ -30,6 +30,7 @@ $mainColor: #02A36D;
     }
 
     .nav-link {
+      font-family: $mainFont, sans-serif;
       font-size: 25px;
       font-weight: 600;
       //color: $mainColor;
@@ -41,6 +42,7 @@ $mainColor: #02A36D;
 
     .title {
       margin-top: 100px;
+      font-family: $mainFont, sans-serif;
       font-size: 50px;
       font-weight: 700;
     }
@@ -56,7 +58,7 @@ $mainColor: #02A36D;
       margin-top: 40px;
       padding: 10px 40px;
       border-radius: 5px 20px;
-      background-color: #02A36D;
+      background-color: $mainColor;
       color: white;
       font-size: 20px;
       font-weight: 600;

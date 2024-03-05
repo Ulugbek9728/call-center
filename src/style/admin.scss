@@ -1,5 +1,6 @@
 $mainColor: #e2f3e8;
 $textColor: #02A36D;
+@import url('https://fonts.googleapis.com/css2?family=Gupter:wght@400;500;700&display=swap');
 
 .ant-layout-sider-dark{
   background: white!important;
@@ -57,10 +58,7 @@ $textColor: #02A36D;
         height: 680px!important;
         margin-right: 30px;
         text-align: justify;
-
-        .date{
-
-        }
+        font-family: "Gupter", serif !important;
 
       }
     }
