@@ -59,6 +59,7 @@ function GetList(props) {
     const [open1, setOpen1] = useState(false);
 
 
+
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
         const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options)
@@ -66,7 +67,6 @@ function GetList(props) {
     }, [Open]);
 
     const handleOk = () => {
-        console.log(arizaSend)
         axios.post(`${ApiName}/api/v1/exchange-application`, arizaSend, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
@@ -92,17 +92,27 @@ function GetList(props) {
 
     useEffect(() => {
         if (arizaSend.exchangeType === "BACK") {
-            setArizaSend({
-                ...arizaSend,
-                toDepartment: {
-                    id: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.id : null,
-                    name: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.name : null,
-                }
-
-            })
+            if (fulInfo.department.id===ariza.toDepartment.id){
+                setArizaSend({
+                    ...arizaSend,
+                    toDepartment: {
+                        id: ariza?.exchangesApp ? ariza?.exchangesApp[0]?.department?.id : null,
+                        name: ariza?.exchangesApp ? ariza?.exchangesApp[0]?.department?.name : null,
+                    }
+                })
+            }
+            else {
+                setArizaSend({
+                    ...arizaSend,
+                    toDepartment: {
+                        id: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.id : null,
+                        name: ariza?.exchangesApp ? ariza?.exchangesApp[ariza?.exchangesApp?.length - 1]?.department?.name : null,
+                    }
+                })
+            }
         }
 
-    }, [arizaSend.exchangeType]);
+    }, [arizaSend.exchangeType, ariza]);
 
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
@@ -149,12 +159,10 @@ function GetList(props) {
             title: "Batafsil",
             render: (item, record, index) => (
                 <button className='btn btn-outline-success' onClick={(e) => {
-                    setArizaSend({
-                        ...arizaSend,
-                        applicationId: item.id,
-                        toDepartment: item.exchangesApp[item.exchangesApp.length - 1].department
-                    })
                     setAriza(item)
+                    setArizaSend({...arizaSend,
+                        applicationId:item.id
+                    })
                     console.log(item)
                     arizaFileList(item.id)
                     setOpen(true)
@@ -304,7 +312,7 @@ function GetList(props) {
                     </div>
 
                     <div className="w-50 px-4">
-                        <div className="border p-2">
+                        <div className="border p-2 fileListe">
                             {
                                 ItemFileListe == '' ? <Empty/> :
                                     ItemFileListe && ItemFileListe.map((item, index) => {

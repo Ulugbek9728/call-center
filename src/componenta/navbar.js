@@ -17,13 +17,13 @@ function Navbar(props) {
                             <a className="nav-link" aria-current="page" href="#">Home</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Link</a>
+                            <a className="nav-link" href="#">Menu 1</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" aria-current="page" href="#">Home</a>
+                            <a className="nav-link" href="#">Menu 2</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Link</a>
+                            <a className="nav-link" href="#">Menu 3</a>
                         </li>
                         
                     </ul>

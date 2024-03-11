@@ -76,3 +76,10 @@ $textColor: #02A36D;
   align-items: center;
   cursor: pointer;
 }
+
+.fileListe{
+  height: 300px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
