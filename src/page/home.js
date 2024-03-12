@@ -18,13 +18,14 @@ function Home(props) {
 
                     <Navbar/>
 
-                    <div className="col-6">
+                    <div className="col-lg-6 col-md-5 col-12">
                         <img className='gif' src="./Consent.gif" alt=""/>
                     </div>
-                    <div className="col-6 righte">
-                        <div className="" data-aos="zoom-in"
-                             data-aos-duration="700"
-                             data-aos-easing="ease-in-sine">
+                    <div className="col-lg-6 col-md-7 col-12 righte"
+                         data-aos="zoom-in"
+                         data-aos-duration="700"
+                         data-aos-easing="ease-in-sine">
+                        <div className="" >
                             <div className="title">
                                 Build Your Business Modern, Faster And Reliable
                             </div>
@@ -35,18 +36,10 @@ function Home(props) {
                             </div>
                         </div>
 
-                        <div className="d-flex justify-content-between">
-                            <a href='https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth'
-                               data-aos="fade-right"
-                               data-aos-duration="300"
-                               data-aos-delay='600'
-                               data-aos-easing="ease-in-sine">
+                        <div className="d-flex justify-content-between kirish">
+                            <a href='https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth'>
                                 Sahifaga Kirish</a>
-                            <Link to='/tekshirish'
-                                  data-aos="fade-left"
-                                  data-aos-duration="300"
-                                  data-aos-delay='600'
-                                  data-aos-easing="ease-in-sine">
+                            <Link to='/tekshirish'>
                                 Ariza holatini tekshirish</Link>
                         </div>
 

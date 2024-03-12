@@ -39,20 +39,22 @@ $mainFont: Josefin Sans;
 
   .righte {
     z-index: 1;
-
+    margin-top: 100px;
     .title {
-      margin-top: 100px;
       font-family: $mainFont, sans-serif;
       font-size: 50px;
       font-weight: 700;
     }
 
     .text {
+      font-family: $mainFont, sans-serif;
       margin-top: 30px;
       font-size: 20px;
     }
 
     a {
+      font-family: $mainFont, sans-serif;
+
       display: flex;
       justify-content: center;
       margin-top: 40px;
@@ -71,9 +73,154 @@ $mainFont: Josefin Sans;
     border-radius: 32%;
     background: none;
     margin-top: 100px;
-
   }
 }
 
+@media (max-width: 1400px) {
+  .home{
+    .righte {
+      .title {
+        font-size: 40px;
+      }
+
+      a {
+        padding: 10px 30px;
+        border-radius: 5px 18px;
+        font-size: 20px;
+      }
+    }
+    .gif {
+      margin-top: 50px;
+    }
+  }
+}
+@media (max-width: 1200px) {
+  .home{
+    .navbar {
+      .navbar-brand {
+        img {
+          width: 80px;
+        }
+      }
+
+      .nav-link {
+        font-size: 22px;
+        font-weight: 600;
+      }
+    }
+    .righte {
+      margin-top: 80px;
+      .title {
+        font-size: 30px;
+      }
+      .text {
+
+        margin-top: 20px;
+        font-size: 18px;
+      }
+      a {
+        padding: 10px 20px;
+        border-radius: 5px 15px;
+        font-size: 18px;
+      }
+    }
+    .gif {
+      width: 400px;
+      margin-top: 50px;
+
+    }
+  }
+}
+@media (max-width: 991px) {
+  .home{
+    background: linear-gradient( 120deg , #ffffff, #ffffff, rgba(2, 163, 109, 0.8)90%);
+    .navbar {
+      .navbar-brand {
+        img {
+          width: 80px;
+        }
+      }
+
+      .nav-link {
+        font-size: 22px;
+        font-weight: 600;
+      }
+    }
+    .righte {
+      margin-top: 30px;
+      .title {
+        font-size: 28px;
+      }
+      .text {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+      a {
+        padding: 10px 20px;
+        border-radius: 5px 15px;
+        font-size: 14px;
+      }
+    }
+    .gif {
+      width: 280px;
+    }
+  }
+}
+@media (max-width: 767px) {
+  .home{
+    background: linear-gradient(to top,#ffffff, rgba(2, 163, 109, 0.8)120%);
+
+    .navbar {
+      .navbar-brand {
+        img {
+          width: 80px;
+        }
+      }
+
+      .nav-link {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+    .righte {
+      margin-top: 50px;
+
+      .title {
+        font-size: 28px;
+      }
+      .text {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+      a {
+        padding: 10px 20px;
+        border-radius: 5px 15px;
+        font-size: 14px;
+      }
+    }
+    .gif {
+      display: none;
+    }
+
+  }
+}
+@media (max-width: 440px) {
+  .home{
 
 
+    .righte {
+      margin-top: 30px;
+      .kirish{
+        display: block!important;
+        a {
+          margin-top: 20px;
+          padding: 10px 20px;
+          border-radius: 5px 15px;
+          font-size: 14px;
+        }
+      }
+
+
+    }
+  }
+}
