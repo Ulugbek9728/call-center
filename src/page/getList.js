@@ -88,7 +88,7 @@ function GetList(props) {
     useEffect(() => {
         arizaGetList()
         DepartmenGet()
-    }, []);
+    }, [sucsessText]);
 
     useEffect(() => {
         if (arizaSend.exchangeType === "BACK") {
@@ -117,7 +117,6 @@ function GetList(props) {
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
-
         }).then((response) => {
             setArizaList(response.data.data.content)
             console.log(response.data.data.content)
@@ -127,6 +126,7 @@ function GetList(props) {
     }
 
     const columns = [
+
         {
             title: '№',
             width: 50,
@@ -422,8 +422,7 @@ function GetList(props) {
             </Drawer>
 
             <Table
-                columns={columns}
-                pagination={pageSize}
+                columns={columns} pagination={pageSize}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
@@ -453,6 +452,9 @@ function GetList(props) {
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}
                 })}
+                rowClassName={(record)=>{
+                    return record.status
+                }}
             />
         </div>
     )

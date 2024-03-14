@@ -93,7 +93,6 @@ function One(props) {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
             params:{
                 isCome: false}
-
         }).then((response) => {
             setArizaList(response.data.data.content)
         }).catch((error) => {

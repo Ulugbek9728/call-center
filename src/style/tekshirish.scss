@@ -4,10 +4,45 @@ $mainColor: #02A36D;
 .tekshirish {
   position: relative;
   margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 10;
-  width: 70% !important;
-  margin-top: 50px!important;
-  border: 2px solid $mainColor;
-  padding: 50px!important;
+  width: 80% !important;
+  margin-top: 80px!important;
+  padding: 40px!important;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 30px 90px;
+  border-radius: 20px;
+  background: linear-gradient( -60deg, rgb(255,255,255), #ffffff, rgba(2, 163, 109, 0.8)100%);
 
+
+  .left{
+    width: 50%;
+    padding-right: 30px;
+    h2{
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    p{
+      text-align: justify;
+    }
+  }
+  .rightebox{
+    width: 50%;
+    padding-left: 30px;
+
+    input{
+      height: 45px;
+      background-color: #bfe8da;
+      border: none;
+      outline: none;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+      margin-bottom: 10px;
+      &:hover{
+        border: none;
+        outline: none;
+      }
+    }
+  }
 }
