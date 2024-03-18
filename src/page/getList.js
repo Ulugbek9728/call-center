@@ -55,10 +55,7 @@ function GetList(props) {
     const [Department, setDepartment] = useState([]);
     const [ItemFileListe, setItemFileListe] = useState([]);
     const [FileDrower, setFileDrower] = useState([]);
-
     const [open1, setOpen1] = useState(false);
-
-
 
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
@@ -119,7 +116,6 @@ function GetList(props) {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
         }).then((response) => {
             setArizaList(response.data.data.content)
-            console.log(response.data.data.content)
         }).catch((error) => {
             console.log(error)
         });
@@ -285,12 +281,13 @@ function GetList(props) {
                 })
             }}>
                 <div className="d-flex justify-content-between">
-                    <div className="w-50 border d-flex position-relative">
-                        <div className=" ariza border shadow px-5 py-3">
-                            <div ref={componentRef}>
+                    <div className="w-50 border p-3 d-flex position-relative">
+
+                        <div className="ariza border shadow">
+                            <div ref={componentRef} style={{fontSize:'14px', padding:'45px'}}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
-                                    <div className="w-50 contentAriza">
+                                    <div className="w-50">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
                                         M.S.Turabdjanovga <span>{ariza.fullName}</span> dan
                                     </div>
@@ -298,14 +295,22 @@ function GetList(props) {
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div className="contentAriza">{ariza.description != '' ? ariza.description :
-                                    <Skeleton/>} </div>
+                                <div className="" style={{textAlign:"justify"}}>{ariza.description != '' ? ariza.description :
+                                    <Skeleton/>}
+                                </div>
+                                <div className='date ' style={{marginTop:"30px"}}>sana: {Datee}</div>
+                                <div>
+                                    <b>Tel raqami:</b><br/>
+                                    {ariza.phone}
+                                </div>
+                                <div>
+                                    <b>Murojatch raqami:</b> <br/>
+                                    {ariza.id}
+                                </div>
                             </div>
-
-                            <span className='date'>sana: {Datee}</span>
                         </div>
 
-                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}}
+                        <button style={{height: 50, width: 200, position: "absolute", bottom: 60, right: 40}}
                                 className='btn btn-success'
                                 onClick={handlePrint}>Yuklab olish / pechat
                         </button>
@@ -415,7 +420,7 @@ function GetList(props) {
 
 
                 </ol>
-                <h6>Ma'lumot</h6>
+                <h6>Izoh</h6>
                 <p className='border p-3'>
                     {FileDrower?.exchangeApp?.description}
                 </p>

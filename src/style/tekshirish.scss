@@ -7,8 +7,8 @@ $mainColor: #02A36D;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
   width: 80% !important;
+  min-height: 600px;
   margin-top: 80px!important;
   padding: 40px!important;
   background-color: white;
@@ -44,5 +44,51 @@ $mainColor: #02A36D;
         outline: none;
       }
     }
+  }
+}
+
+@media (max-width: 991px) {
+  .tekshirish {
+
+
+    width: 100% !important;
+    min-height: 600px;
+    margin-top: 30px!important;
+    padding: 30px!important;
+    border-radius: 20px;
+
+  }
+}
+@media (max-width: 768px) {
+  .tekshirish {
+    background: inherit;
+    display: block;
+    margin-top: 30px!important;
+    padding: 30px!important;
+    border-radius: 15px;
+
+    .left{
+      width: 100%;
+      padding-right: 0;
+      h2{
+        margin-bottom: 20px;
+      }
+      p{
+        font-size: 14px;
+      }
+    }
+    .rightebox{
+      width: 100%;
+      padding-left: 0;
+
+      input{
+        height: 45px;
+        margin-bottom: 10px;
+        background-color: white;
+        border: $mainColor;
+        outline: $mainColor;
+      }
+    }
+
   }
 }

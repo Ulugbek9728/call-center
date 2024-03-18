@@ -53,13 +53,15 @@ $textColor: #02A36D;
     .ant-modal-body{
       height: 90%;
       .ariza{
-        font-size: 14px;
         width: 500px;
         height: 680px!important;
         margin-right: 30px;
         text-align: justify;
         font-family: "Gupter", serif !important;
 
+        .date{
+          margin-top: 30px!important;
+        }
       }
     }
 

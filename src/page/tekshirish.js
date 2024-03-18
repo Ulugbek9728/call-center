@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Navbar from "../componenta/navbar";
 import "../style/tekshirish.scss"
-import {Button, Form, Input, message,} from 'antd';
+import {Button, Form, Input, Drawer,} from 'antd';
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
@@ -10,8 +10,18 @@ import {toast} from "react-toastify";
 function Tekshirish(props) {
     const formRef = React.useRef(null);
 
+
     const [messagee, setMessage] = useState('');
     const [sucsessText, setSucsessText] = useState('');
+    const [open, setOpen] = useState(false);
+    const [response, setResponse] = useState({
+        exchangesApp:[]
+    });
+
+    const onClose = () => {
+        setOpen(false);
+    };
+
 
     function Login(values) {
         const requestData = {
@@ -22,13 +32,15 @@ function Tekshirish(props) {
             params:requestData
         }).then((response) => {
             if (response.data.isSuccess === true){
-
+                setOpen(true);
+                setResponse(response.data?.data)
             }
             else {
                 setMessage(response.data.message)
 
             }
-            console.log(response)
+            console.log(response.data?.data)
+
 
         }).catch((error) => {
 
@@ -68,13 +80,7 @@ function Tekshirish(props) {
                                 optio perferendis quae quam quia repellat repudiandae sapiente sed soluta totam vitae?
                                 Aliquid animi aperiam commodi debitis dolorem dolorum, ea earum, esse, laudantium libero
                                 omnis pariatur quibusdam quis suscipit temporibus vel voluptate.
-                                <br/>
-                                <br/>
-                                Accusantium deserunt
-                                dolorem explicabo, fugit impedit magnam molestiae natus nesciunt nostrum pariatur
-                                possimus, quasi qui reprehenderit saepe sed suscipit tempore ut vel. Ipsa neque nobis
-                                optio reiciendis, repellendus tempora voluptate. Ab amet aut deleniti dignissimos
-                                doloribus, error exercitationem explicabo nam tempora veniam?</p>
+                                </p>
                         </div>
                         <div className="rightebox">
                             <Form
@@ -106,7 +112,7 @@ function Tekshirish(props) {
                                 </Form.Item>
 
                                 <Form.Item
-                                    label="Ariza raqami"
+                                    label="Murojat raqami"
                                     name="Ariza"
                                     rules={[
                                         {
@@ -131,6 +137,24 @@ function Tekshirish(props) {
 
 
                     </div>
+                    <Drawer className='z-3' title="Murojat natijasi" size='large' onClose={onClose} open={open}>
+                        <h6>"{response?.exchangesApp[0]?.department?.name}" dan kelgan ma'lumotlar</h6>
+                        <hr/>
+                        <h6>Izoh</h6>
+                        <p>{response?.exchangesApp[0]?.description}</p>
+
+                        <h6>Fayillar ro'yxati</h6>
+                        <ol>
+                            {response?.files && response?.files.map((item, index) => {
+                                return <li key={index}>
+                                    <a href={item.file.url}
+                                       target={"_blank"}>{item.file.filename}</a>
+                                </li>
+                            })}
+
+                        </ol>
+
+                    </Drawer>
 
                 </div>
 
