@@ -37,7 +37,7 @@ function Home(props) {
                         </div>
 
                         <div className="d-flex justify-content-between kirish">
-                            <a href='https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth'>
+                            <a href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=https://r-office.tdtu.uz/auth`}>
                                 Sahifaga Kirish</a>
                             <Link to='/tekshirish'>
                                 Ariza holatini tekshirish</Link>

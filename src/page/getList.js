@@ -289,7 +289,11 @@ function GetList(props) {
                                     <div className="w-50"></div>
                                     <div className="w-50">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                        M.S.Turabdjanovga <span>{ariza.fullName}</span> dan
+                                        M.S.Turabdjanov ga <span>
+                                            {
+                                                !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                            } { ariza.fullName}
+                                        </span> dan
                                     </div>
                                 </div>
                                 <h4 className="text-center mt-3">

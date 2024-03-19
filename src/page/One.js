@@ -29,6 +29,7 @@ function One(props) {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [ariza, setAriza] = useState({
         fullName: '',
+        nameInfo: '[]',
         applicationType: 'Ariza',
         phone: '',
         description: '',
@@ -73,7 +74,7 @@ function One(props) {
 
 
     useEffect(() => {
-        if (fulInfo?.roles?.includes('ROLE_DEPARTMENT')){
+        if (fulInfo?.roles?.includes('ROLE_DEPARTMENT')) {
             setAriza({...ariza, fullName: fulInfo.fullName})
         }
         DepartmenGet()
@@ -91,8 +92,9 @@ function One(props) {
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params:{
-                isCome: false}
+            params: {
+                isCome: false
+            }
         }).then((response) => {
             setArizaList(response.data.data.content)
         }).catch((error) => {
@@ -220,9 +222,7 @@ function One(props) {
                     console.log(error)
                     message.error(`${info.file.name} file delete failed.`);
                 })
-            }
-
-           else if (info.file.status === 'done') {
+            } else if (info.file.status === 'done') {
                 ariza.files.push({
                         fileId: info.file.response.id,
                     }
@@ -300,7 +300,9 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button className='btn btn-success' onClick={() => {setOpen(true)}}>
+                <button className='btn btn-success' onClick={() => {
+                    setOpen(true)
+                }}>
                     Murojatni yaratish
                 </button>
             </div>
@@ -311,6 +313,7 @@ function One(props) {
                 setEdite(false)
                 setAriza({
                     fullName: '',
+                    nameInfo: '',
                     applicationType: 'Ariza',
                     phone: '',
                     description: '',
@@ -329,6 +332,27 @@ function One(props) {
                 <div className='d-flex justify-content-between'>
                     {edite ? "" : <div className="border w-50 p-3 mx-3">
                         <form>
+                            <div className="mb-3">
+                                <label form="pwd" className="form-label">Murojatchini Kafedra, Bo'lim, Markaz /
+                                    Fakultet, Guruh</label>
+                                <Select
+                                    mode="tags"
+                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
+                                    style={{width: '100%',}}
+                                    onChange={(e) => {
+                                        setAriza({...ariza, nameInfo: JSON.stringify(e)})
+                                        console.log(ariza)
+
+                                    }}
+                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                    options={Department && Department.map((item, index) => ({
+                                        value: item.name,
+                                        label: item.name
+                                    }))}
+                                />
+                            </div>
                             <div className="mb-3 mt-3">
                                 <label form="FISH" className="form-label">Murojatchi Familya Ism Sharif</label>
                                 <input type="text" value={ariza?.fullName} className="form-control" id="FISH"
@@ -337,6 +361,7 @@ function One(props) {
                                            setAriza({...ariza, fullName: e.target.value})
                                        }}/>
                             </div>
+
                             <div className="mb-3">
                                 <label form="pwd" className="form-label">Murojatchi Telefon raqami</label>
                                 <input type="text" value={ariza?.phone} className="form-control" id="pwd"
@@ -346,22 +371,20 @@ function One(props) {
                                        }}/>
                             </div>
                             <div className="mb-3">
-                                <label form="ID" className="form-label">Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang</label>
+                                <label form="ID" className="form-label">Murojat yuboriladigan Markaz / Bo'lim / Fakultet
+                                    / Kafedrani tanlang</label>
                                 <br/>
                                 <Select className='w-100'
                                         showSearch
                                         value={ariza.toDepartment?.name}
-
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
                                         }}
                                         placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
                                         optionFilterProp="children"
-
                                         filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
                                         filterSort={(optionA, optionB) =>
-                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                        }
+                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
                                         options={Department && Department.map((item, index) => ({
                                             value: item.id,
                                             label: item.name
@@ -413,13 +436,18 @@ function One(props) {
 
                     </div>}
                     <div className="w-50 border d-flex position-relative">
-                        <div className=" ariza border shadow px-5 py-3" >
+                        <div className=" ariza border shadow px-5 py-3">
                             <div ref={componentRef}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
                                     <div className="w-50 contentAriza">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                        M.S.Turabdjanovga <span>{ariza.fullName}</span> dan
+                                        M.S.Turabdjanovga
+                                        <span>
+                                            {
+                                               !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                            } { ariza.fullName}
+                                        </span> dan
                                     </div>
                                 </div>
                                 <h4 className="text-center mt-5">
@@ -431,7 +459,8 @@ function One(props) {
 
                             <span className='date'>sana: {Datee}</span>
                         </div>
-                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}} className='btn btn-success'
+                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}}
+                                className='btn btn-success'
                                 onClick={handlePrint}>Yuklab olish / pechat
                         </button>
                     </div>
@@ -491,22 +520,22 @@ function One(props) {
                 expandable={{
                     expandedRowRender: (record) => (
                         <Steps direction="vertical"
-                            current={record?.exchangesApp?.length}
-                            status="wait"
-                            items={
-                                [...record?.exchangesApp?.map(item => (
-                                    {
-                                        title: item?.department?.name
-                                    }
-                                )),
-                                    {
-                                        title: 'Finish',
-                                        icon: <LoadingOutlined/>,
-                                    }
-                                ]
-                            }
+                               current={record?.exchangesApp?.length}
+                               status="wait"
+                               items={
+                                   [...record?.exchangesApp?.map(item => (
+                                       {
+                                           title: item?.department?.name
+                                       }
+                                   )),
+                                       {
+                                           title: 'Finish',
+                                           icon: <LoadingOutlined/>,
+                                       }
+                                   ]
+                               }
                         />
-                        )
+                    )
                 }}
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}

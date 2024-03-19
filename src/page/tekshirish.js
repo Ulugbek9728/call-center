@@ -31,15 +31,24 @@ function Tekshirish(props) {
         axios.get(`${ApiName}/api/application/check`,{
             params:requestData
         }).then((response) => {
+            console.log(response.data)
             if (response.data.isSuccess === true){
-                setOpen(true);
-                setResponse(response.data?.data)
+                if (response.data.data.status ==='FINISHED'){
+                    setOpen(true);
+                    setResponse(response.data?.data)
+                }
+               else if (response.data.data.status ==='PROGRESS'){
+                    setSucsessText("Murojatingiz ko'rib chiqilmoqda")
+                }
+               else {
+                    setSucsessText("Murojatingiz kutish holatida")
+                }
+
             }
             else {
                 setMessage(response.data.message)
 
             }
-            console.log(response.data?.data)
 
 
         }).catch((error) => {
