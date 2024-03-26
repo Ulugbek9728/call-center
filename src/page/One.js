@@ -1,19 +1,15 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
 
-import {Input, Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message, Empty, Drawer} from 'antd';
-import {UploadOutlined, LoadingOutlined, CaretRightOutlined} from '@ant-design/icons';
+import {Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message, Empty, Drawer, Form} from 'antd';
+import {UploadOutlined, LoadingOutlined, CaretRightOutlined } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
 
-
-const {Search} = Input;
-
-
-const onSearch = (value, _e, info) => console.log(info?.source, value);
-
 function One(props) {
+    const formRef = useRef(null);
+    const [form] = Form.useForm();
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
@@ -48,6 +44,9 @@ function One(props) {
     const [Datee, setDatee] = useState();
     const [ItemFileListe, setItemFileListe] = useState([]);
     const [FileDrower, setFileDrower] = useState([]);
+    const [SRC, setSRC] = useState({
+        isCome: false,
+    });
 
     const [open1, setOpen1] = useState(false);
 
@@ -79,7 +78,7 @@ function One(props) {
         }
         DepartmenGet()
         arizaGetList()
-    }, [sucsessText]);
+    }, [sucsessText, SRC]);
 
     function DepartmenGet() {
         axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
@@ -92,9 +91,7 @@ function One(props) {
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params: {
-                isCome: false
-            }
+            params: SRC
         }).then((response) => {
             setArizaList(response.data.data.content)
         }).catch((error) => {
@@ -152,10 +149,6 @@ function One(props) {
 
     ];
 
-    const handleChange = (value) => {
-        console.log(`selected ${value}`);
-    };
-
     const handleOk = () => {
         setConfirmLoading(true);
 
@@ -169,27 +162,27 @@ function One(props) {
             }).then((response) => {
                 console.log(response);
                 if (response.data.message === "Success") {
-                    setTimeout(() => {
-                        setOpen(false);
-                        setConfirmLoading(false);
-                        setSucsessText('File yuborildi')
-                        setAriza({
-                            fullName: '',
-                            applicationType: 'Ariza',
-                            phone: '',
-                            description: '',
-                            toDepartment: {
-                                id: '',
-                                nam: '',
+                    form.resetFields()
+
+                    setOpen(false);
+                    setConfirmLoading(false);
+                    setSucsessText('File yuborildi')
+                    setAriza({
+                        fullName: '',
+                        applicationType: 'Ariza',
+                        phone: '',
+                        description: '',
+                        toDepartment: {
+                            id: '',
+                            nam: '',
+                            code: "",
+                            structureType: {
                                 code: "",
-                                structureType: {
-                                    code: "",
-                                    name: ""
-                                }
-                            },
-                            files: []
-                        })
-                    }, 1000);
+                                name: ""
+                            }
+                        },
+                        files: []
+                    })
                 }
             }).catch((error) => {
                 console.log(error)
@@ -268,34 +261,44 @@ function One(props) {
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
-                    <Search
-                        placeholder="input search text" allowClear
-                        onSearch={onSearch}
-                        style={{width: 400,}}
+                    <Select style={{width:400}}
+                            // showSearch
+                            name="MurojatYuboriladigan"
+                            onChange={(e) => {setSRC({...SRC, departmentId: e})}}
+                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                            optionFilterProp="children"
+                            filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                            options={Department && Department.map((item, index) => (
+
+                                {
+                                    value: item.id,
+                                    label: item.name
+                                }))}
                     />
                     <Select
-                        defaultValue="lucy"
+                        placeholder='Statusini tanlang'
                         style={{
                             width: 400,
                         }}
-                        onChange={handleChange}
+                        onChange={(e) => {setSRC({...SRC, status: e})}}
                         options={[
                             {
-                                value: 'jack',
-                                label: 'Jack',
+                                value: '',
+                                label: 'Hammasi',
                             },
                             {
-                                value: 'lucy',
-                                label: 'Lucy',
+                                value: 'PROGRESS',
+                                label: 'Jarayonda',
                             },
                             {
-                                value: 'Yiminghe',
-                                label: 'yiminghe',
+                                value: 'FINISHED',
+                                label: 'Tugatilgan',
                             },
                             {
-                                value: 'disabled',
-                                label: 'Disabled',
-                                disabled: true,
+                                value: "COMMITTED",
+                                label: 'Yaratilgan',
                             },
                         ]}
                     />
@@ -307,7 +310,7 @@ function One(props) {
                 </button>
             </div>
             <Modal className='modalAddNew'
-                   title={edite ? "Ariza" : "Ariza qo'shish"} open={open} onOk={handleOk}
+                   title={edite ? "Ariza" : "Ariza qo'shish"} open={open} footer={null}
                    confirmLoading={confirmLoading} onCancel={() => {
                 setOpen(false);
                 setEdite(false)
@@ -331,12 +334,18 @@ function One(props) {
             }}>
                 <div className='d-flex justify-content-between'>
                     {edite ? "" : <div className="border w-50 p-3 mx-3">
-                        <form>
-                            <div className="mb-3">
-                                <label form="pwd" className="form-label">Murojatchini Kafedra, Bo'lim, Markaz /
-                                    Fakultet, Guruh</label>
+                        <Form
+                            form={form} layout="vertical" ref={formRef} colon={false}
+                            onFinish={handleOk}>
+                            <Form.Item
+                                label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
+                                name="MurojatchiniBo'limi"
+                                rules={[{
+                                    required: true,
+                                    message: 'Malumot kiritilishi shart !!!'
+                                },]}>
                                 <Select
-                                    mode="tags"
+                                    name="MurojatchiniBo'limi" mode="tags"
                                     placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
                                     style={{width: '100%',}}
                                     onChange={(e) => {
@@ -352,30 +361,44 @@ function One(props) {
                                         label: item.name
                                     }))}
                                 />
-                            </div>
-                            <div className="mb-3 mt-3">
-                                <label form="FISH" className="form-label">Murojatchi Familya Ism Sharif</label>
-                                <input type="text" value={ariza?.fullName} className="form-control" id="FISH"
-                                       placeholder="F.I.SH" name="email"
+                            </Form.Item>
+                            <Form.Item label="Murojatchi Familya Ism Sharif" name="FISH"
+                                       rules={[
+                                           {
+                                               required: true,
+                                               message: 'Malumot kiritilishi shart !!!'
+
+                                           },]}>
+                                <input type="text" value={ariza?.fullName} className="form-control" name="FISH"
+                                       placeholder="F.I.SH"
                                        onChange={(e) => {
                                            setAriza({...ariza, fullName: e.target.value})
                                        }}/>
-                            </div>
+                            </Form.Item>
 
-                            <div className="mb-3">
-                                <label form="pwd" className="form-label">Murojatchi Telefon raqami</label>
-                                <input type="text" value={ariza?.phone} className="form-control" id="pwd"
-                                       placeholder="+998(**) *** ** **" name="pswd"
+                            <Form.Item label="Murojatchi Telefon raqami" name="Tel"
+                                       rules={[
+                                           {
+                                               required: true,
+                                               message: 'Malumot kiritilishi shart !!!'
+
+                                           },]}>
+                                <input type="text" value={ariza?.phone} className="form-control"
+                                       placeholder="+998(**) *** ** **" name="Tel"
                                        onChange={(e) => {
                                            setAriza({...ariza, phone: e.target.value})
                                        }}/>
-                            </div>
-                            <div className="mb-3">
-                                <label form="ID" className="form-label">Murojat yuboriladigan Markaz / Bo'lim / Fakultet
-                                    / Kafedrani tanlang</label>
-                                <br/>
+                            </Form.Item>
+                            <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
+                                       name="MurojatYuboriladigan"
+                                       rules={[
+                                           {
+                                               required: true,
+                                               message: 'Malumot kiritilishi shart !!!'
+                                           },]}>
                                 <Select className='w-100'
                                         showSearch
+                                        name="MurojatYuboriladigan"
                                         value={ariza.toDepartment?.name}
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
@@ -390,14 +413,21 @@ function One(props) {
                                             label: item.name
                                         }))}
                                 />
-                            </div>
-                            <div className="mb-3">
-                                <label form="xujjat" className="form-label">Murojat xujjat turi</label>
+                            </Form.Item>
+
+                            <Form.Item
+                                name="xujjat"
+                                label="Murojat xujjat turi"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Malumot kiritilishi shart !!!'
+                                    },]}>
 
                                 <Select
+                                    name="xujjat"
                                     className='w-100'
                                     value={ariza.documentType}
-
                                     onChange={(e) => {
                                         setAriza({...ariza, applicationType: e})
                                     }}
@@ -421,18 +451,38 @@ function One(props) {
                                         },
                                     ]}
                                 />
+                            </Form.Item>
 
-                            </div>
-                            <label htmlFor="comment">Murojat mazmuni:</label>
-                            <textarea className="form-control" rows="10" id="comment" name="text"
-                                      value={ariza.description}
-                                      onChange={(e) => {
-                                          setAriza({...ariza, description: e.target.value})
-                                      }}/>
-                        </form>
-                        <Upload {...propss}>
-                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
-                        </Upload>
+                            <Form.Item
+                                name="text" label="Murojat mazmuni:"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Malumot kiritilishi shart !!!'
+                                    },]}>
+                                <textarea className="form-control" rows="8" id="comment" name="text"
+                                          value={ariza.description}
+                                          onChange={(e) => {
+                                              setAriza({...ariza, description: e.target.value})
+                                          }}/>
+                            </Form.Item>
+
+                            <Form.Item name='file'>
+                                <Upload name='file' {...propss}>
+                                    <Button icon={<UploadOutlined/>}>File yuklash</Button>
+                                </Upload>
+                            </Form.Item>
+
+                            <Form.Item>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                >
+                                    Ma'lumotni yuborish
+                                </Button>
+                            </Form.Item>
+                        </Form>
+
 
                     </div>}
                     <div className="w-50 border d-flex position-relative">
@@ -445,8 +495,8 @@ function One(props) {
                                         M.S.Turabdjanovga
                                         <span>
                                             {
-                                               !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
-                                            } { ariza.fullName}
+                                                !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                            } {ariza.fullName}
                                         </span> dan
                                     </div>
                                 </div>
@@ -518,28 +568,34 @@ function One(props) {
                 columns={columns}
                 pagination={pageSize}
                 expandable={{
-                    expandedRowRender: (record) => (
-                        <Steps direction="vertical"
-                               current={record?.exchangesApp?.length}
-                               status="wait"
-                               items={
-                                   [...record?.exchangesApp?.map(item => (
-                                       {
-                                           title: item?.department?.name
-                                       }
-                                   )),
-                                       {
-                                           title: 'Finish',
-                                           icon: <LoadingOutlined/>,
-                                       }
-                                   ]
-                               }
-                        />
-                    )
+                    expandedRowRender: (record) => {
+                        return (
+                            <Steps direction="vertical"
+                                   current={record?.exchangesApp?.length}
+                                   status="wait"
+                                   items={
+                                       [...record?.exchangesApp?.map(item => (
+                                           {
+                                               title: item?.department?.name,
+                                               description: item?.toDepartment?.name
+                                           }
+                                       )),
+                                           {
+                                               title: 'Finish',
+                                               icon: <LoadingOutlined/>,
+                                           }
+                                       ]
+                                   }
+                            />
+                        )
+                    }
                 }}
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}
                 })}
+                rowClassName={(record)=>{
+                    return record.status
+                }}
             />
         </div>
     );

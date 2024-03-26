@@ -20,6 +20,7 @@ function App() {
             <Route path={"/operator/*"} element={ <AdminOperator/>}/>
             <Route path={"/department/*"} element={ <AdminOperator/>}/>
             <Route path={"/adminAll/*"} element={ <AdminOperator/>}/>
+            <Route path={"*"} element={ <Auth/>}/>
 
         </Routes>
     </div>

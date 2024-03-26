@@ -22,7 +22,6 @@ function Tekshirish(props) {
         setOpen(false);
     };
 
-
     function Login(values) {
         const requestData = {
             phone: values?.Telefon,
@@ -56,6 +55,7 @@ function Tekshirish(props) {
             console.log(error)
         })
     }
+
     useEffect(() => {
         notify();
         setMessage('')

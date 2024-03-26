@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
     Input, Space, Steps, Table, Modal, Skeleton,
-    Segmented, Upload, Button, message, Select, Empty, Drawer,
+    Segmented, Upload, Button, message, Select, Empty, Drawer, Form,
 } from "antd";
 
 import {LoadingOutlined, UploadOutlined, CaretRightOutlined, ArrowRightOutlined} from "@ant-design/icons";
@@ -14,6 +14,9 @@ const {Search} = Input;
 
 
 function GetList(props) {
+    const formRef = useRef(null);
+    const [form] = Form.useForm();
+
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
@@ -56,6 +59,9 @@ function GetList(props) {
     const [ItemFileListe, setItemFileListe] = useState([]);
     const [FileDrower, setFileDrower] = useState([]);
     const [open1, setOpen1] = useState(false);
+    const [SRC, setSRC] = useState({
+        isCome: true,
+    });
 
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
@@ -67,7 +73,7 @@ function GetList(props) {
         axios.post(`${ApiName}/api/v1/exchange-application`, arizaSend, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
-            console.log(response);
+            form.resetFields()
             setOpen(false);
             setSucsessText('malumotlar yuborildi')
 
@@ -78,18 +84,15 @@ function GetList(props) {
         })
     };
 
-    const onSearch = (value, _e, info) => {
-        console.log(info?.source, value);
-    }
 
     useEffect(() => {
         arizaGetList()
         DepartmenGet()
-    }, [sucsessText]);
+    }, [sucsessText, SRC]);
 
     useEffect(() => {
         if (arizaSend.exchangeType === "BACK") {
-            if (fulInfo.department.id===ariza.toDepartment.id){
+            if (fulInfo.department.id === ariza.toDepartment.id) {
                 setArizaSend({
                     ...arizaSend,
                     toDepartment: {
@@ -97,8 +100,7 @@ function GetList(props) {
                         name: ariza?.exchangesApp ? ariza?.exchangesApp[0]?.department?.name : null,
                     }
                 })
-            }
-            else {
+            } else {
                 setArizaSend({
                     ...arizaSend,
                     toDepartment: {
@@ -113,9 +115,11 @@ function GetList(props) {
 
     function arizaGetList() {
         axios.get(`${ApiName}/api/application`, {
-            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+            params: SRC
         }).then((response) => {
             setArizaList(response.data.data.content)
+            console.log(response.data.data.content)
         }).catch((error) => {
             console.log(error)
         });
@@ -136,7 +140,7 @@ function GetList(props) {
         Table.EXPAND_COLUMN,
         {
             title: "Bo'lim / Markaz",
-            render: (item, record, index) => (<>{item.toDepartment?.name}</>),
+            render: (item, record, index) => (<>{item.exchangesApp[0]?.department?.name}</>),
         },
 
         {
@@ -152,12 +156,17 @@ function GetList(props) {
             dataIndex: 'phone',
         },
         {
+            title: 'Masul hodim',
+            render: (item, record, index) => (<>{item.fromOperator?.fullName}</>),
+        },
+        {
             title: "Batafsil",
             render: (item, record, index) => (
                 <button className='btn btn-outline-success' onClick={(e) => {
                     setAriza(item)
-                    setArizaSend({...arizaSend,
-                        applicationId:item.id
+                    setArizaSend({
+                        ...arizaSend,
+                        applicationId: item.id
                     })
                     console.log(item)
                     arizaFileList(item.id)
@@ -254,14 +263,49 @@ function GetList(props) {
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
-                    <Search
-                        placeholder="input search text" allowClear
-                        onSearch={onSearch}
-                        style={{width: 400,}}
+                    <Select style={{width:400}}
+                        // showSearch
+                            name="MurojatYuboriladigan"
+                            onChange={(e) => {setSRC({...SRC, departmentId: e})}}
+                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                            optionFilterProp="children"
+                            filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                            options={Department && Department.map((item, index) => (
+                                {
+                                    value: item.id,
+                                    label: item.name
+                                }))}
+                    />
+                    <Select
+                        placeholder='Statusini tanlang'
+                        style={{
+                            width: 400,
+                        }}
+                        onChange={(e) => {setSRC({...SRC, status: e})}}
+                        options={[
+                            {
+                                value: '',
+                                label: 'Hammasi',
+                            },
+                            {
+                                value: 'PROGRESS',
+                                label: 'Jarayonda',
+                            },
+                            {
+                                value: 'FINISHED',
+                                label: 'Tugatilgan',
+                            },
+                            {
+                                value: "COMMITTED",
+                                label: 'Yaratilgan',
+                            },
+                        ]}
                     />
                 </Space>
             </div>
-            <Modal className='modalAddNew' title="File mazmuni" open={Open} onOk={handleOk} onCancel={() => {
+            <Modal className='modalAddNew' footer={null} title="File mazmuni" open={Open} onCancel={() => {
                 setOpen(false);
                 setAriza({
                     fullName: '',
@@ -284,7 +328,7 @@ function GetList(props) {
                     <div className="w-50 border p-3 d-flex position-relative">
 
                         <div className="ariza border shadow">
-                            <div ref={componentRef} style={{fontSize:'14px', padding:'45px'}}>
+                            <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
                                     <div className="w-50">
@@ -292,17 +336,18 @@ function GetList(props) {
                                         M.S.Turabdjanov ga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
-                                            } { ariza.fullName}
+                                            } {ariza.fullName}
                                         </span> dan
                                     </div>
                                 </div>
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div className="" style={{textAlign:"justify"}}>{ariza.description != '' ? ariza.description :
+                                <div className=""
+                                     style={{textAlign: "justify"}}>{ariza.description != '' ? ariza.description :
                                     <Skeleton/>}
                                 </div>
-                                <div className='date ' style={{marginTop:"30px"}}>sana: {Datee}</div>
+                                <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
                                 <div>
                                     <b>Tel raqami:</b><br/>
                                     {ariza.phone}
@@ -321,6 +366,7 @@ function GetList(props) {
                     </div>
 
                     <div className="w-50 px-4">
+
                         <div className="border p-2 fileListe">
                             {
                                 ItemFileListe == '' ? <Empty/> :
@@ -365,40 +411,62 @@ function GetList(props) {
                                     exchangeType: e
                                 })
                             }} block/>
-                        {arizaSend.exchangeType === 'BACK' ? '' : <div className="my-3">
-                            <label form="ID" className="form-label">Markaz / Bo'lim / Fakultet / Kafedra ga
-                                yuborish</label>
-                            <br/>
-                            <Select className='w-100'
-                                    showSearch
-                                    value={arizaSend.toDepartment?.name}
+                        <Form
+                            form={form} layout="vertical" ref={formRef} colon={false}
+                            onFinish={handleOk}>
+                            {arizaSend.exchangeType === 'BACK' ? '' :
+                                <Form.Item
+                                    label="Markaz / Bo'lim / Fakultet / Kafedra ga yuborish"
+                                    name="Markaz"
+                                    rules={[{
+                                        required: true,
+                                        message: 'Malumot kiritilishi shart !!!'
+                                    },]}>
+                                    <Select className='w-100' showSearch name="Markaz"
+                                            value={arizaSend.toDepartment?.name}
+                                            onChange={(e) => {
+                                                handleChangeDepartme(e)
+                                            }}
+                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={Department && Department.map((item, index) => ({
+                                                value: item.id,
+                                                label: item.name
+                                            }))}
+                                    />
+                                </Form.Item>}
+                            <Form.Item
+                                label="Javob mazmuni:"
+                                name="Javob"
+                                rules={[{
+                                    required: true,
+                                    message: 'Malumot kiritilishi shart !!!'
+                                },]}>
+                                <textarea className="form-control mt-2" rows="6" id="comment" name="Javob"
+                                          onChange={(e) => {
+                                              setArizaSend({...arizaSend, description: e.target.value})
+                                          }}
+                                />
+                            </Form.Item>
+                            <Form.Item name='file'>
+                                <Upload name='file' {...propss}>
+                                    <Button icon={<UploadOutlined/>}>File yuklash</Button>
+                                </Upload>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                >
+                                    Ma'lumotni yuborish
+                                </Button>
+                            </Form.Item>
+                        </Form>
 
-                                    onChange={(e) => {
-                                        handleChangeDepartme(e)
-                                    }}
-                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
-                                    optionFilterProp="children"
-
-                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                    }
-                                    options={Department && Department.map((item, index) => ({
-                                        value: item.id,
-                                        label: item.name
-                                    }))}
-                            />
-                        </div>}
-
-                        <label htmlFor="comment" className='mt-2'>Javob mazmuni:</label>
-                        <textarea className="form-control mt-2" rows="6" id="comment" name="text"
-                                  onChange={(e) => {
-                                      setArizaSend({...arizaSend, description: e.target.value})
-                                  }}
-                        />
-                        <Upload {...propss}>
-                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
-                        </Upload>
                     </div>
 
 
@@ -431,7 +499,8 @@ function GetList(props) {
             </Drawer>
 
             <Table
-                columns={columns} pagination={pageSize}
+                columns={columns}
+                pagination={pageSize}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
@@ -444,9 +513,6 @@ function GetList(props) {
                                                title: item?.department?.name,
                                                description: item?.toDepartment?.name
                                            }
-                                           // {
-                                           //     title: item?.toDepartment?.name
-                                           // }
                                        )),
                                            {
                                                title: 'Finish',
@@ -461,7 +527,7 @@ function GetList(props) {
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}
                 })}
-                rowClassName={(record)=>{
+                rowClassName={(record) => {
                     return record.status
                 }}
             />

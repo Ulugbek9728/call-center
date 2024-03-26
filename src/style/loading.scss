@@ -1,0 +1,123 @@
+.loding {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: #1B6B50;
+  background-image: url("../img/politex_img1.svg");
+  background-repeat: no-repeat;
+  background-size: 90% 100%;
+  background-position: 50% 50%;
+  overflow: hidden;
+  .ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: transparent;
+    border: 3px solid #3c3c3c;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(220, 254, 217, 0.5);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      width: 300px;
+      height: 300px;
+      border: 3px solid transparent;
+      border-top: 3px solid white;
+      border-right: 3px solid white;
+      border-radius: 50%;
+      animation: animateC 2s linear infinite;
+    }
+    img {
+      width: 90%;
+      height: 90%;
+    }
+
+    span {
+      display: block;
+      position: absolute;
+      top: calc(50% - 2px);
+      left: 50%;
+      width: 50%;
+      height: 4px;
+      background: transparent;
+      transform-origin: left;
+      animation: animate 2s linear infinite;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        top: -6px;
+        right: -8px;
+        box-shadow: 0 0 20px white;
+      }
+    }
+  }
+}
+@keyframes animateC
+{
+  0%
+  {
+    transform:rotate(0deg);
+  }
+  100%
+  {
+    transform:rotate(360deg);
+  }
+}
+@keyframes animate
+{
+  0%
+  {
+    transform:rotate(45deg);
+  }
+  100%
+  {
+    transform:rotate(405deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .loding {
+    background-size: 170% 100%;
+    .ring {
+      width: 200px;
+      height: 200px;
+
+      &::before {
+        width: 200px;
+        height: 200px;
+      }
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  .loding {
+    background-size: 230% 100%;
+    .ring {
+      width: 160px;
+      height: 160px;
+
+      &::before {
+        width: 160px;
+        height: 160px;
+      }
+    }
+  }
+}
