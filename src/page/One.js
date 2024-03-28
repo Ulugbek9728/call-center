@@ -1,11 +1,19 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
 
-import {Space, Table, Select, Modal, Upload, Button, Steps, Skeleton, message, Empty, Drawer, Form} from 'antd';
-import {UploadOutlined, LoadingOutlined, CaretRightOutlined } from '@ant-design/icons';
+import {
+    Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
+    message, Empty, Drawer, Form, DatePicker
+} from 'antd';
+import {UploadOutlined, LoadingOutlined, CaretRightOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
+const {RangePicker} = DatePicker;
 
 function One(props) {
     const formRef = useRef(null);
@@ -49,6 +57,7 @@ function One(props) {
     });
 
     const [open1, setOpen1] = useState(false);
+    const [DateListe, setDateListe] = useState(['', '']);
 
 
     function arizaFileList(id) {
@@ -257,14 +266,47 @@ function One(props) {
         }
     }
 
+    const disabledDate = (current) => {
+        // Can not select days before today and today
+        return current && current < dayjs().endOf('day');
+    };
+
+    const onChangeDate = (value, dateString) => {
+        setDateListe(dateString)
+
+    };
+    const onChange = () => {
+        console.log(DateListe)
+        axios.get(`${ApiName}/api/application/get-as-excel`, {
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+            params:{from:DateListe[0], to:DateListe[1], departmentId:7777},
+            responseType:'blob'
+        } ).then((response) => {
+            console.log(response)
+
+            const link = document.createElement('a');
+            const blob = new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const url = URL.createObjectURL(blob);
+
+            link.href = url;
+            link.setAttribute('download', `arizalar_${DateListe[0]}_${DateListe[1]}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+        }).catch((error) => {
+            console.log(error)
+        });
+    };
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
-                    <Select style={{width:400}}
-                            // showSearch
+                    <Select style={{width: 400}}
+                        // showSearch
                             name="MurojatYuboriladigan"
-                            onChange={(e) => {setSRC({...SRC, departmentId: e})}}
+                            onChange={(e) => {
+                                setSRC({...SRC, departmentId: e})
+                            }}
                             placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
                             optionFilterProp="children"
                             filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
@@ -282,7 +324,9 @@ function One(props) {
                         style={{
                             width: 400,
                         }}
-                        onChange={(e) => {setSRC({...SRC, status: e})}}
+                        onChange={(e) => {
+                            setSRC({...SRC, status: e})
+                        }}
                         options={[
                             {
                                 value: '',
@@ -338,6 +382,23 @@ function One(props) {
                             form={form} layout="vertical" ref={formRef} colon={false}
                             onFinish={handleOk}>
                             <Form.Item
+                                label="Murojat mudatini belgilang"
+                                name="MurojatchiniDate"
+                                rules={[{
+                                    required: true,
+                                    message: 'Malumot kiritilishi shart !!!'
+                                },]}>
+                                <RangePicker name="MurojatchiniDate"
+                                             style={{width: '100%',}}
+                                             disabledDate={disabledDate}
+                                             onChange={(e) => {
+                                                 console.log(e)
+
+                                             }}/>
+                            </Form.Item>
+
+
+                            <Form.Item
                                 label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
                                 name="MurojatchiniBo'limi"
                                 rules={[{
@@ -362,6 +423,7 @@ function One(props) {
                                     }))}
                                 />
                             </Form.Item>
+
                             <Form.Item label="Murojatchi Familya Ism Sharif" name="FISH"
                                        rules={[
                                            {
@@ -474,42 +536,49 @@ function One(props) {
                             </Form.Item>
 
                             <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
+                                <Button className='p-4 d-flex align-items-center justify-content-center'
+                                        type="primary"
+                                        htmlType="submit"
                                 >
                                     Ma'lumotni yuborish
                                 </Button>
                             </Form.Item>
                         </Form>
-
-
                     </div>}
-                    <div className="w-50 border d-flex position-relative">
-                        <div className=" ariza border shadow px-5 py-3">
-                            <div ref={componentRef}>
+                    <div className="w-50 border p-3 d-flex position-relative">
+
+                        <div className="ariza border shadow">
+                            <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
                                 <div className="d-flex">
                                     <div className="w-50"></div>
-                                    <div className="w-50 contentAriza">
+                                    <div className="w-50">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                        M.S.Turabdjanovga
-                                        <span>
+                                        M.S.Turabdjanov ga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
                                             } {ariza.fullName}
                                         </span> dan
                                     </div>
                                 </div>
-                                <h4 className="text-center mt-5">
+                                <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div className="contentAriza">{ariza.description != '' ? ariza.description :
-                                    <Skeleton/>} </div>
+                                <div style={{textAlign: "justify"}}>{ariza.description != '' ? ariza.description :
+                                    <Skeleton/>}
+                                </div>
+                                <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
+                                <div>
+                                    <b>Tel raqami:</b><br/>
+                                    {ariza.phone}
+                                </div>
+                                <div>
+                                    <b>Murojatch raqami:</b> <br/>
+                                    {ariza.id}
+                                </div>
                             </div>
-
-                            <span className='date'>sana: {Datee}</span>
                         </div>
-                        <button style={{height: 50, width: 200, position: "relative", top: 600, right: -40}}
+
+                        <button style={{height: 50, width: 200, position: "absolute", bottom: 60, right: 40}}
                                 className='btn btn-success'
                                 onClick={handlePrint}>Yuklab olish / pechat
                         </button>
@@ -541,11 +610,9 @@ function One(props) {
             </Modal>
 
             <Drawer
-                size={'large'}
+                size={'large'} placement="right"
                 title={`"${FileDrower?.exchangeApp?.department?.name}" dan kelgan ma'lumotlar`}
-                placement="right"
-                onClose={() => setOpen1(false)}
-                open={open1}
+                onClose={() => setOpen1(false)} open={open1}
             >
                 <h6> Fayillar ro'yxati</h6>
                 <ol>
@@ -565,8 +632,7 @@ function One(props) {
             </Drawer>
 
             <Table
-                columns={columns}
-                pagination={pageSize}
+                columns={columns} pagination={pageSize}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
@@ -593,10 +659,33 @@ function One(props) {
                 dataSource={ArizaList?.map(item => {
                     return {...item, key: item.id}
                 })}
-                rowClassName={(record)=>{
+                rowClassName={(record) => {
                     return record.status
                 }}
             />
+            <hr/>
+            <Form form={form} layout="vertical" ref={formRef} colon={false}
+                onFinish={onChange}
+            >
+                <Form.Item label="Murojatlarni yuklash mudatini belgilang"
+                           name="MurojatYuklash"
+                           rules={[{
+                               required: true,
+                               message: 'Malumot kiritilishi shart !!!'
+                           },]}>
+                    <RangePicker name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
+                </Form.Item>
+                <Form.Item>
+                    <Button className='btn-outline-success p-4 d-flex align-items-center justify-content-center'
+                            htmlType="submit" type="primary"
+                    >
+                        Ma'lumotni yuklash
+                    </Button>
+                </Form.Item>
+
+            </Form>
+
+
         </div>
     );
 }

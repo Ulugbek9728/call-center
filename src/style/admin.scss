@@ -44,7 +44,7 @@ $textColor: #02A36D;
 }
 .modalAddNew{
   width: 90%!important;
-  height: 900px!important;
+  min-height: 900px!important;
   padding: 0;
 
   .ant-modal-content{
@@ -55,6 +55,7 @@ $textColor: #02A36D;
       .ariza{
         width: 500px;
         height: 680px!important;
+        overflow-y: auto;
         margin-right: 30px;
         text-align: justify;
         font-family: "Gupter", serif !important;

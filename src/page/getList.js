@@ -343,8 +343,7 @@ function GetList(props) {
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div className=""
-                                     style={{textAlign: "justify"}}>{ariza.description != '' ? ariza.description :
+                                <div style={{textAlign: "justify"}}>{ariza.description != '' ? ariza.description :
                                     <Skeleton/>}
                                 </div>
                                 <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>

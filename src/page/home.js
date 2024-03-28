@@ -27,18 +27,16 @@ function Home(props) {
                          data-aos-easing="ease-in-sine">
                         <div className="">
                             <div className="title">
-                                TDTU talabarini murojatlarini qabul qilish platformasi
+                                Islom Karimov nomidagi
+                                Toshkent Davlat Texnika Universiteti Registrator bo‘limi platformasi
                             </div>
                             <div className="text">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid beatae commodi cumque
-                                ea,
-                                eaque ex excepturi expedita explicabo iusto labore libero minima minus natus
-                                necessitatibus
-                                quia quis quos similique voluptas. Debitis?
+                                Akademik faoliyat va registrator bo‘limi universitetning asosiy xizmatlarini talabalarga bir joydan turib tezkor, samarali va shaffof tarzda amalga oshirishdan iborat.
                             </div>
                         </div>
 
                         <div className="d-flex justify-content-between kirish">
+                                                                                                                                  {/*${ApiName}*/}
                             <a href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth`}>
                                 Sahifaga Kirish</a>
                             <Link to='/tekshirish'>

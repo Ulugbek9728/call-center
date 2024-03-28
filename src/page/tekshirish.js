@@ -15,7 +15,7 @@ function Tekshirish(props) {
     const [sucsessText, setSucsessText] = useState('');
     const [open, setOpen] = useState(false);
     const [response, setResponse] = useState({
-        exchangesApp:[]
+        exchangesApp: []
     });
 
     const onClose = () => {
@@ -27,24 +27,21 @@ function Tekshirish(props) {
             phone: values?.Telefon,
             application_number: values?.Ariza
         };
-        axios.get(`${ApiName}/api/application/check`,{
-            params:requestData
+        axios.get(`${ApiName}/api/application/check`, {
+            params: requestData
         }).then((response) => {
             console.log(response.data)
-            if (response.data.isSuccess === true){
-                if (response.data.data.status ==='FINISHED'){
+            if (response.data.isSuccess === true) {
+                if (response.data.data.status === 'FINISHED') {
                     setOpen(true);
                     setResponse(response.data?.data)
-                }
-               else if (response.data.data.status ==='PROGRESS'){
+                } else if (response.data.data.status === 'PROGRESS') {
                     setSucsessText("Murojatingiz ko'rib chiqilmoqda")
-                }
-               else {
+                } else {
                     setSucsessText("Murojatingiz kutish holatida")
                 }
 
-            }
-            else {
+            } else {
                 setMessage(response.data.message)
 
             }
@@ -83,13 +80,11 @@ function Tekshirish(props) {
 
                     <div className="tekshirish">
                         <div className="left">
-                            <h2>Build Your Business Modern, Faster And Reliable</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias amet animi asperiores
-                                delectus dicta dolore ducimus ea est harum, hic illum incidunt iure laboriosam libero
-                                optio perferendis quae quam quia repellat repudiandae sapiente sed soluta totam vitae?
-                                Aliquid animi aperiam commodi debitis dolorem dolorum, ea earum, esse, laudantium libero
-                                omnis pariatur quibusdam quis suscipit temporibus vel voluptate.
-                                </p>
+                            <h2>Murojat holatini ko'rish</h2>
+
+                            <p>Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator
+                                bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz.
+                            </p>
                         </div>
                         <div className="rightebox">
                             <Form
