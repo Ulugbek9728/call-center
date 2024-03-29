@@ -4,7 +4,13 @@ import {
     Segmented, Upload, Button, message, Select, Empty, Drawer, Form,
 } from "antd";
 
-import {LoadingOutlined, UploadOutlined, CaretRightOutlined, ArrowRightOutlined} from "@ant-design/icons";
+import {
+    CheckCircleOutlined,
+    UploadOutlined,
+    CaretRightOutlined,
+    ArrowRightOutlined,
+    ClockCircleOutlined
+} from "@ant-design/icons";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
@@ -504,7 +510,7 @@ function GetList(props) {
                     expandedRowRender: (record) => {
                         return (
                             <Steps direction="vertical"
-                                   current={record?.exchangesApp?.length}
+                                   current={record.status!=="FINISHED"? record?.exchangesApp?.length : record?.exchangesApp?.length+1}
                                    status="wait"
                                    items={
                                        [...record?.exchangesApp?.map(item => (
@@ -514,8 +520,13 @@ function GetList(props) {
                                            }
                                        )),
                                            {
-                                               title: 'Finish',
-                                               icon: <LoadingOutlined/>,
+                                               title:  `Murojatga javob berish mudati ${record?.expDate}`,
+                                               description:record.status!=="FINISHED"?
+                                                   ''
+                                                   :
+                                                   `Murojatga javob berilgan sana 
+                                                   ${record.exchangesApp[record.exchangesApp.length-1]?.createdDate?.split('T')[0]}`,
+                                               icon:record.status!=="FINISHED"? <ClockCircleOutlined className="timeline-clock-icon" /> :'',
                                            }
                                        ]
                                    }

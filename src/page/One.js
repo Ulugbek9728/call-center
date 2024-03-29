@@ -5,7 +5,7 @@ import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
     message, Empty, Drawer, Form, DatePicker
 } from 'antd';
-import {UploadOutlined, LoadingOutlined, CaretRightOutlined} from '@ant-design/icons';
+import {UploadOutlined, ClockCircleOutlined, CaretRightOutlined} from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
@@ -18,6 +18,8 @@ const {RangePicker} = DatePicker;
 function One(props) {
     const formRef = useRef(null);
     const [form] = Form.useForm();
+    const [form1] = Form.useForm();
+
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
@@ -36,6 +38,7 @@ function One(props) {
         nameInfo: '[]',
         applicationType: 'Ariza',
         phone: '',
+        expDate: '',
         description: '',
         toDepartment: {
             id: '',
@@ -103,6 +106,7 @@ function One(props) {
             params: SRC
         }).then((response) => {
             setArizaList(response.data.data.content)
+            console.log(response.data.data.content)
         }).catch((error) => {
             console.log(error)
         });
@@ -160,7 +164,6 @@ function One(props) {
 
     const handleOk = () => {
         setConfirmLoading(true);
-
         edite ? setTimeout(() => {
                 setOpen(false);
                 setConfirmLoading(false);
@@ -172,7 +175,6 @@ function One(props) {
                 console.log(response);
                 if (response.data.message === "Success") {
                     form.resetFields()
-
                     setOpen(false);
                     setConfirmLoading(false);
                     setSucsessText('File yuborildi')
@@ -180,6 +182,7 @@ function One(props) {
                         fullName: '',
                         applicationType: 'Ariza',
                         phone: '',
+                        expDate: '',
                         description: '',
                         toDepartment: {
                             id: '',
@@ -198,8 +201,6 @@ function One(props) {
                 setMessage('File error')
                 setConfirmLoading(false);
             })
-
-
     };
 
     const propss = {
@@ -271,15 +272,19 @@ function One(props) {
         return current && current < dayjs().endOf('day');
     };
 
+    const onChangeDate2 = (value, dateString) => {
+        console.log(dateString)
+        setAriza({...ariza, expDate: dateString})
+    };
+
     const onChangeDate = (value, dateString) => {
         setDateListe(dateString)
-
     };
     const onChange = () => {
-        console.log(DateListe)
+        const departmentID= fulInfo.roles[0]==="ROLE_OPERATOR"? 7777 :fulInfo.department.id
         axios.get(`${ApiName}/api/application/get-as-excel`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params:{from:DateListe[0], to:DateListe[1], departmentId:7777},
+            params:{from:DateListe[0], to:DateListe[1], departmentId:departmentID},
             responseType:'blob'
         } ).then((response) => {
             console.log(response)
@@ -363,6 +368,7 @@ function One(props) {
                     nameInfo: '',
                     applicationType: 'Ariza',
                     phone: '',
+                    expDate: '',
                     description: '',
                     toDepartment: {
                         id: '',
@@ -388,13 +394,10 @@ function One(props) {
                                     required: true,
                                     message: 'Malumot kiritilishi shart !!!'
                                 },]}>
-                                <RangePicker name="MurojatchiniDate"
+                                <DatePicker name="MurojatchiniDate"
                                              style={{width: '100%',}}
                                              disabledDate={disabledDate}
-                                             onChange={(e) => {
-                                                 console.log(e)
-
-                                             }}/>
+                                            onChange={onChangeDate2}/>
                             </Form.Item>
 
 
@@ -411,8 +414,6 @@ function One(props) {
                                     style={{width: '100%',}}
                                     onChange={(e) => {
                                         setAriza({...ariza, nameInfo: JSON.stringify(e)})
-                                        console.log(ariza)
-
                                     }}
                                     filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
                                     filterSort={(optionA, optionB) =>
@@ -538,8 +539,7 @@ function One(props) {
                             <Form.Item>
                                 <Button className='p-4 d-flex align-items-center justify-content-center'
                                         type="primary"
-                                        htmlType="submit"
-                                >
+                                        htmlType="submit">
                                     Ma'lumotni yuborish
                                 </Button>
                             </Form.Item>
@@ -579,8 +579,7 @@ function One(props) {
                         </div>
 
                         <button style={{height: 50, width: 200, position: "absolute", bottom: 60, right: 40}}
-                                className='btn btn-success'
-                                onClick={handlePrint}>Yuklab olish / pechat
+                                className='btn btn-success' onClick={handlePrint}>Yuklab olish / pechat
                         </button>
                     </div>
 
@@ -647,8 +646,8 @@ function One(props) {
                                            }
                                        )),
                                            {
-                                               title: 'Finish',
-                                               icon: <LoadingOutlined/>,
+                                               title: record?.expDate,
+                                               icon: <ClockCircleOutlined className="timeline-clock-icon" />,
                                            }
                                        ]
                                    }
@@ -664,7 +663,7 @@ function One(props) {
                 }}
             />
             <hr/>
-            <Form form={form} layout="vertical" ref={formRef} colon={false}
+            <Form form={form1} layout="vertical" ref={formRef} colon={false}
                 onFinish={onChange}
             >
                 <Form.Item label="Murojatlarni yuklash mudatini belgilang"
@@ -673,7 +672,9 @@ function One(props) {
                                required: true,
                                message: 'Malumot kiritilishi shart !!!'
                            },]}>
-                    <RangePicker name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
+                    <DatePicker.RangePicker
+                        // placeholder={["Bosh sana", 'Tugash sana']}
+                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
                 </Form.Item>
                 <Form.Item>
                     <Button className='btn-outline-success p-4 d-flex align-items-center justify-content-center'

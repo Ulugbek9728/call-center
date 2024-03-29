@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {
     UploadOutlined,
-    UserOutlined,
+    UserOutlined,LineChartOutlined,
     DownloadOutlined, UserAddOutlined,
 } from '@ant-design/icons';
 
@@ -13,6 +13,7 @@ import {Route, Routes, useNavigate} from "react-router-dom";
 import One from "./One";
 import AddDeportment from "./addDeportment";
 import GetList from "./getList";
+import Statistika from "./statistika";
 
 
 const {} = Input;
@@ -45,12 +46,12 @@ function AdminOperator(props) {
             access: ['ROLE_DEPARTMENT']
         },
 
-        // {
-        //     label: "menu",
-        //     key: "3",
-        //     icon: <DownloadOutlined/>,
-        //     access: ['ROLE_DEPARTMENT', 'ROLE_ADMIN']
-        // },
+        {
+            label: "Statistika",
+            key: "3",
+            icon: <LineChartOutlined />,
+            access: ['ROLE_DEPARTMENT', 'ROLE_ADMIN','ROLE_OPERATOR']
+        },
 
     ];
 
@@ -71,9 +72,7 @@ function AdminOperator(props) {
                               else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/userAdd")
                               }
-                              // else {
-                              //     navigate("/auth/")
-                              // }
+
                           } else if (into.key === "2") {
                               if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/123")
@@ -82,6 +81,18 @@ function AdminOperator(props) {
                                   navigate("/adminAll/getFileDepartment")
                               }
                           }
+                          else if (into.key === "3") {
+                              if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+                                  navigate("/adminAll/statistika")
+                              }
+                              else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+                                  navigate("/adminAll/statistika")
+                              }
+                              else if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
+                                  navigate("/operator/statistika")
+                              }
+                          }
+
                       }}/>
             </Sider>
             <Layout className="site-layout" style={{
@@ -115,6 +126,7 @@ function AdminOperator(props) {
                         <Route path={"/addFileDepartment"} element={<One/>}/>
                         <Route path={"/getFileDepartment"} element={<GetList/>}/>
                         <Route path={"/userAdd"} element={<AddDeportment/>}/>
+                        <Route path={"/statistika"} element={<Statistika/>}/>
 
                     </Routes>
                 </Content>
