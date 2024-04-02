@@ -1,23 +1,33 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
+import domtoimage from 'dom-to-image-more';
+import {FileJpgOutlined} from '@ant-design/icons';
+
+import axios from "axios";
+import {ApiName} from "../APIname";
 
 
 
 function Statistika(props) {
+    const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    const [stati, setStatistics] = useState([]);
+
+
     const options = {
         chart: {
             type: 'pie'
         },
         title:  {
             text: 'Browser market shares. January, 2022',
-            align: 'left'
+            align: 'center',
+            marginBottom: 50
         },
         subtitle: {
             text: 'Click the slices to view versions. Source:',
-            align: 'left'
-        },
+            align: 'center',
 
+        },
 
         plotOptions: {
             series: {
@@ -25,6 +35,10 @@ function Statistika(props) {
                 dataLabels: [{
                     enabled: true,
                     distance: 30,
+                    style: {
+                        fontSize: '0.9em',
+                        textOutline: 'none'
+                    }
                 }, {
                     enabled: true,
                     distance: '-30%',
@@ -40,35 +54,76 @@ function Statistika(props) {
         series: [
             {
                 name: 'Foiz',
+                colorByPoint: true,
                 data: [
                     {
-                        name: 'Vaqtida javob berilgan murojatlar',
-                        y: 60.4,
-                        color:'#3be08e'
+                        name: "Javob berilmagan murojatlar",
+                        y: stati?.committed?.percent,
+                        color:'#2791cb'
                     },
                     {
                         name: "Vaqtida javob berilmagan murojatlar",
-                        y: 15,
+                        y: stati?.notInTimeFinished?.percent,
                         color:'#f46161'
 
                     },
                     {
-                        name: "Boshqa bo'limga yuborilgan murojatlar",
-                        y: 25,
+                        name: 'Vaqtida javob berilgan murojatlar',
+                        y: stati?.inTimeAnswer?.percent,
+                        color:'#3be08e',
+                    },
+
+                    {
+                        name: "Boshqa bo'limga yuborilganlekin",
+                        y: stati?.progress?.percent,
                         color:'#eab021'
                     },
+
                 ]
             }
         ],
     }
 
+
+    useEffect(() => {
+        StatisticsGet()
+    }, []);
+
+    function StatisticsGet() {
+        axios.get(`${ApiName}/api/application/statistics-progress`, {
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}}
+            ).then((response) => {
+            setStatistics(response.data.data);
+            console.log(response.data.data)
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    function download(){
+        var node = document.getElementById('img');
+
+        domtoimage
+            .toJpeg(node, { quality: 0.95 })
+            .then(function (dataUrl) {
+                var link = document.createElement('a');
+                link.download = 'my-image-name.jpeg';
+                link.href = dataUrl;
+                link.click();
+            });
+    }
+
     return (
         <div>
+            <div id='img'>
+                <HighchartsReact
+                                 highcharts={Highcharts}
+                                 options={options}
+                />
+            </div>
 
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={options}
-            />
+
+            <button className='btn btn-success' onClick={download} id='btnID'>Yuklab olish <FileJpgOutlined /></button>
 
         </div>
     );
