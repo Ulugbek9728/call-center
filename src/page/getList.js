@@ -205,13 +205,15 @@ function GetList(props) {
                     console.log(error)
                     message.error(`${info.file.name} file delete failed.`);
                 })
-            } else if (info.file.status === 'done') {
+            }
+            else if (info.file.status === 'done') {
                 arizaSend.files.push({
                         fileId: info.file.response.id,
                     }
                 )
                 message.success(`${info.file.name} File uploaded successfully`);
-            } else if (info.file.status === 'error') {
+            }
+            else if (info.file.status === 'error') {
                 message.error(`${info.file.name} File upload failed.`);
             }
         },

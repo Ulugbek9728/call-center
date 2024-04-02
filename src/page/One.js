@@ -3,7 +3,7 @@ import {useReactToPrint} from 'react-to-print';
 
 import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
-    message, Empty, Drawer, Form, DatePicker, Popconfirm
+    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
@@ -16,7 +16,6 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(customParseFormat);
-const {RangePicker} = DatePicker;
 
 function One(props) {
     const formRef = useRef(null);
@@ -57,7 +56,6 @@ function One(props) {
     const [ArizaList, setArizaList] = useState([]);
     const [Datee, setDatee] = useState();
     const [ItemFileListe, setItemFileListe] = useState([]);
-    const [ItemFileListe1, setItemFileListe1] = useState([]);
     const [FileDrower, setFileDrower] = useState([]);
     const [SRC, setSRC] = useState({
         isCome: false,
@@ -76,15 +74,6 @@ function One(props) {
 
         }).then((response) => {
             setItemFileListe(response.data.data)
-        }).catch((error) => {
-            console.log(error)
-        });
-    }
-    function AlpicationfileListe(id){
-        axios.get(`${ApiName}/api/application-file/${id}`, {
-            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-        }).then((response) => {
-            setItemFileListe1(response.data.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -122,6 +111,81 @@ function One(props) {
             console.log(error)
         });
     }
+
+    const handleOk = () => {
+        if (batafsil===true){
+            setTimeout(() => {
+                setOpen(false);
+                setBatafsil(false)
+            }, 1000)
+        }
+        else {
+            if (edite===true){
+                axios.put(`${ApiName}/api/application/${ariza?.id}`, ariza, {
+                    headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+                }).then((response) => {
+                    console.log(response)
+                    form.resetFields()
+                    setOpen(false);
+                    setSucsessText("Murojat o'zgardi")
+                    setAriza({
+                        fullName: '',
+                        applicationType: 'Ariza',
+                        phone: '',
+                        expDate: '',
+                        description: '',
+                        toDepartment: {
+                            id: '',
+                            nam: '',
+                            code: "",
+                            structureType: {
+                                code: "",
+                                name: ""
+                            }
+                        },
+                        files: []
+                    })
+                    setEdite(false)
+                }).catch((error) => {
+                    console.log(error)
+                    setMessage('File error')
+                })
+            }
+            else{
+                axios.post(`${ApiName}/api/application`, ariza, {
+                    headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+                }).then((response) => {
+                    if (response.data.message === "Success") {
+                        form.resetFields()
+                        setOpen(false);
+                        setSucsessText('Murojat yuborildi')
+                        setAriza({
+                            fullName: '',
+                            applicationType: 'Ariza',
+                            phone: '',
+                            expDate: '',
+                            description: '',
+                            toDepartment: {
+                                id: '',
+                                nam: '',
+                                code: "",
+                                structureType: {
+                                    code: "",
+                                    name: ""
+                                }
+                            },
+                            files: []
+                        })
+                    }
+                }).catch((error) => {
+                    setMessage('File error')
+                })
+            }
+
+        }
+
+
+    };
 
     const columns = [
         {
@@ -165,12 +229,20 @@ function One(props) {
                         setBatafsil(true)
                         setOpen(true)
                     }}><EyeOutlined/></button>
+
                     <button className='btn btn-warning' onClick={(e) => {
-                        setAriza(item)
-                        setOpen(true)
-                        AlpicationfileListe(item.id)
-                        setEdite(true)
+                        setAriza({
+                            id:item.id,
+                            fullName: item.fullName,
+                            nameInfo: item.nameInfo,
+                            applicationType: item.applicationType,
+                            phone: item.phone,
+                            expDate: item.expDate,
+                            description: item.description,
+                            toDepartment: item.toDepartment,
+                        }); setOpen(true); setEdite(true)
                     }}><EditOutlined/></button>
+
                     <Popconfirm
                         title="Murojatni o'chirish"
                         description="Murojatni o'chirishni tasdiqlaysizmi?"
@@ -187,45 +259,7 @@ function One(props) {
 
     ];
 
-    const handleOk = () => {
-        batafsil ? setTimeout(() => {
-                setOpen(false);
-
-                setBatafsil(false)
-            }, 1000) :
-            axios.post(`${ApiName}/api/application`, ariza, {
-                headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
-            }).then((response) => {
-                console.log(response);
-                if (response.data.message === "Success") {
-                    form.resetFields()
-                    setOpen(false);
-                    setSucsessText('File yuborildi')
-                    setAriza({
-                        fullName: '',
-                        applicationType: 'Ariza',
-                        phone: '',
-                        expDate: '',
-                        description: '',
-                        toDepartment: {
-                            id: '',
-                            nam: '',
-                            code: "",
-                            structureType: {
-                                code: "",
-                                name: ""
-                            }
-                        },
-                        files: []
-                    })
-                }
-            }).catch((error) => {
-                console.log(error)
-                setMessage('File error')
-            })
-    };
-
-    const propss = {
+    const propsss = {
         name: 'file',
         action: `${ApiName}/api/v1/attach/upload`,
         headers: {
@@ -233,18 +267,15 @@ function One(props) {
         },
 
         onChange(info) {
-            console.log(info)
             if (info.file.status === 'removed') {
-                const result = ariza.files.filter((idAll) => idAll.id !== info.file.response.id);
+                const result = ariza.files.filter((idAll) => idAll?.id !== info?.file?.response?.id);
                 setAriza({...ariza, files: result})
 
-                axios.delete(`${ApiName}/api/v1/attach/${info.file.response.id}`, {
+                axios.delete(`${ApiName}/api/v1/attach/${info?.file?.response?.id}`, {
                     headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
                 }).then((res) => {
-                    console.log(res)
                     message.success("File o'chirildi")
                 }).catch((error) => {
-                    console.log(error)
                     message.error(`${info.file.name} file delete failed.`);
                 })
             }
@@ -262,7 +293,6 @@ function One(props) {
             }
         },
     };
-
 
     useEffect(() => {
         const date = new Date();
@@ -299,7 +329,6 @@ function One(props) {
     };
 
     const onChangeDate2 = (value, dateString) => {
-        console.log(dateString)
         setAriza({...ariza, expDate: dateString})
     };
 
@@ -356,7 +385,6 @@ function One(props) {
                             filterSort={(optionA, optionB) =>
                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
                             options={Department && Department.map((item, index) => (
-
                                 {
                                     value: item.id,
                                     label: item.name
@@ -429,7 +457,7 @@ function One(props) {
                             fields={[
                                 {
                                     name: "MurojatchiniBo'limi",
-                                    value: !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                    value: !ariza.nameInfo || ariza.nameInfo === "" ? [] : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
                                 },
                                 {
                                     name: "FISH",
@@ -441,7 +469,7 @@ function One(props) {
                                 },
                                 {
                                     name: "MurojatYuboriladigan",
-                                    value: ariza.toDepartment?.name
+                                    value: ariza?.toDepartment?.name
                                 },
                                 {
                                     name: "xujjat",
@@ -451,18 +479,8 @@ function One(props) {
                                     name: "text",
                                     value: ariza?.description
                                 },
-                                {
-                                    name:'file',
-                                    value: ItemFileListe1.map(({file})=>{
-                                        return {
-                                            uid: file.id,
-                                            name: file.name,
-                                            status: 'done',
-                                            url: file.url
-                                        }
-                                    })
-                                }
-                            ]}>
+                            ]}
+                        >
                             <Form.Item
                                 label="Murojat mudatini belgilang"
                                 name="MurojatchiniDate"
@@ -486,7 +504,6 @@ function One(props) {
                                 <Select
                                     name="MurojatchiniBo'limi" mode="tags"
                                     placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
-                                    style={{width: '100%',}}
                                     onChange={(e) => {
                                         setAriza({...ariza, nameInfo: JSON.stringify(e)})
                                     }}
@@ -507,8 +524,7 @@ function One(props) {
                                                message: 'Malumot kiritilishi shart !!!'
 
                                            },]}>
-                                <input type="text" className="form-control" name="FISH"
-                                       placeholder="F.I.SH"
+                                <Input type="text"  name="FISH" placeholder="F.I.SH"
                                        onChange={(e) => {
                                            setAriza({...ariza, fullName: e.target.value})
                                        }}/>
@@ -521,27 +537,22 @@ function One(props) {
                                                message: 'Malumot kiritilishi shart !!!'
 
                                            },]}>
-                                <input type="text"  className="form-control"
-                                       placeholder="+998(**) *** ** **" name="Tel"
+                                <Input type="text" placeholder="+998(**) *** ** **" name="Tel"
                                        onChange={(e) => {
                                            setAriza({...ariza, phone: e.target.value})
                                        }}/>
                             </Form.Item>
                             <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
-                                       name="MurojatYuboriladigan"
-                                       rules={[
+                                       name="MurojatYuboriladigan" rules={[
                                            {
                                                required: true,
                                                message: 'Malumot kiritilishi shart !!!'
                                            },]}>
-                                <Select className='w-100'
-                                        showSearch
-                                        name="MurojatYuboriladigan"
+                                <Select className='w-100' showSearch name="MurojatYuboriladigan"
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
                                         }}
-                                        placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
-                                        optionFilterProp="children"
+                                        placeholder="Markaz / Bo'lim / Fakultet / Kafedra" optionFilterProp="children"
                                         filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
                                         filterSort={(optionA, optionB) =>
                                             (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
@@ -553,24 +564,19 @@ function One(props) {
                             </Form.Item>
 
                             <Form.Item
-                                name="xujjat"
-                                label="Murojat xujjat turi"
+                                name="xujjat" label="Murojat xujjat turi"
                                 rules={[
                                     {
                                         required: true,
                                         message: 'Malumot kiritilishi shart !!!'
                                     },]}>
-
-                                <Select
-                                    name="xujjat"
-                                    className='w-100'
+                                <Select name="xujjat" className='w-100'
                                     onChange={(e) => {
                                         setAriza({...ariza, applicationType: e})
                                     }}
                                     style={{
                                         width: 120,
-                                    }}
-                                    allowClear
+                                    }} allowClear
                                     options={[
                                         {
                                             value: 'Ariza',
@@ -602,18 +608,13 @@ function One(props) {
                                           }}/>
                             </Form.Item>
 
-                            <Form.Item name='file'>
-                                <Upload name='file' {...propss} defaultFileList={ ItemFileListe1.map(({file})=>{
-                                        return {
-                                            uid: file.id,
-                                            name: file.filename,
-                                            status: 'done',
-                                            url: file.url
-                                        }
-                                    })}>
+                            {edite? '' : <Form.Item name='file'>
+                                <Upload name='file' {...propsss}>
                                     <Button icon={<UploadOutlined/>}>File yuklash</Button>
                                 </Upload>
-                            </Form.Item>
+                            </Form.Item>}
+
+
 
                             <Form.Item>
                                 <Button className='p-4 d-flex align-items-center justify-content-center'
