@@ -181,7 +181,6 @@ function One(props) {
                     setMessage('File error')
                 })
             }
-
         }
 
 
@@ -339,11 +338,11 @@ function One(props) {
         const departmentID = fulInfo.roles[0] === "ROLE_OPERATOR" ? 7777 : fulInfo.department.id
         axios.get(`${ApiName}/api/application/get-as-excel`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params: {from: DateListe[0], to: DateListe[1], departmentId: departmentID},
+            params: {
+                from: DateListe[0], to: DateListe[1], departmentId: departmentID, isCome: false
+            },
             responseType: 'blob'
         }).then((response) => {
-            console.log(response)
-
             const link = document.createElement('a');
             const blob = new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
             const url = URL.createObjectURL(blob);

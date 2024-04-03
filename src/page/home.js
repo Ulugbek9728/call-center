@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import '../style/home.scss'
 import {Link} from "react-router-dom";
+import {ApiName} from "../APIname";
 
 function Home(props) {
     useEffect(() => {

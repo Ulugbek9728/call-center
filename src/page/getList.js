@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
     Input, Space, Steps, Table, Modal, Skeleton,
-    Segmented, Upload, Button, message, Select, Empty, Drawer, Form,
+    Segmented, Upload, Button, message, Select, Empty, Drawer, Form, DatePicker,
 } from "antd";
 
 import {
@@ -15,6 +15,7 @@ import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
 import {toast} from "react-toastify";
+import dayjs from "dayjs";
 
 const {Search} = Input;
 
@@ -22,6 +23,8 @@ const {Search} = Input;
 function GetList(props) {
     const formRef = useRef(null);
     const [form] = Form.useForm();
+    const [form1] = Form.useForm();
+
 
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
@@ -68,6 +71,8 @@ function GetList(props) {
     const [SRC, setSRC] = useState({
         isCome: true,
     });
+    const [DateListe, setDateListe] = useState(['', '']);
+
 
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
@@ -257,6 +262,31 @@ function GetList(props) {
         setSucsessText('')
         notify();
     }, [message, sucsessText,]);
+
+    const onChange = () => {
+        const departmentID = fulInfo.roles[0] === "ROLE_OPERATOR" ? 7777 : fulInfo.department.id
+        axios.get(`${ApiName}/api/application/get-as-excel`, {
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+            params: {
+                from: DateListe[0], to: DateListe[1], departmentId: departmentID,isCome: true
+            },
+            responseType: 'blob'
+        }).then((response) => {
+            const link = document.createElement('a');
+            const blob = new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const url = URL.createObjectURL(blob);
+
+            link.href = url;
+            link.setAttribute('download', `arizalar_${DateListe[0]}_${DateListe[1]}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+        }).catch((error) => {
+            console.log(error)
+        });
+    };
+    const onChangeDate = (value, dateString) => {
+        setDateListe(dateString)
+    };
 
     function notify() {
         if (sucsessText !== '') {
@@ -478,7 +508,6 @@ function GetList(props) {
 
 
                 </div>
-
             </Modal>
 
             <Drawer
@@ -543,6 +572,28 @@ function GetList(props) {
                     return record.status
                 }}
             />
+
+            <Form form={form1} layout="vertical" ref={formRef} colon={false}
+                  onFinish={onChange}
+            >
+                <Form.Item label="Murojatlarni yuklash mudatini belgilang"
+                           name="MurojatYuklash"
+                           rules={[{
+                               required: true,
+                               message: 'Malumot kiritilishi shart !!!'
+                           },]}>
+                    <DatePicker.RangePicker
+                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
+                </Form.Item>
+                <Form.Item>
+                    <Button className='btn-outline-success p-4 d-flex align-items-center justify-content-center'
+                            htmlType="submit" type="primary"
+                    >
+                        Ma'lumotni yuklash
+                    </Button>
+                </Form.Item>
+
+            </Form>
         </div>
     )
         ;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     UploadOutlined,
     UserOutlined,LineChartOutlined,
@@ -24,6 +24,8 @@ const {Header, Content, Sider} = Layout;
 function AdminOperator(props) {
     const navigate = useNavigate();
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    const [RollName, setRollName] = useState('');
+
 
 
     const items = [
@@ -54,6 +56,18 @@ function AdminOperator(props) {
         },
 
     ];
+    useEffect(()=>{
+        if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
+            setRollName('Operator')
+            console.log('operator')
+        }
+        else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+            setRollName(fulInfo?.department?.name)
+        }
+        else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+            setRollName('Akademik faoliyat va registrator bo‘limi ADMINI')
+        }
+    },[])
 
 
     return (
@@ -101,8 +115,7 @@ function AdminOperator(props) {
                 <Header>
                     <div className='d-flex justify-content-between'>
                         <div className="">
-                            <span className=''
-                            >{fulInfo?.roles[0]}</span>
+                            <span>{RollName}</span>
                         </div>
                         <div className="w-50 d-flex justify-content-end">
                             <span className='mx-2'>{fulInfo?.fullName}</span>
