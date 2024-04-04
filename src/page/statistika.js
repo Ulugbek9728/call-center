@@ -230,7 +230,6 @@ function Statistika(props) {
                     >Ma'lumotni chaqirish
                     </button>
                 </Form.Item>
-
             </Form>
 
 

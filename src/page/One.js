@@ -28,7 +28,13 @@ function One(props) {
     const [messagee, setMessage] = useState('');
     const [sucsessText, setSucsessText] = useState('');
 
-    const [pageSize, setPageSize] = useState();
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 20,
+            total: 100
+        },
+    });
     const [Department, setDepartment] = useState([]);
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
 
@@ -90,7 +96,7 @@ function One(props) {
             setAriza({...ariza, fullName: fulInfo.fullName})
         }
         DepartmenGet()
-        arizaGetList()
+        arizaGetList(1, 10)
     }, [sucsessText, SRC]);
 
     function DepartmenGet() {
@@ -101,12 +107,25 @@ function One(props) {
         });
     }
 
-    function arizaGetList() {
+    function arizaGetList(page, pageSize) {
         axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params: SRC
+            params: {
+                isCome: SRC.isCome,
+                departmentId: SRC.departmentId,
+                status: SRC.status,
+                size: pageSize,
+                page: page-1
+            }
         }).then((response) => {
             setArizaList(response.data.data.content)
+            setTableParams({...tableParams,
+                pagination: {
+                    pageSize:response.data.data.size,
+                    total:response.data.data.totalElements
+                }
+            })
+            console.log(response.data.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -392,7 +411,7 @@ function One(props) {
                     <Select
                         placeholder='Statusini tanlang'
                         style={{
-                            width: 400,
+                            width: 200,
                         }}
                         onChange={(e) => {
                             setSRC({...SRC, status: e})
@@ -710,7 +729,12 @@ function One(props) {
             </Drawer>
 
             <Table
-                columns={columns} pagination={pageSize}
+                columns={columns}
+                pagination={{
+                    total:tableParams.pagination.total,
+                    onChange: (page, pageSize) => {
+                    arizaGetList(page, pageSize);
+                }}}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (

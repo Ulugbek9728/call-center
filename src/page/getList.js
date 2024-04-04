@@ -5,7 +5,6 @@ import {
 } from "antd";
 
 import {
-    CheckCircleOutlined,
     UploadOutlined,
     CaretRightOutlined,
     ArrowRightOutlined,
@@ -15,7 +14,6 @@ import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
 import {toast} from "react-toastify";
-import dayjs from "dayjs";
 
 const {Search} = Input;
 
@@ -25,7 +23,6 @@ function GetList(props) {
     const [form] = Form.useForm();
     const [form1] = Form.useForm();
 
-
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
@@ -33,7 +30,13 @@ function GetList(props) {
     const [sucsessText, setSucsessText] = useState('');
 
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
-    const [pageSize, setPageSize] = useState();
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 20,
+            total: 100
+        },
+    });
     const [ArizaList, setArizaList] = useState([]);
     const [Open, setOpen] = useState(false);
     const [ariza, setAriza] = useState({
@@ -69,7 +72,7 @@ function GetList(props) {
     const [FileDrower, setFileDrower] = useState([]);
     const [open1, setOpen1] = useState(false);
     const [SRC, setSRC] = useState({
-        isCome: true,
+        isCome:true
     });
     const [DateListe, setDateListe] = useState(['', '']);
 
@@ -97,9 +100,8 @@ function GetList(props) {
 
 
     useEffect(() => {
-        arizaGetList()
-        DepartmenGet()
-    }, [sucsessText, SRC]);
+        arizaGetList(1, 10)
+    }, [sucsessText, SRC,]);
 
     useEffect(() => {
         if (arizaSend.exchangeType === "BACK") {
@@ -124,13 +126,25 @@ function GetList(props) {
 
     }, [arizaSend.exchangeType, ariza]);
 
-    function arizaGetList() {
+    function arizaGetList(page, pageSize) {
         axios.get(`${ApiName}/api/application`, {
             headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
-            params: SRC
+            params: {
+                isCome: SRC.isCome,
+                departmentId: SRC.departmentId,
+                status: SRC.status,
+                size: pageSize,
+                page: page-1
+            }
         }).then((response) => {
             setArizaList(response.data.data.content)
-            console.log(response.data.data.content)
+            setTableParams({...tableParams,
+                pagination: {
+                    pageSize:response.data.data.size,
+                    total:response.data.data.totalElements
+                }
+            })
+            console.log(response.data.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -258,6 +272,7 @@ function GetList(props) {
     }
 
     useEffect(() => {
+        DepartmenGet()
         setMessage('')
         setSucsessText('')
         notify();
@@ -288,6 +303,7 @@ function GetList(props) {
         setDateListe(dateString)
     };
 
+
     function notify() {
         if (sucsessText !== '') {
             toast.success(sucsessText)
@@ -310,22 +326,48 @@ function GetList(props) {
                             filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
                             filterSort={(optionA, optionB) =>
                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
-                            options={Department && Department.map((item, index) => (
+                            options={
+                                Department && Department.map((item, index) => (
                                 {
                                     value: item.id,
                                     label: item.name
                                 }))}
                     />
+                    {
+                        fulInfo?.roles?.includes("ROLE_ADMIN") ? <Select
+                            placeholder='Yuborilgna murojat / Kelgan murojat'
+                            style={{
+                                width: 300,
+                            }}
+                            value={SRC.isCome}
+                            onChange={(e) => {setSRC({...SRC, isCome: e})}}
+                            options={[
+                                {
+                                    value: false,
+                                    label: 'Yuborilgna murojat',
+                                },
+                                {
+                                    value: true,
+                                    label: 'Kelgan murojat',
+                                },
+                            ]}
+                        />: ''
+                    }
                     <Select
                         placeholder='Statusini tanlang'
                         style={{
-                            width: 400,
+                            width: 200,
                         }}
+                        value={SRC.status}
                         onChange={(e) => {setSRC({...SRC, status: e})}}
                         options={[
                             {
                                 value: '',
                                 label: 'Hammasi',
+                            },
+                            {
+                                value: "COMMITTED",
+                                label: 'Yaratilgan',
                             },
                             {
                                 value: 'PROGRESS',
@@ -335,12 +377,11 @@ function GetList(props) {
                                 value: 'FINISHED',
                                 label: 'Tugatilgan',
                             },
-                            {
-                                value: "COMMITTED",
-                                label: 'Yaratilgan',
-                            },
+
                         ]}
                     />
+
+
                 </Space>
             </div>
             <Modal className='modalAddNew' footer={null} title="File mazmuni" open={Open} onCancel={() => {
@@ -429,80 +470,83 @@ function GetList(props) {
                             }
                         </div>
 
-
-                        <Segmented
-                            options={[
-                                {
-                                    label: "Javob berish",
-                                    value: "BACK"
-                                },
-                                {
-                                    label: "Boshqa bo'limga o'tkazish",
-                                    value: "SEND"
-                                },
-                            ]}
-                            value={arizaSend.exchangeType}
-                            onChange={(e) => {
-                                setArizaSend({
-                                    ...arizaSend,
-                                    exchangeType: e
-                                })
-                            }} block/>
-                        <Form
-                            form={form} layout="vertical" ref={formRef} colon={false}
-                            onFinish={handleOk}>
-                            {arizaSend.exchangeType === 'BACK' ? '' :
-                                <Form.Item
-                                    label="Markaz / Bo'lim / Fakultet / Kafedra ga yuborish"
-                                    name="Markaz"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Malumot kiritilishi shart !!!'
-                                    },]}>
-                                    <Select className='w-100' showSearch name="Markaz"
-                                            value={arizaSend.toDepartment?.name}
-                                            onChange={(e) => {
-                                                handleChangeDepartme(e)
-                                            }}
-                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
-                                            optionFilterProp="children"
-                                            filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                            filterSort={(optionA, optionB) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            options={Department && Department.map((item, index) => ({
-                                                value: item.id,
-                                                label: item.name
-                                            }))}
-                                    />
-                                </Form.Item>}
-                            <Form.Item
-                                label="Javob mazmuni:"
-                                name="Javob"
-                                rules={[{
-                                    required: true,
-                                    message: 'Malumot kiritilishi shart !!!'
-                                },]}>
+                        {fulInfo?.roles?.includes("ROLE_ADMIN") ? '' :
+                            <div className="">
+                                <Segmented
+                                    options={[
+                                        {
+                                            label: "Javob berish",
+                                            value: "BACK"
+                                        },
+                                        {
+                                            label: "Boshqa bo'limga o'tkazish",
+                                            value: "SEND"
+                                        },
+                                    ]}
+                                    value={arizaSend.exchangeType}
+                                    onChange={(e) => {
+                                        setArizaSend({
+                                            ...arizaSend,
+                                            exchangeType: e
+                                        })
+                                    }} block/>
+                                <Form
+                                    form={form} layout="vertical" ref={formRef} colon={false}
+                                    onFinish={handleOk}>
+                                    {arizaSend.exchangeType === 'BACK' ? '' :
+                                        <Form.Item
+                                            label="Markaz / Bo'lim / Fakultet / Kafedra ga yuborish"
+                                            name="Markaz"
+                                            rules={[{
+                                                required: true,
+                                                message: 'Malumot kiritilishi shart !!!'
+                                            },]}>
+                                            <Select className='w-100' showSearch name="Markaz"
+                                                    value={arizaSend.toDepartment?.name}
+                                                    onChange={(e) => {
+                                                        handleChangeDepartme(e)
+                                                    }}
+                                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                                                    optionFilterProp="children"
+                                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                                    filterSort={(optionA, optionB) =>
+                                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                    }
+                                                    options={Department && Department.map((item, index) => ({
+                                                        value: item.id,
+                                                        label: item.name
+                                                    }))}
+                                            />
+                                        </Form.Item>}
+                                    <Form.Item
+                                        label="Javob mazmuni:"
+                                        name="Javob"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Malumot kiritilishi shart !!!'
+                                        },]}>
                                 <textarea className="form-control mt-2" rows="6" id="comment" name="Javob"
                                           onChange={(e) => {
                                               setArizaSend({...arizaSend, description: e.target.value})
                                           }}
                                 />
-                            </Form.Item>
-                            <Form.Item name='file'>
-                                <Upload name='file' {...propss}>
-                                    <Button icon={<UploadOutlined/>}>File yuklash</Button>
-                                </Upload>
-                            </Form.Item>
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                >
-                                    Ma'lumotni yuborish
-                                </Button>
-                            </Form.Item>
-                        </Form>
+                                    </Form.Item>
+                                    <Form.Item name='file'>
+                                        <Upload name='file' {...propss}>
+                                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
+                                        </Upload>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Button
+                                            type="primary"
+                                            htmlType="submit"
+                                        >
+                                            Ma'lumotni yuborish
+                                        </Button>
+                                    </Form.Item>
+                                </Form>
+                            </div>}
+
 
                     </div>
 
@@ -536,7 +580,13 @@ function GetList(props) {
 
             <Table
                 columns={columns}
-                pagination={pageSize}
+                pagination={{
+
+                    total:tableParams.pagination.total,
+                    onChange: (page, pageSize) => {
+                        arizaGetList(page, pageSize);
+                    }
+            }}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
@@ -596,7 +646,6 @@ function GetList(props) {
             </Form>
         </div>
     )
-        ;
 }
 
 export default GetList;
