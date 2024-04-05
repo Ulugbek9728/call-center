@@ -9,17 +9,34 @@ $mainFont: Josefin Sans;
   margin: 0;
 
   a {
-    text-decoration: none!important;
+    text-decoration: none !important;
   }
 }
 
-.home{
+.home {
   position: relative;
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
+  background: linear-gradient(120deg, rgb(255,255,255)-5%, #ffffff, rgba(2, 163, 109, 0.8));
 
-  background: linear-gradient( 120deg, rgb(255,255,255)-5%, #ffffff, rgba(2, 163, 109, 0.8));
+  .lin {
+    width: 970px;
+    height: 970px;
+    position: absolute;
+    top: 35%;
+    right: -18%;
+    background-image: url("../img/Layer_3.svg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    animation: mymove 350s linear infinite;
+  }
+
+  @keyframes mymove {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 
 
   .navbar {
@@ -40,6 +57,7 @@ $mainFont: Josefin Sans;
   .righte {
     z-index: 1;
     margin-top: 100px;
+
     .title {
       line-height: 120%;
       font-family: $mainFont, sans-serif;
@@ -50,7 +68,7 @@ $mainFont: Josefin Sans;
     .text {
       font-family: $mainFont, sans-serif;
       margin-top: 30px;
-      font-size: 20px;
+      font-size: 25px;
     }
 
     a {
@@ -77,8 +95,20 @@ $mainFont: Josefin Sans;
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1600px) {
   .home{
+    .lin {
+      width: 770px;
+      height: 770px;
+      top: 48%;
+      right: -18%;
+    }
+  }
+
+}
+
+@media (max-width: 1400px) {
+  .home {
     .righte {
       .title {
         font-size: 40px;
@@ -90,13 +120,20 @@ $mainFont: Josefin Sans;
         font-size: 20px;
       }
     }
+
     .gif {
       margin-top: 50px;
     }
   }
 }
+
 @media (max-width: 1200px) {
-  .home{
+  .home {
+    .lin {
+      width: 570px;
+      height: 570px;
+
+    }
     .navbar {
       .navbar-brand {
         img {
@@ -109,22 +146,27 @@ $mainFont: Josefin Sans;
         font-weight: 600;
       }
     }
+
     .righte {
       margin-top: 80px;
+
       .title {
         font-size: 30px;
       }
+
       .text {
 
         margin-top: 20px;
         font-size: 18px;
       }
+
       a {
         padding: 10px 20px;
         border-radius: 5px 15px;
         font-size: 18px;
       }
     }
+
     .gif {
       width: 400px;
       margin-top: 50px;
@@ -132,9 +174,16 @@ $mainFont: Josefin Sans;
     }
   }
 }
+
 @media (max-width: 991px) {
-  .home{
-    background: linear-gradient( 120deg , #ffffff, #ffffff, rgba(2, 163, 109, 0.8)90%);
+  .home {
+    background: linear-gradient(120deg, #ffffff, #ffffff, rgba(2, 163, 109, 0.8) 90%);
+
+    .lin {
+      width: 470px;
+      height: 470px;
+
+    }
     .navbar {
       .navbar-brand {
         img {
@@ -147,30 +196,40 @@ $mainFont: Josefin Sans;
         font-weight: 600;
       }
     }
+
     .righte {
       margin-top: 30px;
+
       .title {
         font-size: 28px;
       }
+
       .text {
         margin-top: 20px;
         font-size: 14px;
       }
+
       a {
         padding: 10px 20px;
         border-radius: 5px 15px;
         font-size: 14px;
       }
     }
+
     .gif {
       width: 280px;
     }
   }
 }
-@media (max-width: 767px) {
-  .home{
-    background: linear-gradient(to top,#ffffff, rgba(2, 163, 109, 0.8)120%);
 
+@media (max-width: 767px) {
+  .home {
+    background: linear-gradient(to top, #ffffff, rgba(2, 163, 109, 0.8) 120%);
+    .lin {
+      width: 370px;
+      height: 370px;
+      top: 13%;
+    }
     .navbar {
       .navbar-brand {
         img {
@@ -183,36 +242,47 @@ $mainFont: Josefin Sans;
         font-weight: 600;
       }
     }
+
     .righte {
       margin-top: 50px;
 
       .title {
         font-size: 28px;
       }
+
       .text {
         margin-top: 20px;
         font-size: 14px;
       }
+
       a {
         padding: 10px 20px;
         border-radius: 5px 15px;
         font-size: 14px;
       }
     }
+
     .gif {
       display: none;
     }
 
   }
 }
-@media (max-width: 440px) {
-  .home{
 
+@media (max-width: 440px) {
+  .home {
+    .lin {
+      width: 270px;
+      height: 270px;
+      top: 10%;
+    }
 
     .righte {
       margin-top: 30px;
-      .kirish{
-        display: block!important;
+
+      .kirish {
+        display: block !important;
+
         a {
           margin-top: 20px;
           padding: 10px 20px;

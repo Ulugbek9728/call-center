@@ -20,16 +20,6 @@ function Navbar(props) {
                         <li className="nav-item">
                             <Link className="nav-link" aria-current="page" to="/">Bosh sahifa</Link>
                         </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Menu1</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Menu2</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Menu3</a>
-                        </li>
-
                     </ul>
                     <div className="d-flex">
                             <a href='#' className="btn btn-outline-success" type="submit">+998(94) 222-21-13</a>

@@ -77,6 +77,7 @@ function Tekshirish(props) {
                 <div className="row">
 
                     <Navbar/>
+                    <div className="lin"/>
 
                     <div className="tekshirish">
                         <div className="left">
@@ -87,6 +88,7 @@ function Tekshirish(props) {
                             </p>
                         </div>
                         <div className="rightebox">
+                            <h2 className='text-center mb-5'>Murojat holatini tekshirish</h2>
                             <Form
                                 layout="vertical"
                                 ref={formRef}
@@ -129,12 +131,9 @@ function Tekshirish(props) {
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <Button
-                                        type="primary"
-                                        htmlType="submit"
-                                    >
+                                    <button type="submit" className='btn btn-primary form-control'>
                                         Tekshirish
-                                    </Button>
+                                    </button>
                                 </Form.Item>
                             </Form>
                         </div>

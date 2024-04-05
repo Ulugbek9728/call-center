@@ -17,8 +17,9 @@ function Home(props) {
             <div className='container'>
                 <div className="row">
 
-                    <Navbar/>
 
+                    <Navbar/>
+                    <div className="lin"/>
                     <div className="col-lg-6 col-md-5 col-12">
                         <img className='gif' src="./Consent.gif" alt=""/>
                     </div>
@@ -45,7 +46,6 @@ function Home(props) {
                         </div>
 
                     </div>
-
                 </div>
 
             </div>
