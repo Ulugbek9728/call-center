@@ -115,14 +115,15 @@ function One(props) {
                 departmentId: SRC.departmentId,
                 status: SRC.status,
                 size: pageSize,
-                page: page-1
+                page: page - 1
             }
         }).then((response) => {
             setArizaList(response.data.data.content)
-            setTableParams({...tableParams,
+            setTableParams({
+                ...tableParams,
                 pagination: {
-                    pageSize:response.data.data.size,
-                    total:response.data.data.totalElements
+                    pageSize: response.data.data.size,
+                    total: response.data.data.totalElements
                 }
             })
             console.log(response.data.data)
@@ -132,14 +133,13 @@ function One(props) {
     }
 
     const handleOk = () => {
-        if (batafsil===true){
+        if (batafsil === true) {
             setTimeout(() => {
                 setOpen(false);
                 setBatafsil(false)
             }, 1000)
-        }
-        else {
-            if (edite===true){
+        } else {
+            if (edite === true) {
                 axios.put(`${ApiName}/api/application/${ariza?.id}`, ariza, {
                     headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
                 }).then((response) => {
@@ -169,8 +169,7 @@ function One(props) {
                     console.log(error)
                     setMessage('File error')
                 })
-            }
-            else{
+            } else {
                 axios.post(`${ApiName}/api/application`, ariza, {
                     headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
                 }).then((response) => {
@@ -248,18 +247,27 @@ function One(props) {
                         setOpen(true)
                     }}><EyeOutlined/></button>
 
-                    <button className='btn btn-warning' onClick={(e) => {
-                        setAriza({
-                            id:item.id,
-                            fullName: item.fullName,
-                            nameInfo: item.nameInfo,
-                            applicationType: item.applicationType,
-                            phone: item.phone,
-                            expDate: item.expDate,
-                            description: item.description,
-                            toDepartment: item.toDepartment,
-                        }); setOpen(true); setEdite(true)
-                    }}><EditOutlined/></button>
+                    <button className="editBtn"
+                            onClick={(e) => {
+                                setAriza({
+                                    id: item.id,
+                                    fullName: item.fullName,
+                                    nameInfo: item.nameInfo,
+                                    applicationType: item.applicationType,
+                                    phone: item.phone,
+                                    expDate: item.expDate,
+                                    description: item.description,
+                                    toDepartment: item.toDepartment,
+                                });
+                                setOpen(true);
+                                setEdite(true)
+                            }}>
+                        <svg height="1em" viewBox="0 0 512 512">
+                            <path
+                                d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"
+                            ></path>
+                        </svg>
+                    </button>
 
                     <Popconfirm
                         title="Murojatni o'chirish"
@@ -267,7 +275,45 @@ function One(props) {
                         onConfirm={(e) => Delete(item.id)}
                         okText="Ha" cancelText="Yo'q"
                     >
-                        <button className='btn btn-danger'><DeleteOutlined/></button>
+                        <button className="delet">
+                            <svg
+                                className="bin-top"
+                                viewBox="0 0 39 7"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <line y1="5" x2="39" y2="5" stroke="white" stroke-width="4"></line>
+                                <line
+                                    x1="12"
+                                    y1="1.5"
+                                    x2="26.0357"
+                                    y2="1.5"
+                                    stroke="white"
+                                    stroke-width="3"
+                                ></line>
+                            </svg>
+                            <svg
+                                className="bin-bottom"
+                                viewBox="0 0 33 39"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <mask id="path-1-inside-1_8_19" fill="white">
+                                    <path
+                                        d="M0 0H33V35C33 37.2091 31.2091 39 29 39H4C1.79086 39 0 37.2091 0 35V0Z"
+                                    ></path>
+                                </mask>
+                                <path
+                                    d="M0 0H33H0ZM37 35C37 39.4183 33.4183 43 29 43H4C-0.418278 43 -4 39.4183 -4 35H4H29H37ZM4 43C-0.418278 43 -4 39.4183 -4 35V0H4V35V43ZM37 0V35C37 39.4183 33.4183 43 29 43V35V0H37Z"
+                                    fill="white"
+                                    mask="url(#path-1-inside-1_8_19)"
+                                ></path>
+                                <path d="M12 6L12 29" stroke="white" stroke-width="4"></path>
+                                <path d="M21 6V29" stroke="white" stroke-width="4"></path>
+                            </svg>
+                        </button>
+
+                        {/*<button className='btn btn-danger'><DeleteOutlined/></button>*/}
                     </Popconfirm>
                 </div>
 
@@ -296,8 +342,7 @@ function One(props) {
                 }).catch((error) => {
                     message.error(`${info.file.name} file delete failed.`);
                 })
-            }
-            else if (info.file.status === "done") {
+            } else if (info.file.status === "done") {
                 ariza.files.push({
                         fileId: info.file.response.id,
                     }
@@ -305,8 +350,7 @@ function One(props) {
 
 
                 message.success(`${info.file.name} File uploaded successfully`);
-            }
-            else if (info.file.status === 'error') {
+            } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} File upload failed.`);
             }
         },
@@ -436,10 +480,17 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button className='btn btn-success' onClick={() => {
-                    setOpen(true)
-                }}>
-                    Murojatni yaratish
+                <button type="button" className="button1"
+                        onClick={() => {
+                            setOpen(true)
+                        }}>
+                    <span className="button__text">Murojatni yaratish</span>
+                    <span className="button__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2"
+                             stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24"
+                             fill="none"
+                             className="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19"
+                                                                                               x1="5"></line></svg></span>
                 </button>
             </div>
             <Modal className='modalAddNew'
@@ -542,7 +593,7 @@ function One(props) {
                                                message: 'Malumot kiritilishi shart !!!'
 
                                            },]}>
-                                <Input type="text"  name="FISH" placeholder="F.I.SH"
+                                <Input type="text" name="FISH" placeholder="F.I.SH"
                                        onChange={(e) => {
                                            setAriza({...ariza, fullName: e.target.value})
                                        }}/>
@@ -562,10 +613,10 @@ function One(props) {
                             </Form.Item>
                             <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
                                        name="MurojatYuboriladigan" rules={[
-                                           {
-                                               required: true,
-                                               message: 'Malumot kiritilishi shart !!!'
-                                           },]}>
+                                {
+                                    required: true,
+                                    message: 'Malumot kiritilishi shart !!!'
+                                },]}>
                                 <Select className='w-100' showSearch name="MurojatYuboriladigan"
                                         onChange={(e) => {
                                             handleChangeDepartme(e)
@@ -589,27 +640,27 @@ function One(props) {
                                         message: 'Malumot kiritilishi shart !!!'
                                     },]}>
                                 <Select name="xujjat" className='w-100'
-                                    onChange={(e) => {
-                                        setAriza({...ariza, applicationType: e})
-                                    }}
-                                    style={{
-                                        width: 120,
-                                    }} allowClear
-                                    options={[
-                                        {
-                                            value: 'Ariza',
+                                        onChange={(e) => {
+                                            setAriza({...ariza, applicationType: e})
+                                        }}
+                                        style={{
+                                            width: 120,
+                                        }} allowClear
+                                        options={[
+                                            {
+                                                value: 'Ariza',
 
-                                        },
-                                        {
-                                            value: 'Bildirgi'
-                                        },
-                                        {
-                                            value: 'Tushuntirish xati',
-                                        },
-                                        {
-                                            value: 'Xat',
-                                        },
-                                    ]}
+                                            },
+                                            {
+                                                value: 'Bildirgi'
+                                            },
+                                            {
+                                                value: 'Tushuntirish xati',
+                                            },
+                                            {
+                                                value: 'Xat',
+                                            },
+                                        ]}
                                 />
                             </Form.Item>
 
@@ -626,20 +677,33 @@ function One(props) {
                                           }}/>
                             </Form.Item>
 
-                            {edite? '' : <Form.Item name='file'>
+                            {edite ? '' : <Form.Item name='file'>
                                 <Upload name='file' {...propsss}>
                                     <Button icon={<UploadOutlined/>}>File yuklash</Button>
                                 </Upload>
                             </Form.Item>}
 
 
-
                             <Form.Item>
-                                <Button className='p-4 d-flex align-items-center justify-content-center'
-                                        type="primary"
-                                        htmlType="submit">
-                                    Ma'lumotni yuborish
-                                </Button>
+                                <button className='button2' type='submit'>
+                                    <div className="svg-wrapper-1">
+                                        <div className="svg-wrapper">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                            >
+                                                <path fill="none" d="M0 0h24v24H0z"></path>
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <span>Ma'lumotni yuborish</span>
+                                </button>
                             </Form.Item>
                         </Form>
                     </div>}
@@ -675,10 +739,18 @@ function One(props) {
                                 </div>
                             </div>
                         </div>
-
-                        <button style={{height: 50, width: 200, position: "absolute", bottom: 60, right: 40}}
-                                className='btn btn-success' onClick={handlePrint}>Yuklab olish / pechat
+                        <button className="button1" type="button"
+                                style={{position: "absolute", bottom: 60, right: 40}}
+                                onClick={handlePrint}>
+                            <span className="button__text">Yuklab olish <br/> pechat qilish</span>
+                            <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35"
+                                                                id="bdd05811-e15d-428c-bb53-8661459f9307"
+                                                                data-name="Layer 2" className="svg"><path
+                                d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
+                                d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
+                                d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
                         </button>
+
                     </div>
 
                     {batafsil ?
@@ -731,10 +803,11 @@ function One(props) {
             <Table
                 columns={columns}
                 pagination={{
-                    total:tableParams.pagination.total,
+                    total: tableParams.pagination.total,
                     onChange: (page, pageSize) => {
-                    arizaGetList(page, pageSize);
-                }}}
+                        arizaGetList(page, pageSize);
+                    }
+                }}
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
@@ -786,11 +859,15 @@ function One(props) {
                         name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button className='btn-outline-success p-4 d-flex align-items-center justify-content-center'
-                            htmlType="submit" type="primary"
-                    >
-                        Ma'lumotni yuklash
-                    </Button>
+                    <button className="button1" type="submit">
+                        <span className="button__text">Ma'lumotni yuklash</span>
+                        <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35"
+                                                            id="bdd05811-e15d-428c-bb53-8661459f9307"
+                                                            data-name="Layer 2" className="svg"><path
+                            d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
+                            d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
+                            d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
+                    </button>
                 </Form.Item>
 
             </Form>

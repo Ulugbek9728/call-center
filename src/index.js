@@ -7,6 +7,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min"
 import {MyRedusers} from "./componenta/MyRedusers";
 import {createStore} from "redux";
 import Provider from "react-redux/es/components/Provider";
+import "./utils/i18n";
+import './style/buttons.scss'
+
 
 const store = createStore(MyRedusers,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 

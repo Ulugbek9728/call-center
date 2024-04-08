@@ -334,7 +334,7 @@ function GetList(props) {
                                 }))}
                     />
                     {
-                        fulInfo?.roles?.includes("ROLE_ADMIN") ? <Select
+                        fulInfo?.roles[0]==="ROLE_ADMIN" ? <Select
                             placeholder='Yuborilgna murojat / Kelgan murojat'
                             style={{
                                 width: 300,
@@ -436,11 +436,18 @@ function GetList(props) {
                                 </div>
                             </div>
                         </div>
-
-                        <button style={{height: 50, width: 200, position: "absolute", bottom: 60, right: 40}}
-                                className='btn btn-success'
-                                onClick={handlePrint}>Yuklab olish / pechat
+                        <button className="button1" type="button"
+                                style={{position: "absolute", bottom: 35, right: 40}}
+                                onClick={handlePrint}>
+                            <span className="button__text">Yuklab olish <br/> pechat qilish</span>
+                            <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35"
+                                                                id="bdd05811-e15d-428c-bb53-8661459f9307"
+                                                                data-name="Layer 2" className="svg"><path
+                                d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
+                                d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
+                                d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
                         </button>
+
                     </div>
 
                     <div className="w-50 px-4">
@@ -470,7 +477,7 @@ function GetList(props) {
                             }
                         </div>
 
-                        {fulInfo?.roles?.includes("ROLE_ADMIN") ? '' :
+                        {fulInfo?.roles[0]==="ROLE_ADMIN" ? '' :
                             <div className="">
                                 <Segmented
                                     options={[
@@ -537,12 +544,25 @@ function GetList(props) {
                                         </Upload>
                                     </Form.Item>
                                     <Form.Item>
-                                        <Button
-                                            type="primary"
-                                            htmlType="submit"
-                                        >
-                                            Ma'lumotni yuborish
-                                        </Button>
+                                        <button className='button2' type='submit'>
+                                            <div className="svg-wrapper-1">
+                                                <div className="svg-wrapper">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        width="24"
+                                                        height="24"
+                                                    >
+                                                        <path fill="none" d="M0 0h24v24H0z"></path>
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span>Ma'lumotni yuborish</span>
+                                        </button>
                                     </Form.Item>
                                 </Form>
                             </div>}
@@ -636,11 +656,15 @@ function GetList(props) {
                         name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button className='btn-outline-success p-4 d-flex align-items-center justify-content-center'
-                            htmlType="submit" type="primary"
-                    >
-                        Ma'lumotni yuklash
-                    </Button>
+                    <button className="button1" type="submit">
+                        <span className="button__text">Ma'lumotni yuklash</span>
+                        <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35"
+                                                            id="bdd05811-e15d-428c-bb53-8661459f9307"
+                                                            data-name="Layer 2" className="svg"><path
+                            d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
+                            d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
+                            d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
+                    </button>
                 </Form.Item>
 
             </Form>

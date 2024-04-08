@@ -5,17 +5,24 @@ import {Button, Form, Input, Drawer,} from 'antd';
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
+import AOS from "aos";
+import {ReactTyped} from "react-typed";
+
 
 
 function Tekshirish(props) {
     const formRef = React.useRef(null);
-
 
     const [messagee, setMessage] = useState('');
     const [sucsessText, setSucsessText] = useState('');
     const [open, setOpen] = useState(false);
     const [response, setResponse] = useState({
         exchangesApp: []
+    });
+
+    useEffect(() => {
+        AOS.init()
+
     });
 
     const onClose = () => {
@@ -77,15 +84,19 @@ function Tekshirish(props) {
                 <div className="row">
 
                     <Navbar/>
+                    <hr/>
                     <div className="lin"/>
 
-                    <div className="tekshirish">
+                    <div className="tekshirish"
+                         data-aos="zoom-in"
+                         data-aos-duration="700"
+                         data-aos-easing="ease-in-sine">
                         <div className="left">
                             <h2>Murojat holatini ko'rish</h2>
 
-                            <p>Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator
-                                bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz.
-                            </p>
+                            <ReactTyped className='text'
+                                        strings={["Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz."]}
+                                        typeSpeed={50}/>
                         </div>
                         <div className="rightebox">
                             <h2 className='text-center mb-5'>Murojat holatini tekshirish</h2>
@@ -131,11 +142,12 @@ function Tekshirish(props) {
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <button type="submit" className='btn btn-primary form-control'>
+                                    <button  className='button mt-4 px-5'>
                                         Tekshirish
                                     </button>
                                 </Form.Item>
                             </Form>
+
                         </div>
 
 

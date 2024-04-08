@@ -1,11 +1,13 @@
 $mainColor: #02A36D;
+$mainFont: Josefin Sans;
+
 
 
 .tekshirish {
   position: relative;
   margin: auto;
   display: flex;
-  align-items: center;
+  //align-items: center;
   justify-content: center;
   width: 80% !important;
   min-height: 600px;
@@ -21,10 +23,13 @@ $mainColor: #02A36D;
     width: 50%;
     padding-right: 30px;
     h2{
+
       text-align: center;
-      margin-bottom: 40px;
+      margin: 80px 0 40px 0;
     }
-    p{
+    .text{
+      font-size: 25px;
+      font-family: $mainFont;
       text-align: justify;
     }
   }
@@ -45,11 +50,6 @@ $mainColor: #02A36D;
       }
     }
 
-    button{
-      height: 45px;
-      margin-top: 20px;
-      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    }
   }
 }
 

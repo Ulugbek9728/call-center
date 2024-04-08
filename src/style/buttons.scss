@@ -1,0 +1,299 @@
+.button {
+  position: relative;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #02A36D;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  &:active {
+    transform: scale(0.96);
+  }
+  &:before {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-repeat: no-repeat;
+  }
+  &:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-repeat: no-repeat;
+  }
+  &:hover:before {
+    top: -70%;
+    background-image: radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #02A36D 20%, transparent 30%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #02A36D 15%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
+    10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+  }
+  &:hover:after {
+    bottom: -70%;
+    background-image: radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #02A36D 15%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%),
+    radial-gradient(circle, #02A36D 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+  }
+}
+
+@keyframes greentopBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
+    40% 90%, 55% 90%, 70% 90%;
+  }
+
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
+    50% 50%, 65% 20%, 90% 30%;
+  }
+
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
+    50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes greenbottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
+    70% -10%, 70% 0%;
+  }
+
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
+    105% 0%;
+  }
+
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
+    110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+
+.button1 {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 200px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #02A36D;
+  background-color: rgba(2, 163, 109, 0.8);
+  &:hover {
+    background: #02A36D;
+  }
+  &:hover .button__text {
+    color: transparent;
+  }
+  &:hover .button__icon {
+    width: 200px;
+    transform: translateX(0);
+  }
+  &:active .button__icon {
+    background-color: #02A36D;
+  }
+  &:active {
+    border: 1px solid #02A36D;
+  }
+  .button__icon,.button__text {
+    transition: all 0.3s;
+  }
+  .button__text {
+    transform: translateX(30px);
+    color: #fff;
+    font-weight: 600;
+  }
+  .button__icon {
+    position: absolute;
+    transform: translateX(159px);
+    height: 100%;
+    width: 39px;
+    background-color: #07885d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: #fff;
+  }
+  .svg {
+    width: 30px;
+    stroke: #fff;
+  }
+}
+
+.delet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 15px;
+  background-color: rgb(255, 95, 95);
+  cursor: pointer;
+  border: none;
+  transition-duration: 0.3s;
+  &:hover .bin-top {
+    transform: rotate(45deg);
+  }
+  &:hover {
+    background-color: rgb(255, 0, 0);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+  .bin-bottom {
+    width: 15px;
+  }
+  .bin-top {
+    width: 17px;
+    transform-origin: right;
+    transition-duration: 0.3s;
+  }
+}
+
+
+.editBtn {
+  width: 55px;
+  height: 55px;
+  border-radius: 15px;
+  border: none;
+  background-color: rgb(204, 171, 50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.123);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  &:hover:before {
+    transform: scale(1);
+  }
+  &:hover:after {
+    transform: scaleX(1);
+    left: 0;
+    transform-origin: right;
+  }
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.336);
+  }
+  &:hover svg {
+    transform: rotate(-15deg) translateX(5px);
+  }
+  &:before{
+    content: "";
+    width: 200%;
+    height: 200%;
+    background-color: rgb(225, 140, 40);
+    position: absolute;
+    z-index: 1;
+    transform: scale(0);
+    transition: all 0.3s;
+    border-radius: 50%;
+    filter: blur(10px);
+  }
+  &:after{
+    content: "";
+    width: 25px;
+    height: 1.5px;
+    position: absolute;
+    bottom: 19px;
+    left: -5px;
+    background-color: white;
+    border-radius: 2px;
+    z-index: 2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease-out;
+  }
+
+  svg {
+    height: 17px;
+    fill: white;
+    z-index: 3;
+    transition: all 0.2s;
+    transform-origin: bottom;
+  }
+}
+
+.button2 {
+  font-family: inherit;
+  font-size: 20px;
+  background: royalblue;
+  color: white;
+  padding: 0.5em 1em;
+  padding-left: 0.9em;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+  &:hover .svg-wrapper {
+    animation: fly-1 0.6s ease-in-out infinite alternate;
+  }
+  &:hover svg {
+    transform: translateX(5em) rotate(45deg) scale(1.1);
+  }
+  &:hover span {
+    transform: translateX(12em);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+  span {
+    display: block;
+    margin-left: 0.3em;
+    transition: all 0.3s ease-in-out;
+  }
+  svg {
+    display: block;
+    transform-origin: center center;
+    transition: transform 0.3s ease-in-out;
+  }
+}
+
+@keyframes fly-1 {
+  from {
+    transform: translateY(0.1em);
+  }
+
+  to {
+    transform: translateY(-0.1em);
+  }
+}
+
+
+
+
