@@ -13,10 +13,9 @@ function Auth(props) {
     const [sucsessText, setSucsessText] = useState('');
 
     const [loading, setLoading] = useState(false);
+    const [login, setLogin] = useState(false);
 
-    window.onload = (event) => {
-        getEmploee()
-    };
+
     function getEmploee() {
         setLoading(true)
         axios.get(`${ApiName}/api/auth/login`, {
@@ -27,7 +26,7 @@ function Auth(props) {
         }).then((response) => {
             if (response.data.isSuccess === true) {
                 setLoading(false)
-
+                setLogin(true)
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
                 if (response.data?.data?.roles[0]==='ROLE_OPERATOR'){
                     navigate("/operator/addFile")
@@ -38,12 +37,10 @@ function Auth(props) {
                 if (response.data?.data?.roles[0]==='ROLE_DEPARTMENT'){
                     navigate("/department/addFileDepartment")
                 }
-
             }
             else {
                 setLoading(false)
                 setMessage(response.data.message)
-
             }
         }).catch((error) => {
             console.log(error);
@@ -52,6 +49,9 @@ function Auth(props) {
 
         })
     }
+    useEffect(() => {
+        getEmploee()
+    }, []);
 
     useEffect(() => {
         setMessage('')

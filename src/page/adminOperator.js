@@ -74,19 +74,19 @@ function AdminOperator(props) {
     var newWindow;
 
     function LogOut() {
-
             openNewWindow(); // Yangi oynani ochish
-            setTimeout(closeWindow, 10); // 0.1 sekunddan so'ng oynani yopish
-
+            setTimeout(closeWindow, 80); // 0.1 sekunddan so'ng oynani yopish
         localStorage.removeItem("myCat");
-        navigate("/")
+
     }
     function openNewWindow() {
         newWindow = window.open('https://hemis.tdtu.uz/dashboard/logout', '_blank');
+
     }
 
     function closeWindow() {
         newWindow.close(); // Yangi oynani yopish
+        navigate("/")
     }
 
 
