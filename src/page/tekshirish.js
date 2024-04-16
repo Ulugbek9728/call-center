@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import Navbar from "../componenta/navbar";
 import "../style/tekshirish.scss"
-import {Button, Form, Input, Drawer,} from 'antd';
+import {Form, Input, Drawer,} from 'antd';
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
 import AOS from "aos";
 import {ReactTyped} from "react-typed";
+import {useTranslation} from "react-i18next";
 
 
 
 function Tekshirish(props) {
+    const { t } = useTranslation();
     const formRef = React.useRef(null);
 
     const [messagee, setMessage] = useState('');
@@ -92,14 +94,14 @@ function Tekshirish(props) {
                          data-aos-duration="700"
                          data-aos-easing="ease-in-sine">
                         <div className="left">
-                            <h2>Murojat holatini ko'rish</h2>
+                            <h2>{t("Home.ViewApplication")}</h2>
 
                             <ReactTyped className='text'
-                                        strings={["Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz."]}
+                                        strings={[t("Home.ViewApplicationText")]}
                                         typeSpeed={50}/>
                         </div>
                         <div className="rightebox">
-                            <h2 className='text-center mb-5'>Murojat holatini tekshirish</h2>
+                            <h2 className='text-center mb-5'>{t("Home.CheckApplication")}</h2>
                             <Form
                                 layout="vertical"
                                 ref={formRef}
@@ -115,12 +117,12 @@ function Tekshirish(props) {
                                 onFinish={Login}
                             >
                                 <Form.Item
-                                    label="Telefon raqami"
+                                    label={t("Home.PhoneNumber")}
                                     name="Telefon"
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Telefon raqam kiritilishi shart !!!'
+                                            message: t("Home.PhoneNumberCheck")
 
                                         },]}>
                                     <Input
@@ -129,12 +131,12 @@ function Tekshirish(props) {
                                 </Form.Item>
 
                                 <Form.Item
-                                    label="Murojat raqami"
+                                    label={t("Home.ApplicationNumber")}
                                     name="Ariza"
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Ariza raqam kiritilishi shart !!!'
+                                            message: t("Home.ApplicationNumberCheck")
                                         },
                                     ]}
                                 >
@@ -143,7 +145,7 @@ function Tekshirish(props) {
 
                                 <Form.Item>
                                     <button  className='button mt-4 px-5'>
-                                        Tekshirish
+                                        {t("Home.CheckButton")}
                                     </button>
                                 </Form.Item>
                             </Form>

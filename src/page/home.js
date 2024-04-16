@@ -6,6 +6,7 @@ import '../style/home.scss'
 import {Link} from "react-router-dom";
 import {ApiName} from "../APIname";
 import {ReactTyped} from "react-typed";
+import {useTranslation} from "react-i18next";
 
 
 function Home(props) {
@@ -13,6 +14,7 @@ function Home(props) {
         AOS.init()
 
     });
+    const { t } = useTranslation();
 
 
     return (
@@ -34,11 +36,11 @@ function Home(props) {
                          data-aos-easing="ease-in-sine">
                         <div className="">
                             <div className="title">
-                                Islom Karimov nomidagi
-                                Toshkent Davlat Texnika Universiteti Registrator bo‘limi platformasi
+                                {t("Home.DepartmentName")}
+
                             </div>
                             <ReactTyped className='text'
-                                        strings={["Akademik faoliyat va registrator bo‘limi universitetning asosiy xizmatlarini talabalarga bir joydan turib tezkor, samarali va shaffof tarzda amalga oshirishdan iborat."]}
+                                        strings={[t('Home.Departmenttext')]}
                                         typeSpeed={50}/>
                         </div>
 
@@ -46,9 +48,11 @@ function Home(props) {
                             {/*/!*${ApiName}*!/  http://localhost:3000/*/}
                             <a className='button'
                                href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=${ApiName}/auth`}>
-                                Sahifaga Kirish</a>
+                                {t("Home.EnterPage")}
+                            </a>
                             <Link className='button' to='/tekshirish'>
-                                Ariza holatini tekshirish</Link>
+                                {t("Home.CheckApplication")}
+                            </Link>
                         </div>
 
                     </div>

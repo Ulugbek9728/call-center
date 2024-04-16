@@ -1,7 +1,18 @@
 {
   "Home": {
     "logo1": "Toshkent Davlat",
-    "logo2":"Texnika Universiteti"
+    "logo2":"Texnika Universiteti",
+    "DepartmentName":"Islom Karimov nomidagi Toshkent Davlat Texnika Universiteti Registrator bo‘limi platformasi",
+    "Departmenttext":"Akademik faoliyat va registrator bo‘limi universitetning asosiy xizmatlarini talabalarga bir joydan turib tezkor, samarali va shaffof tarzda amalga oshiradi.",
+    "EnterPage":"Sahifaga kirish",
+    "CheckApplication":"Murojat holatini tekshirish",
+    "ViewApplication":"Murojat holatini ko'rish",
+    "ViewApplicationText":"Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz.",
+    "PhoneNumber":"Telefon raqam",
+    "PhoneNumberCheck":"Telefon raqam kiritilishi shart !!!",
+    "ApplicationNumber":"Ariza raqam",
+    "ApplicationNumberCheck":"Ariza raqam kiritilishi shart !!!",
+    "CheckButton":"Tekshirish"
 
   }
 }
