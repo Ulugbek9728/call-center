@@ -71,7 +71,8 @@ function AddDeportment(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
             params: {
                 type: employeeType,
-                departmentId: addEmployee?.department?.id
+                departmentId: addEmployee?.department?.id,
+                size:200,
             }
 
         }).then((response) => {

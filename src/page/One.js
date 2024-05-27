@@ -354,6 +354,7 @@ function One(props) {
                 message.error(`${info.file.name} File upload failed.`);
             }
         },
+
     };
 
     useEffect(() => {

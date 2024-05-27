@@ -15,7 +15,11 @@ function Auth(props) {
     const [loading, setLoading] = useState(false);
     const [login, setLogin] = useState(false);
 
+    useEffect(() => {
 
+            getEmploee()
+
+    }, []);
     function getEmploee() {
         setLoading(true)
         axios.get(`${ApiName}/api/auth/login`, {
@@ -49,9 +53,7 @@ function Auth(props) {
 
         })
     }
-    useEffect(() => {
-        getEmploee()
-    }, []);
+
 
     useEffect(() => {
         setMessage('')
