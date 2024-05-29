@@ -45,12 +45,12 @@ function Statistika(props) {
             type: 'pie'
         },
         title: {
-            text: 'Browser market shares. January, 2022',
+            text: "Murojatlar bo'yicha statistika",
             align: 'center',
             marginBottom: 50
         },
         subtitle: {
-            text: 'Click the slices to view versions. Source:',
+            text: '',
             align: 'center',
 
         },

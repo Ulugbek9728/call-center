@@ -282,14 +282,14 @@ function One(props) {
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <line y1="5" x2="39" y2="5" stroke="white" stroke-width="4"></line>
+                                <line y1="5" x2="39" y2="5" stroke="white" strokeWidth="4"></line>
                                 <line
                                     x1="12"
                                     y1="1.5"
                                     x2="26.0357"
                                     y2="1.5"
                                     stroke="white"
-                                    stroke-width="3"
+                                    strokeWidth="3"
                                 ></line>
                             </svg>
                             <svg
@@ -308,8 +308,8 @@ function One(props) {
                                     fill="white"
                                     mask="url(#path-1-inside-1_8_19)"
                                 ></path>
-                                <path d="M12 6L12 29" stroke="white" stroke-width="4"></path>
-                                <path d="M21 6V29" stroke="white" stroke-width="4"></path>
+                                <path d="M12 6L12 29" stroke="white" strokeWidth="4"></path>
+                                <path d="M21 6V29" stroke="white" strokeWidth="4"></path>
                             </svg>
                         </button>
 
@@ -372,17 +372,18 @@ function One(props) {
     }, [batafsil, edite]);
 
     useEffect(() => {
+        notify();
         setMessage('')
         setSucsessText('')
-        notify();
-    }, [message, sucsessText,]);
+
+    }, [messagee, sucsessText,]);
 
     function notify() {
         if (sucsessText !== '') {
             toast.success(sucsessText)
         }
         if (messagee !== '') {
-            toast.error(message)
+            toast.error(messagee)
         }
     }
 
@@ -487,11 +488,15 @@ function One(props) {
                         }}>
                     <span className="button__text">Murojatni yaratish</span>
                     <span className="button__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2"
-                             stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24"
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
+                             strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
                              fill="none"
-                             className="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19"
-                                                                                               x1="5"></line></svg></span>
+                             className="svg">
+                            <line y2="19" y1="5" x2="12" x1="12"/>
+
+                            <line y2="12" y1="12" x2="19" x1="5"/>
+                        </svg>
+                    </span>
                 </button>
             </div>
             <Modal className='modalAddNew'
@@ -805,6 +810,7 @@ function One(props) {
                 columns={columns}
                 pagination={{
                     total: tableParams.pagination.total,
+                    pageSize:20,
                     onChange: (page, pageSize) => {
                         arizaGetList(page, pageSize);
                     }

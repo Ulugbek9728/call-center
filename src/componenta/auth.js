@@ -5,6 +5,8 @@ import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
 import Navbar from "./navbar";
 import Loading from "./loading";
+import bg from "../img/404error1.svg";
+
 
 function Auth(props) {
     const navigate = useNavigate();
@@ -16,10 +18,9 @@ function Auth(props) {
     const [login, setLogin] = useState(false);
 
     useEffect(() => {
-
-            getEmploee()
-
+        return()=> getEmploee()
     }, []);
+
     function getEmploee() {
         setLoading(true)
         axios.get(`${ApiName}/api/auth/login`, {
@@ -32,28 +33,29 @@ function Auth(props) {
                 setLoading(false)
                 setLogin(true)
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
-                if (response.data?.data?.roles[0]==='ROLE_OPERATOR'){
+                if (response.data?.data?.roles[0] === 'ROLE_OPERATOR') {
                     navigate("/operator/addFile")
                 }
-                if (response.data?.data?.roles[0]==='ROLE_ADMIN'){
+                if (response.data?.data?.roles[0] === 'ROLE_RECTOR') {
+                    navigate("/adminRector/getappeals")
+                }
+                if (response.data?.data?.roles[0] === 'ROLE_ADMIN') {
                     navigate("/adminAll/userAdd")
                 }
-                if (response.data?.data?.roles[0]==='ROLE_DEPARTMENT'){
+                if (response.data?.data?.roles[0] === 'ROLE_DEPARTMENT') {
                     navigate("/department/addFileDepartment")
                 }
-            }
-            else {
+            } else {
                 setLoading(false)
                 setMessage(response.data.message)
             }
         }).catch((error) => {
             console.log(error);
             setLoading(false)
-            setMessage("Serverda o'zgartirish olib borilmoqda")
+            setMessage("Loginda xato")
 
         })
     }
-
 
     useEffect(() => {
         setMessage('')
@@ -72,12 +74,12 @@ function Auth(props) {
 
     return (
         <>
-            {loading===true ? <Loading/> :  <div className="home">
+            {loading === true ? <Loading/> : <div className="home">
                 <div className="container">
                     <div className="row d-flex align-items-center justify-content-center">
                         <Navbar/>
 
-                        <img className='w-50' src="./404error1.svg" alt=""/>
+                        <img className='w-50' src={bg} alt=''/>
                     </div>
 
                 </div>

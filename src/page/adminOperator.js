@@ -14,6 +14,7 @@ import One from "./One";
 import AddDeportment from "./addDeportment";
 import GetList from "./getList";
 import Statistika from "./statistika";
+import GetListRector from "./getListRector";
 
 
 const {} = Input;
@@ -25,17 +26,18 @@ function AdminOperator(props) {
     const navigate = useNavigate();
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [RollName, setRollName] = useState('');
+    console.log(fulInfo.roles)
 
 
     const items = [
         {
-            label: "Yuborilgan arizalar",
+            label: "Yuborilgan Murojatlar",
             key: "1",
             icon: <UploadOutlined/>,
             access: ['ROLE_DEPARTMENT', 'ROLE_OPERATOR']
         },
         {
-            label: "Odam qo'shish",
+            label: "Hodim qo'shish",
             key: "1",
             icon: <UserAddOutlined/>,
             access: ['ROLE_ADMIN']
@@ -47,7 +49,20 @@ function AdminOperator(props) {
             access: ['ROLE_ADMIN']
         },
         {
-            label: "Kelgan arizalar",
+            label: "Kelgan Murojatlar",
+            key: "1",
+            icon: <SnippetsOutlined/>,
+            access: [ 'ROLE_RECTOR']
+        },
+        {
+            label: "Hamma Murojatlar ",
+            key: "2",
+            icon: <SnippetsOutlined/>,
+            access: [ 'ROLE_RECTOR']
+        },
+
+        {
+            label: "Kelgan Murojatlar",
             key: "2",
             icon: <DownloadOutlined/>,
             access: ['ROLE_DEPARTMENT']
@@ -66,16 +81,20 @@ function AdminOperator(props) {
             setRollName('Operator')
         } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
             setRollName(fulInfo?.department?.name)
-        } else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+
+        } else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
+            setRollName('Rektorat')
+
+        }else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
             setRollName('Akademik faoliyat va registrator bo‘limi ADMINI')
         }
     }, [])
 
-    var newWindow;
+    let newWindow;
 
     function LogOut() {
             openNewWindow(); // Yangi oynani ochish
-            setTimeout(closeWindow, 80); // 0.1 sekunddan so'ng oynani yopish
+            setTimeout(closeWindow, 100); // 0.1 sekunddan so'ng oynani yopish
         localStorage.removeItem("myCat");
 
     }
@@ -104,12 +123,18 @@ function AdminOperator(props) {
                               } else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/userAdd")
                               }
+                              else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
+                                  navigate("/adminRector/getappeals")
+                              }
 
                           } else if (into.key === "2") {
                               if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/appeals")
                               } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/getFileDepartment")
+                              }
+                              else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
+                                  navigate("/adminRector/appeals")
                               }
                           } else if (into.key === "3") {
                               if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
@@ -120,6 +145,7 @@ function AdminOperator(props) {
                                   navigate("/operator/statistika")
                               }
                           }
+
 
                       }}/>
             </Sider>
@@ -149,7 +175,17 @@ function AdminOperator(props) {
 
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <span style={{height: 40, alignItems: "center", display: "flex"}}
-                                          className='dropdown-item'>{fulInfo?.fullName}</span>
+                                          className='dropdown-item'>{fulInfo?.fullName}
+                                    </span>
+
+                                    <span style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'>
+                                        123
+                                    </span>
+
+                                    <span style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'>
+                                        456
+                                    </span>
+
                                     <a style={{height: 40, alignItems: "center", display: "flex"}}
                                        className='dropdown-item' onClick={LogOut}
                                        href="#">PLATFORMADAN CHIQISH <LogoutOutlined className='mx-4' /></a>
@@ -170,6 +206,7 @@ function AdminOperator(props) {
                         <Route path={"/addFileDepartment"} element={<One/>}/>
                         <Route path={"/getFileDepartment"} element={<GetList/>}/>
                         <Route path={"/appeals"} element={<GetList/>}/>
+                        <Route path={"/getappeals"} element={<GetListRector/>}/>
                         <Route path={"/userAdd"} element={<AddDeportment/>}/>
                         <Route path={"/statistika"} element={<Statistika/>}/>
 

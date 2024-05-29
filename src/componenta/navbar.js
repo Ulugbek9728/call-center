@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 
 import LanguageSwitcher from "./LanguageSwitcher/index.js";
 import { useTranslation } from "react-i18next";
+import bg from "../img/logo.png";
+
 
 
 function Navbar(props) {
@@ -14,7 +16,7 @@ function Navbar(props) {
         <nav className="navbar">
             <div className="container-fluid">
                 <Link to="/" className="navbar-brand">
-                    <img  src="./logo.png" alt=""/>
+                    <img  src={bg} alt=""/>
                     {t("Home.logo1")} <br/> {t("Home.logo2")}
                 </Link>
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">

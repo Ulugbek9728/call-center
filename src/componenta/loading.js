@@ -1,11 +1,13 @@
 import React from 'react';
 import "../style/loading.scss"
+import bg from "../img/logo.png";
+
 
 function Loading(props) {
     return (
         <div className="loding">
             <div className="ring">
-                <img src="/logo.png" alt=""/>
+                <img src={bg} alt=""/>
                 <span></span>
             </div>
         </div>

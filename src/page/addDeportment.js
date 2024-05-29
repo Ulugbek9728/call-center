@@ -10,7 +10,13 @@ const {Search} = Input;
 
 function AddDeportment(props) {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
-    const [pageSize, setPageSize] = useState();
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 20,
+            total: 20
+        },
+    });
 
     const [open, setOpen] = useState(false);
     const [open1, setOpen1] = useState(false);
@@ -25,7 +31,7 @@ function AddDeportment(props) {
 
     useEffect(() => {
         DepartmenGet();
-        user()
+        user(1, 20)
     }, [sucsessText]);
 
     useEffect(() => {
@@ -40,12 +46,22 @@ function AddDeportment(props) {
         });
     }
 
-    function user() {
+    function user(page, pageSize) {
         axios.get(`${ApiName}/api/employee`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
+            params: {
+                size: pageSize,
+                page: page - 1
+            }
         }).then((response) => {
             setUserListe(response.data.content);
-            console.log(response.data.content);
+            setTableParams({
+                ...tableParams,
+                pagination: {
+                    pageSize: response.data.size,
+                    total: response.data.totalElements
+                }
+            })
         }).catch((error) => {
             console.log(error)
         });
@@ -72,7 +88,7 @@ function AddDeportment(props) {
             params: {
                 type: employeeType,
                 departmentId: addEmployee?.department?.id,
-                size:200,
+                size: 200,
             }
 
         }).then((response) => {
@@ -209,7 +225,7 @@ function AddDeportment(props) {
                     <Popconfirm
                         title="Hodimni o'chirish"
                         description="Hodimni o'chirishni tasdiqlaysizmi?"
-                        onConfirm={(e) =>  Delete(item.id)}
+                        onConfirm={(e) => Delete(item.id)}
                         okText="Ha" cancelText="Yo'q"
                     >
                         <button className="delet">
@@ -219,14 +235,14 @@ function AddDeportment(props) {
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <line y1="5" x2="39" y2="5" stroke="white" stroke-width="4"></line>
+                                <line y1="5" x2="39" y2="5" stroke="white" strokeWidth="4"></line>
                                 <line
                                     x1="12"
                                     y1="1.5"
                                     x2="26.0357"
                                     y2="1.5"
                                     stroke="white"
-                                    stroke-width="3"
+                                    strokeWidth="3"
                                 ></line>
                             </svg>
                             <svg
@@ -245,30 +261,34 @@ function AddDeportment(props) {
                                     fill="white"
                                     mask="url(#path-1-inside-1_8_19)"
                                 ></path>
-                                <path d="M12 6L12 29" stroke="white" stroke-width="4"></path>
-                                <path d="M21 6V29" stroke="white" stroke-width="4"></path>
+                                <path d="M12 6L12 29" stroke="white" strokeWidth="4"></path>
+                                <path d="M21 6V29" stroke="white" strokeWidth="4"></path>
                             </svg>
                         </button>
 
-                        {/*<button className='btn btn-danger'><DeleteOutlined/></button>*/}
                     </Popconfirm>
 
-                    {/*<button className='btn btn-outline-danger mx-1'*/}
-                    {/*        onClick={() => {*/}
-                    {/*            setOpen1(true)*/}
-                    {/*            setDeleteID(item.id)*/}
-                    {/*        }}*/}
-                    {/*>*/}
-                    {/*    <DeleteOutlined/>*/}
-                    {/*</button>*/}
+
                 </div>)
 
         },
     ];
 
+    function chengStatusEmployee(e, status) {
+        if (e === true){
+            addEmployee.roles.push(status)
+        }
+        else {
+            const filteredArray = addEmployee?.roles.filter(item => item !== status);
+            setaddEmployee({...addEmployee, roles:filteredArray}
+                )
+        }
+    }
+
+
+
     return (
         <div>
-
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
                     <Search placeholder="F.I.SH bo'yicha qidiruv" allowClear onSearch={onSearch} style={{width: 400,}}/>
@@ -279,22 +299,18 @@ function AddDeportment(props) {
                         }}>
                     <span className="button__text">Hodim yaratish</span>
                     <span className="button__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2"
-                             stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24"
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
+                             strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
                              fill="none"
                              className="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19"
                                                                                                x1="5"></line></svg></span>
                 </button>
             </div>
-
-            <Modal className='w-50'
-                   title={"Hodim qo'shish"} open={open} onOk={handleOk}
-                   onCancel={() => {
-                       setOpen(false);
-                       setemployeeListe([])
-                       setaddEmployee({})
-
-                   }}>
+            <Modal className='w-50' title={"Hodim qo'shish"} open={open} onOk={handleOk} onCancel={() => {
+                setOpen(false);
+                setemployeeListe([]);
+                setaddEmployee({})
+            }}>
                 <form>
                     <label className="form-label">Markaz / Bo'lim / Fakultet / Kafedra</label>
                     <br/>
@@ -361,6 +377,10 @@ function AddDeportment(props) {
                             }}
                             options={[
                                 {
+                                    value: 'ROLE_RECTOR',
+                                    label: "Rektor"
+                                },
+                                {
                                     value: 'ROLE_ADMIN',
                                     label: "Admin"
                                 },
@@ -377,43 +397,54 @@ function AddDeportment(props) {
 
                 </form>
             </Modal>
-
-            <Modal className='w-25'
-                   title={"Hodimni ro'lini o'zgartirish"}
-                   open={open1} onOk={handleOk1}
+            <Modal className='w-25' title={"Hodimni ro'lini o'zgartirish"} open={open1} onOk={handleOk1}
                    onCancel={() => {
                        setOpen1(false);
                    }}>
                 <div className="d-block">
-                        <Switch
-                            checked={addEmployee?.roles?.includes('ROLE_ADMIN')}
-                            onClick={() => {
-                                setaddEmployee({...addEmployee, roles: ['ROLE_ADMIN']})
-                            }}
-                        />
-                        <span>Admin</span> <br/>
-                        <Switch
-                            checked={addEmployee?.roles?.includes('ROLE_OPERATOR')}
-                            onClick={() => {
-                                setaddEmployee({...addEmployee, roles: ['ROLE_OPERATOR']})
-                            }}
-                        />
-                        <span>Operator</span> <br/>
-                        <Switch
-                            checked={addEmployee?.roles?.includes('ROLE_DEPARTMENT')}
-                            onClick={() => {
-                                setaddEmployee({...addEmployee, roles: ['ROLE_DEPARTMENT']})
+                    <Switch
+                        defaultChecked ={addEmployee?.roles?.includes('ROLE_RECTOR')}
+                        onClick={(e) => {
+                            chengStatusEmployee(e, 'ROLE_RECTOR')
+                        }}
+                    />
+                    <span className='mx-3'>Rector</span> <br/>
+                    <Switch
+                        defaultChecked={addEmployee?.roles?.includes('ROLE_ADMIN')}
+                        onClick={(e) => {
+                            chengStatusEmployee(e, 'ROLE_ADMIN')
 
-                            }}
-                        />
-                        <span>Bo'lim admin</span>
-                    </div>
-
+                        }}
+                    />
+                    <span className='mx-3'>Admin</span> <br/>
+                    <Switch
+                        defaultChecked={addEmployee?.roles?.includes('ROLE_OPERATOR')}
+                        onClick={(e) => {
+                            chengStatusEmployee(e, 'ROLE_OPERATOR')
+                        }}
+                    />
+                    <span className='mx-3 '>Operator</span> <br/>
+                    <Switch
+                        defaultChecked={addEmployee?.roles?.includes('ROLE_DEPARTMENT')}
+                        onClick={(e) => {
+                            chengStatusEmployee(e, 'ROLE_DEPARTMENT')
+                        }}
+                    />
+                    <span className='mx-3'>Bo'lim admin</span>
+                </div>
             </Modal>
 
             <Table
                 columns={columns}
-                pagination={pageSize}
+                pagination={
+                    {
+                        total: tableParams.pagination.total,
+                        pageSize: 20,
+                        onChange: (page, pageSize) => {
+                            user(page, pageSize);
+                        }
+                    }
+                }
                 dataSource={userListe?.map(item => {
                     return {...item, key: item.id}
                 })}
