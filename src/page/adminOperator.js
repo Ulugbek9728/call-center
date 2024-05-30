@@ -15,6 +15,8 @@ import AddDeportment from "./addDeportment";
 import GetList from "./getList";
 import Statistika from "./statistika";
 import GetListRector from "./getListRector";
+import axios from "axios";
+import {ApiName} from "../APIname";
 
 
 const {} = Input;
@@ -24,9 +26,8 @@ const {Header, Content, Sider} = Layout;
 
 function AdminOperator(props) {
     const navigate = useNavigate();
-    const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    const [fulInfo,setFulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [RollName, setRollName] = useState('');
-    console.log(fulInfo.roles)
 
 
     const items = [
@@ -77,15 +78,15 @@ function AdminOperator(props) {
 
     ];
     useEffect(() => {
-        if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
+        if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
             setRollName('Operator')
-        } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+        } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
             setRollName(fulInfo?.department?.name)
 
-        } else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
-            setRollName('Rektorat')
+        } else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
+            setRollName('Rektor')
 
-        }else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+        }else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
             setRollName('Akademik faoliyat va registrator bo‘limi ADMINI')
         }
     }, [])
@@ -108,40 +109,70 @@ function AdminOperator(props) {
         navigate("/")
     }
 
+    function changeRole(e) {
+        let value
+        axios.post(`${ApiName}/api/change-role/${e}`,'',
+            {headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}}
+        ).then((res)=>{
+            value={...fulInfo, currentRole:e}
+            localStorage.setItem("myCat", JSON.stringify(value));
+            if (e==='ROLE_OPERATOR'){
+                navigate('/operator/addFile')
+
+            }else if (e==='ROLE_RECTOR'){
+                navigate('/adminRector/getappeals')
+            }
+            else if (e==='ROLE_ADMIN'){
+                navigate('/adminAll/userAdd')
+
+            }
+            else if (e==='ROLE_DEPARTMENT'){
+                navigate('/department/addFileDepartment')
+
+            }
+            window.location.reload()
+
+
+        }).catch((error)=>{
+            console.log(error)
+        })
+    }
+
+
 
     return (
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu mode="inline" defaultSelectedKeys={['1']}
-                      items={items.filter(item => item.access?.includes(fulInfo?.roles[0]))}
+                      items={items.filter(item => item.access?.includes(fulInfo?.currentRole))}
                       onClick={(into) => {
                           if (into.key === "1") {
-                              if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
+                              if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
                                   navigate("/operator/addFile")
-                              } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/department/addFileDepartment")
-                              } else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+                              } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/userAdd")
                               }
-                              else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
+                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
                                   navigate("/adminRector/getappeals")
                               }
 
                           } else if (into.key === "2") {
-                              if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/appeals")
-                              } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/getFileDepartment")
                               }
-                              else if (fulInfo?.roles?.includes("ROLE_RECTOR")) {
+                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
                                   navigate("/adminRector/appeals")
                               }
                           } else if (into.key === "3") {
-                              if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
+                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/statistika")
-                              } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
+                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/statistika")
-                              } else if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
+                              } else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
                                   navigate("/operator/statistika")
                               }
                           }
@@ -149,9 +180,7 @@ function AdminOperator(props) {
 
                       }}/>
             </Sider>
-            <Layout className="site-layout" style={{
-                marginLeft: 220,
-            }}>
+            <Layout className="site-layout" style={{marginLeft: 220,}}>
                 <Header>
                     <div className='d-flex justify-content-between'>
                         <div className="">
@@ -177,14 +206,14 @@ function AdminOperator(props) {
                                     <span style={{height: 40, alignItems: "center", display: "flex"}}
                                           className='dropdown-item'>{fulInfo?.fullName}
                                     </span>
-
-                                    <span style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'>
-                                        123
+                                    {
+                                        fulInfo.roles.map((item,index)=>(
+                                            <span key={index} style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'
+                                            onClick={()=>{changeRole(item)}}>
+                                        {item ==='ROLE_DEPARTMENT'? "BO'LIM ADMIN":item==='ROLE_RECTOR'? 'RECTOR' : item==='ROLE_ADMIN'? 'ADMIN' :item==='ROLE_OPERATOR'? 'OPERATOR' :''}
                                     </span>
-
-                                    <span style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'>
-                                        456
-                                    </span>
+                                        ))
+                                    }
 
                                     <a style={{height: 40, alignItems: "center", display: "flex"}}
                                        className='dropdown-item' onClick={LogOut}

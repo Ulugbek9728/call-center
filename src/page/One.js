@@ -7,13 +7,14 @@ import {
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
-    EyeOutlined, EditOutlined, DeleteOutlined
+    EyeOutlined, CheckOutlined, CloseOutlined
 } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import moment from 'moment';
 
 dayjs.extend(customParseFormat);
 
@@ -46,7 +47,7 @@ function One(props) {
         nameInfo: '[]',
         applicationType: 'Ariza',
         phone: '',
-        expDate: '',
+        expDate: null,
         description: '',
         toDepartment: {
             id: '',
@@ -126,7 +127,6 @@ function One(props) {
                     total: response.data.data.totalElements
                 }
             })
-            console.log(response.data.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -221,7 +221,14 @@ function One(props) {
             render: (item, record, index) => (<>{item.toDepartment?.name}</>),
         },
         {
-            title: 'FISH',
+            title: 'Murojat tasdiqlanganligi',
+            render: (item) => (
+                item.isApproved ? <CheckOutlined style={{fontSize: "20px"}}/> :
+                    <CloseOutlined style={{fontSize: "20px"}}/>
+            )
+        },
+        {
+            title: 'Murojatchi',
             dataIndex: 'fullName',
         },
         {
@@ -316,8 +323,6 @@ function One(props) {
                         {/*<button className='btn btn-danger'><DeleteOutlined/></button>*/}
                     </Popconfirm>
                 </div>
-
-
             )
         },
 
@@ -394,6 +399,7 @@ function One(props) {
 
     const onChangeDate2 = (value, dateString) => {
         setAriza({...ariza, expDate: dateString})
+        console.log(dateString)
     };
 
     const onChangeDate = (value, dateString) => {
@@ -426,19 +432,23 @@ function One(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((res) => {
             console.log(res)
-            setSucsessText("Murojat o'chirildi")
+            if (res.data.isSuccess===true){
+                setSucsessText("Murojat o'chirildi")
+            }
+            else setMessage(res.data.message)
+
         }).catch((error) => {
             console.log(error)
             setMessage("O'chirishda xatolik")
         })
     };
 
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
                     <Select style={{width: 400}}
-                        // showSearch
                             name="MurojatYuboriladigan"
                             onChange={(e) => {
                                 setSRC({...SRC, departmentId: e})
@@ -554,6 +564,10 @@ function One(props) {
                                     name: "text",
                                     value: ariza?.description
                                 },
+                                {
+                                    name: "MurojatchiniDate",
+                                    value: edite || ariza.expDate ? dayjs(new Date(ariza.expDate)) : ariza.expDate
+                                },
                             ]}
                         >
                             <Form.Item
@@ -563,9 +577,13 @@ function One(props) {
                                     required: true,
                                     message: 'Malumot kiritilishi shart !!!'
                                 },]}>
-                                <DatePicker name="MurojatchiniDate"
-                                            style={{width: '100%',}}
-                                            disabledDate={disabledDate} onChange={onChangeDate2}/>
+                                <DatePicker
+                                    name="MurojatchiniDate"
+                                    format="YYYY-MM-DD"
+                                    style={{width: '100%'}}
+                                    disabledDate={disabledDate}
+                                    onChange={onChangeDate2}
+                                />
                             </Form.Item>
 
 
@@ -740,7 +758,7 @@ function One(props) {
                                     {ariza.phone}
                                 </div>
                                 <div>
-                                    <b>Murojatch raqami:</b> <br/>
+                                    <b>Murojat raqami:</b> <br/>
                                     {ariza.id}
                                 </div>
                             </div>
@@ -810,7 +828,7 @@ function One(props) {
                 columns={columns}
                 pagination={{
                     total: tableParams.pagination.total,
-                    pageSize:20,
+                    pageSize: 20,
                     onChange: (page, pageSize) => {
                         arizaGetList(page, pageSize);
                     }

@@ -33,16 +33,17 @@ function Auth(props) {
                 setLoading(false)
                 setLogin(true)
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
-                if (response.data?.data?.roles[0] === 'ROLE_OPERATOR') {
+                console.log(response.data.data)
+                if (response.data?.data?.currentRole === 'ROLE_OPERATOR') {
                     navigate("/operator/addFile")
                 }
-                if (response.data?.data?.roles[0] === 'ROLE_RECTOR') {
+                if (response.data?.data?.currentRole === 'ROLE_RECTOR') {
                     navigate("/adminRector/getappeals")
                 }
-                if (response.data?.data?.roles[0] === 'ROLE_ADMIN') {
+                if (response.data?.data?.currentRole === 'ROLE_ADMIN') {
                     navigate("/adminAll/userAdd")
                 }
-                if (response.data?.data?.roles[0] === 'ROLE_DEPARTMENT') {
+                if (response.data?.data?.currentRole === 'ROLE_DEPARTMENT') {
                     navigate("/department/addFileDepartment")
                 }
             } else {

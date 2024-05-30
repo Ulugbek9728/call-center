@@ -154,7 +154,6 @@ function GetList(props) {
     }
 
     const columns = [
-
         {
             title: '№',
             width: 50,
@@ -177,7 +176,7 @@ function GetList(props) {
             )
         },
         {
-            title: 'Murojatchi FISH',
+            title: 'Murojatchi',
             dataIndex: 'fullName',
         },
 
@@ -314,6 +313,7 @@ function GetList(props) {
         }
     }
 
+    console.log(fulInfo?.currentRole)
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -336,7 +336,8 @@ function GetList(props) {
                                     }))}
                     />
                     {
-                        fulInfo?.roles[0] === "ROLE_ADMIN" || "ROLE_RECTOR" ? <Select
+                        fulInfo?.currentRole !== "ROLE_DEPARTMENT" ?
+                            <Select
                             placeholder='Yuborilgna murojat / Kelgan murojat'
                             style={{
                                 width: 300,
@@ -435,7 +436,7 @@ function GetList(props) {
                                     {ariza.phone}
                                 </div>
                                 <div>
-                                    <b>Murojatch raqami:</b> <br/>
+                                    <b>Murojat raqami:</b> <br/>
                                     {ariza.id}
                                 </div>
                             </div>
@@ -481,7 +482,7 @@ function GetList(props) {
                             }
                         </div>
 
-                        {fulInfo?.roles[0] === "ROLE_ADMIN" || "ROLE_RECTOR" ? '' :
+                        {fulInfo?.currentRole === "ROLE_DEPARTMENT" ?
                             <div className="">
                                 <Segmented
                                     options={[
@@ -569,7 +570,7 @@ function GetList(props) {
                                         </button>
                                     </Form.Item>
                                 </Form>
-                            </div>}
+                            </div>:''}
                     </div>
 
                 </div>

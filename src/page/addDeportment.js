@@ -137,12 +137,15 @@ function AddDeportment(props) {
         })
     };
     const handleOk1 = () => {
-
+        let value
         axios.put(`${ApiName}/api/employee`, {profileId: addEmployee.id, roles: addEmployee.roles}, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
             setSucsessText("Hodim roli o'zgardi")
             setOpen1(false);
+            value={...fulInfo, roles:addEmployee.roles}
+            localStorage.setItem("myCat", JSON.stringify(value));
+            window.location.reload()
 
         }).catch((error) => {
             console.log(error)
@@ -196,7 +199,7 @@ function AddDeportment(props) {
             width: 300,
         },
         {
-            title: 'FISH',
+            title: 'Hodim F.I.SH',
             dataIndex: 'fullName',
         },
 
@@ -284,7 +287,6 @@ function AddDeportment(props) {
                 )
         }
     }
-
 
 
     return (
@@ -397,13 +399,14 @@ function AddDeportment(props) {
 
                 </form>
             </Modal>
-            <Modal className='w-25' title={"Hodimni ro'lini o'zgartirish"} open={open1} onOk={handleOk1}
-                   onCancel={() => {
-                       setOpen1(false);
-                   }}>
+            {open1 ? (<Modal className='w-25' title={"Hodimni ro'lini o'zgartirish"} open={open1} onOk={handleOk1}
+                     onCancel={() => {
+                         setOpen1(false);
+                         setaddEmployee({})
+                     }}>
                 <div className="d-block">
                     <Switch
-                        defaultChecked ={addEmployee?.roles?.includes('ROLE_RECTOR')}
+                        defaultChecked={addEmployee?.roles?.includes('ROLE_RECTOR')}
                         onClick={(e) => {
                             chengStatusEmployee(e, 'ROLE_RECTOR')
                         }}
@@ -413,7 +416,6 @@ function AddDeportment(props) {
                         defaultChecked={addEmployee?.roles?.includes('ROLE_ADMIN')}
                         onClick={(e) => {
                             chengStatusEmployee(e, 'ROLE_ADMIN')
-
                         }}
                     />
                     <span className='mx-3'>Admin</span> <br/>
@@ -432,7 +434,7 @@ function AddDeportment(props) {
                     />
                     <span className='mx-3'>Bo'lim admin</span>
                 </div>
-            </Modal>
+            </Modal>) : null}
 
             <Table
                 columns={columns}

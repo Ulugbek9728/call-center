@@ -143,7 +143,7 @@ function GetListRector(props) {
         },
 
         {
-            title: 'FISH',
+            title: 'Murojatchi',
             dataIndex: 'fullName',
         },
         {
@@ -279,7 +279,7 @@ function GetListRector(props) {
                                     {ariza.phone}
                                 </div>
                                 <div>
-                                    <b>Murojatch raqami:</b> <br/>
+                                    <b>Murojat raqami:</b> <br/>
                                     {ariza.id}
                                 </div>
                             </div>
