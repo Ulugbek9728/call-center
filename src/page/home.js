@@ -28,17 +28,17 @@ function Home(props) {
                     <hr/>
                     <div className="lin"/>
                     <div className="col-lg-6 col-md-5 col-12">
-                        <img className='gif' src="./Consent.gif" alt=""/>
+                        <img className='gif' src="./Consent.gif" alt="gif"/>
                     </div>
                     <div className="col-lg-6 col-md-7 col-12 righte"
                          data-aos="zoom-in"
                          data-aos-duration="700"
                          data-aos-easing="ease-in-sine">
                         <div className="">
-                            <div className="title">
+                            <h1 className="title">
                                 {t("Home.DepartmentName")}
 
-                            </div>
+                            </h1>
                             <ReactTyped className='text'
                                         strings={[t('Home.Departmenttext')]}
                                         typeSpeed={50}/>
@@ -47,7 +47,7 @@ function Home(props) {
                         <div className="d-flex justify-content-between kirish">
                             {/*/!*${ApiName}*!/  http://localhost:3000/*/}
                             <a className='button'
-                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth`}>
+                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=${ApiName}/auth`}>
                                 {t("Home.EnterPage")}
                             </a>
                             <Link className='button' to='/tekshirish'>

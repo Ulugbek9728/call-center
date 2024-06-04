@@ -7,14 +7,13 @@ import {
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
-    EyeOutlined, CheckOutlined, CloseOutlined
+    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined
 } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import moment from 'moment';
 
 dayjs.extend(customParseFormat);
 
@@ -127,6 +126,7 @@ function One(props) {
                     total: response.data.data.totalElements
                 }
             })
+            console.log(response)
         }).catch((error) => {
             console.log(error)
         });
@@ -500,10 +500,8 @@ function One(props) {
                     <span className="button__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
                              strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
-                             fill="none"
-                             className="svg">
+                             fill="none" className="svg">
                             <line y2="19" y1="5" x2="12" x1="12"/>
-
                             <line y2="12" y1="12" x2="19" x1="5"/>
                         </svg>
                     </span>
@@ -739,7 +737,7 @@ function One(props) {
                                     <div className="w-50"></div>
                                     <div className="w-50">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                        M.S.Turabdjanov ga <span>
+                                        S.M.Turabdjanovga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
                                             } {ariza.fullName}
@@ -787,8 +785,11 @@ function One(props) {
                                                 setFileDrower(item)
                                                 setOpen1(true)
                                             }}>
-                                                <h6 className="mb-0">
-                                                    {item.exchangeApp.department.name}
+                                                <h6 className="mb-0 d-flex justify-content-between">
+                                                    <p className='w-50 px-3'>{item.exchangeApp.department.name} </p>
+                                                    <ArrowRightOutlined/>
+                                                    <p className='w-50 px-3'> {item.exchangeApp.toDepartment.name}</p>
+
                                                 </h6>
                                                 <CaretRightOutlined/>
                                             </div>

@@ -1,5 +1,7 @@
 $mainColor: #02A36D;
 $mainFont: Josefin Sans;
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Exo:ital,wght@1,500&family=Josefin+Sans&display=swap');
+
 
 
 
@@ -23,7 +25,8 @@ $mainFont: Josefin Sans;
     width: 50%;
     padding-right: 30px;
     h2{
-
+      font-family: $mainFont;
+      font-weight: 700;
       text-align: center;
       margin: 80px 0 40px 0;
     }
@@ -36,6 +39,10 @@ $mainFont: Josefin Sans;
   .rightebox{
     width: 50%;
     padding-left: 30px;
+    h2{
+      font-family: $mainFont;
+      font-weight: 700;
+    }
 
     input{
       height: 45px;

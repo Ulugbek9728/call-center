@@ -18,7 +18,7 @@ function Auth(props) {
     const [login, setLogin] = useState(false);
 
     useEffect(() => {
-        return()=> getEmploee()
+        getEmploee()
     }, []);
 
     function getEmploee() {
@@ -80,7 +80,7 @@ function Auth(props) {
                     <div className="row d-flex align-items-center justify-content-center">
                         <Navbar/>
 
-                        <img className='w-50' src={bg} alt=''/>
+                        <img className='w-50' src={bg} alt='gif'/>
                     </div>
 
                 </div>

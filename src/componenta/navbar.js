@@ -16,8 +16,11 @@ function Navbar(props) {
         <nav className="navbar">
             <div className="container-fluid">
                 <Link to="/" className="navbar-brand">
-                    <img  src={bg} alt=""/>
-                    {t("Home.logo1")} <br/> {t("Home.logo2")}
+                    <img  src={bg} alt="logo"/>
+                    <h2 >
+                        {t("Home.logo1")} <br/> {t("Home.logo2")}
+                    </h2>
+
                 </Link>
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                     <li className="nav-item">

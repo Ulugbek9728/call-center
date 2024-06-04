@@ -26,7 +26,7 @@ const {Header, Content, Sider} = Layout;
 
 function AdminOperator(props) {
     const navigate = useNavigate();
-    const [fulInfo,setFulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
+    const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [RollName, setRollName] = useState('');
 
 
@@ -87,7 +87,7 @@ function AdminOperator(props) {
             setRollName('Rektor')
 
         }else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-            setRollName('Akademik faoliyat va registrator bo‘limi ADMINI')
+            setRollName('ADMINI')
         }
     }, [])
 
@@ -109,24 +109,27 @@ function AdminOperator(props) {
         navigate("/")
     }
 
+    console.log(fulInfo)
     function changeRole(e) {
         let value
         axios.post(`${ApiName}/api/change-role/${e}`,'',
             {headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}}
         ).then((res)=>{
-            value={...fulInfo, currentRole:e}
+            console.log(res)
+            value={...fulInfo,
+                currentRole:e,
+                accessToken:res?.data?.data?.accessToken
+            }
             localStorage.setItem("myCat", JSON.stringify(value));
-            if (e==='ROLE_OPERATOR'){
+            if (e === 'ROLE_OPERATOR') {
                 navigate('/operator/addFile')
 
-            }else if (e==='ROLE_RECTOR'){
+            } else if (e === 'ROLE_RECTOR') {
                 navigate('/adminRector/getappeals')
-            }
-            else if (e==='ROLE_ADMIN'){
+            } else if (e === 'ROLE_ADMIN') {
                 navigate('/adminAll/userAdd')
 
-            }
-            else if (e==='ROLE_DEPARTMENT'){
+            } else if (e === 'ROLE_DEPARTMENT') {
                 navigate('/department/addFileDepartment')
 
             }
@@ -137,7 +140,6 @@ function AdminOperator(props) {
             console.log(error)
         })
     }
-
 
 
     return (
@@ -198,7 +200,7 @@ function AdminOperator(props) {
                                         :
                                         <div className="btn btn-secondary dropdown-toggle img p-0"
                                              id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                             aria-expanded="false"><img width={50} src={fulInfo?.imageUrl} alt=""/>
+                                             aria-expanded="false"><img width={50} src={fulInfo?.imageUrl} alt="userImg"/>
                                         </div>
                                 }
 
@@ -207,7 +209,7 @@ function AdminOperator(props) {
                                           className='dropdown-item'>{fulInfo?.fullName}
                                     </span>
                                     {
-                                        fulInfo.roles.map((item,index)=>(
+                                        fulInfo?.roles.map((item,index)=>(
                                             <span key={index} style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'
                                             onClick={()=>{changeRole(item)}}>
                                         {item ==='ROLE_DEPARTMENT'? "BO'LIM ADMIN":item==='ROLE_RECTOR'? 'RECTOR' : item==='ROLE_ADMIN'? 'ADMIN' :item==='ROLE_OPERATOR'? 'OPERATOR' :''}

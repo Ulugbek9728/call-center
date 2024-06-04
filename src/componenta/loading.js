@@ -7,7 +7,7 @@ function Loading(props) {
     return (
         <div className="loding">
             <div className="ring">
-                <img src={bg} alt=""/>
+                <img src={bg} alt="logo"/>
                 <span></span>
             </div>
         </div>

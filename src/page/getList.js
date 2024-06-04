@@ -176,6 +176,10 @@ function GetList(props) {
             )
         },
         {
+            title: 'File ID raqami',
+            dataIndex: 'id',
+        },
+        {
             title: 'Murojatchi',
             dataIndex: 'fullName',
         },
@@ -313,12 +317,12 @@ function GetList(props) {
         }
     }
 
-    console.log(fulInfo?.currentRole)
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
                     <Select style={{width: 400}}
+                            showSearch
                             name="MurojatYuboriladigan"
                             onChange={(e) => {
                                 setSRC({...SRC, departmentId: e})
@@ -417,7 +421,7 @@ function GetList(props) {
                                     <div className="w-50"></div>
                                     <div className="w-50">
                                         Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
-                                        M.S.Turabdjanov ga <span>
+                                        S.M.Turabdjanovga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
                                             } {ariza.fullName}

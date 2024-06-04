@@ -48,13 +48,13 @@ function AddDeportment(props) {
 
     function user(page, pageSize) {
         axios.get(`${ApiName}/api/employee`, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
             params: {
                 size: pageSize,
                 page: page - 1
             }
         }).then((response) => {
-            setUserListe(response.data.content);
+            setUserListe(response?.data?.content);
             setTableParams({
                 ...tableParams,
                 pagination: {
@@ -69,7 +69,7 @@ function AddDeportment(props) {
 
     const onSearch = (value, _e, info) => {
         axios.get(`${ApiName}/api/employee`, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
             params: {
                 search: value
             }
@@ -84,7 +84,7 @@ function AddDeportment(props) {
 
     const EmployeeGet = () => {
         axios.get(`${ApiName}/api/employee/search`, {
-            headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
             params: {
                 type: employeeType,
                 departmentId: addEmployee?.department?.id,
