@@ -109,7 +109,6 @@ function AdminOperator(props) {
         navigate("/")
     }
 
-    console.log(fulInfo)
     function changeRole(e) {
         let value
         axios.post(`${ApiName}/api/change-role/${e}`,'',
@@ -160,7 +159,8 @@ function AdminOperator(props) {
                                   navigate("/adminRector/getappeals")
                               }
 
-                          } else if (into.key === "2") {
+                          }
+                          else if (into.key === "2") {
                               if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/appeals")
                               } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
@@ -240,7 +240,6 @@ function AdminOperator(props) {
                         <Route path={"/getappeals"} element={<GetListRector/>}/>
                         <Route path={"/userAdd"} element={<AddDeportment/>}/>
                         <Route path={"/statistika"} element={<Statistika/>}/>
-
                     </Routes>
                 </Content>
             </Layout>

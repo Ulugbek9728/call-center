@@ -259,7 +259,7 @@ function GetListRector(props) {
                                 <div className="d-flex">
                                     <div className="w-50"></div>
                                     <div className="w-50">
-                                        Islom karimov nomidagi Toshkent davlat texnika universiteti rektori
+                                        Islom Karimov nomidagi Toshkent davlat texnika universiteti rektori akademik
                                         S.M.Turabdjanovga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)

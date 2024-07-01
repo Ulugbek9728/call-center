@@ -137,23 +137,34 @@ function AddDeportment(props) {
         })
     };
     const handleOk1 = () => {
-        let value
+
         axios.put(`${ApiName}/api/employee`, {profileId: addEmployee.id, roles: addEmployee.roles}, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
-            setSucsessText("Hodim roli o'zgardi")
-            setOpen1(false);
-            value={...fulInfo, roles:addEmployee.roles}
-            localStorage.setItem("myCat", JSON.stringify(value));
-            window.location.reload()
 
+            setOpen1(false);
+            EmployeeGet()
+            getRoleUser()
         }).catch((error) => {
             console.log(error)
             setMessage("error Edite")
         })
-
-
     };
+    console.log(fulInfo)
+    function getRoleUser() {
+        let value
+
+        axios.get(`${ApiName}/api/employee/current`, {
+            headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`},
+        }).then((response) => {
+            value={...fulInfo, roles:response.data.data.roles}
+            localStorage.setItem("myCat", JSON.stringify(value));
+            window.location.reload()
+        }).catch((error) => {
+            console.log(error)
+        });
+
+    }
     const Delete = (e) => {
         axios.delete(`${ApiName}/api/employee/${e}`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
@@ -202,7 +213,6 @@ function AddDeportment(props) {
             title: 'Hodim F.I.SH',
             dataIndex: 'fullName',
         },
-
         {
             title: 'Rasm',
             render: (item, record, index) => (
@@ -226,8 +236,7 @@ function AddDeportment(props) {
                     </button>
 
                     <Popconfirm
-                        title="Hodimni o'chirish"
-                        description="Hodimni o'chirishni tasdiqlaysizmi?"
+                        title="Hodimni o'chirish" description="Hodimni o'chirishni tasdiqlaysizmi?"
                         onConfirm={(e) => Delete(item.id)}
                         okText="Ha" cancelText="Yo'q"
                     >

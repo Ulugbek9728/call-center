@@ -21,7 +21,6 @@ function App() {
             <Route path={"/department/*"} element={ <AdminOperator/>}/>
             <Route path={"/adminAll/*"} element={ <AdminOperator/>}/>
             <Route path={"/adminRector/*"} element={ <AdminOperator/>}/>
-            {/*<Route path={"*"} element={ <Auth/>}/>*/}
 
         </Routes>
     </div>
