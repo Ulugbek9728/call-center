@@ -129,9 +129,9 @@
     transition: all 0.3s;
   }
   .button__text {
-    transform: translateX(30px);
     color: #fff;
     font-weight: 600;
+    width: 70%;
   }
   .button__icon {
     position: absolute;
@@ -245,7 +245,69 @@
     transform-origin: bottom;
   }
 }
+.editBtnSmoll {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  border: none;
+  background-color: rgb(204, 171, 50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.123);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  &:hover:before {
+    transform: scale(1);
+  }
+  &:hover:after {
+    transform: scaleX(1);
+    left: 0;
+    transform-origin: right;
+  }
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.336);
+  }
+  &:hover svg {
+    transform: rotate(-15deg) translateX(5px);
+  }
+  &:before{
+    content: "";
+    width: 200%;
+    height: 200%;
+    background-color: rgb(225, 140, 40);
+    position: absolute;
+    z-index: 1;
+    transform: scale(0);
+    transition: all 0.3s;
+    border-radius: 50%;
+    filter: blur(10px);
+  }
+  &:after{
+    content: "";
+    width: 20px;
+    height: 1px;
+    position: absolute;
+    bottom: 10px;
+    left: -20px;
+    background-color: white;
+    border-radius: 1px;
+    z-index: 2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease-out;
+  }
 
+  svg {
+    height: 15px;
+    fill: white;
+    z-index: 3;
+    transition: all 0.2s;
+    transform-origin: bottom;
+  }
+}
 .button2 {
   font-family: inherit;
   font-size: 20px;

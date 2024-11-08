@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {
     UploadOutlined,
-    UserOutlined, LineChartOutlined,
-    DownloadOutlined, UserAddOutlined, SnippetsOutlined, LogoutOutlined
+    UserOutlined, LineChartOutlined,CheckSquareOutlined,
+    DownloadOutlined, UserAddOutlined, SnippetsOutlined, LogoutOutlined,
 } from '@ant-design/icons';
 
 
@@ -17,6 +17,7 @@ import Statistika from "./statistika";
 import GetListRector from "./getListRector";
 import axios from "axios";
 import {ApiName} from "../APIname";
+import TypeService from "./TypeService";
 
 
 const {} = Input;
@@ -30,10 +31,17 @@ function AdminOperator(props) {
     const [RollName, setRollName] = useState('');
 
 
+
     const items = [
         {
-            label: "Yuborilgan Murojatlar",
+            label: "Joyida xal qilingan murojatlar",
             key: "1",
+            icon: <CheckSquareOutlined />,
+            access: ['ROLE_OPERATOR']
+        },
+        {
+            label: "Yuborilgan murojatlar",
+            key: "2",
             icon: <UploadOutlined/>,
             access: ['ROLE_DEPARTMENT', 'ROLE_OPERATOR']
         },
@@ -61,14 +69,12 @@ function AdminOperator(props) {
             icon: <SnippetsOutlined/>,
             access: [ 'ROLE_RECTOR']
         },
-
         {
             label: "Kelgan Murojatlar",
             key: "2",
             icon: <DownloadOutlined/>,
             access: ['ROLE_DEPARTMENT']
         },
-
         {
             label: "Statistika",
             key: "3",
@@ -121,7 +127,7 @@ function AdminOperator(props) {
             }
             localStorage.setItem("myCat", JSON.stringify(value));
             if (e === 'ROLE_OPERATOR') {
-                navigate('/operator/addFile')
+                navigate('/operator/TypeService')
 
             } else if (e === 'ROLE_RECTOR') {
                 navigate('/adminRector/getappeals')
@@ -149,7 +155,7 @@ function AdminOperator(props) {
                       onClick={(into) => {
                           if (into.key === "1") {
                               if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
-                                  navigate("/operator/addFile")
+                                  navigate("/operator/TypeService")
                               } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/department/addFileDepartment")
                               } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
@@ -163,7 +169,11 @@ function AdminOperator(props) {
                           else if (into.key === "2") {
                               if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/appeals")
-                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
+                              }
+                              else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
+                                  navigate("/operator/addFile")
+                              }
+                              else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/getFileDepartment")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
@@ -233,6 +243,7 @@ function AdminOperator(props) {
                     overflow: 'initial',
                 }}>
                     <Routes>
+                        <Route path={"/TypeService"} element={<TypeService/>}/>
                         <Route path={"/addFile"} element={<One/>}/>
                         <Route path={"/addFileDepartment"} element={<One/>}/>
                         <Route path={"/getFileDepartment"} element={<GetList/>}/>

@@ -3,11 +3,11 @@ import {useReactToPrint} from 'react-to-print';
 
 import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
-    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input
+    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input, Divider
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
-    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined
+    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined, PlusOutlined
 } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
@@ -94,7 +94,7 @@ function One(props) {
             setAriza({...ariza, fullName: fulInfo.fullName})
         }
         DepartmenGet()
-        arizaGetList(1, 10)
+        arizaGetList(1, 20)
     }, [sucsessText, SRC]);
 
     function DepartmenGet() {
@@ -124,7 +124,6 @@ function One(props) {
                     total: response.data.data.totalElements
                 }
             })
-            console.log(response)
         }).catch((error) => {
             console.log(error)
         });
@@ -163,9 +162,14 @@ function One(props) {
                         files: []
                     })
                     setEdite(false)
+                    if (response?.data?.isSuccess === true) {
+                        setSucsessText("Murojat o'zgardi")
+                    } else {
+                        setMessage(response?.data?.message)
+                    }
                 }).catch((error) => {
                     console.log(error)
-                    setMessage('File error')
+                    setMessage(error?.response?.data?.message)
                 })
             } else {
                 axios.post(`${ApiName}/api/application`, ariza, {
@@ -198,8 +202,6 @@ function One(props) {
                 })
             }
         }
-
-
     };
 
     const columns = [
@@ -337,7 +339,6 @@ function One(props) {
             if (info.file.status === 'removed') {
                 const result = ariza.files.filter((idAll) => idAll?.id !== info?.file?.response?.id);
                 setAriza({...ariza, files: result})
-
                 axios.delete(`${ApiName}/api/v1/attach/${info?.file?.response?.id}`, {
                     headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
                 }).then((res) => {
@@ -350,8 +351,6 @@ function One(props) {
                         fileId: info.file.response.id,
                     }
                 )
-
-
                 message.success(`${info.file.name} File uploaded successfully`);
             } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} File upload failed.`);
@@ -363,7 +362,6 @@ function One(props) {
     useEffect(() => {
         const date = new Date();
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
-
         if (batafsil || edite === true) {
             const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options);
             setDatee(formattedDate)
@@ -378,7 +376,6 @@ function One(props) {
         notify();
         setMessage('')
         setSucsessText('')
-
     }, [messagee, sucsessText,]);
 
     function notify() {
@@ -397,7 +394,6 @@ function One(props) {
 
     const onChangeDate2 = (value, dateString) => {
         setAriza({...ariza, expDate: dateString})
-        console.log(dateString)
     };
 
     const onChangeDate = (value, dateString) => {
@@ -430,17 +426,14 @@ function One(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((res) => {
             console.log(res)
-            if (res.data.isSuccess===true){
+            if (res.data.isSuccess === true) {
                 setSucsessText("Murojat o'chirildi")
-            }
-            else setMessage(res.data.message)
-
+            } else setMessage(res.data.message)
         }).catch((error) => {
             console.log(error)
             setMessage("O'chirishda xatolik")
         })
     };
-
 
     return (
         <div>
@@ -490,12 +483,12 @@ function One(props) {
                         ]}
                     />
                 </Space>
-                <button type="button" className="button1"
-                        onClick={() => {
-                            setOpen(true)
-                        }}>
-                    <span className="button__text">Murojatni yaratish</span>
-                    <span className="button__icon">
+                <div className="d-flex">
+                    <button type="button" className="button1" onClick={() => {
+                        setOpen(true)
+                    }}>
+                        <span className="button__text">Murojatni yaratish</span>
+                        <span className="button__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
                              strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
                              fill="none" className="svg">
@@ -503,10 +496,11 @@ function One(props) {
                             <line y2="12" y1="12" x2="19" x1="5"/>
                         </svg>
                     </span>
-                </button>
+                    </button>
+                </div>
             </div>
             <Modal className='modalAddNew'
-                   title={batafsil ? "Ariza" : "Ariza qo'shish"} open={open} footer={null}
+                   title={batafsil ? "Murojat" : "Murojat yaratish"} open={open} footer={null}
                    onCancel={() => {
                        setOpen(false);
                        setBatafsil(false)
@@ -531,7 +525,7 @@ function One(props) {
                        })
                    }}>
                 <div className='d-flex justify-content-between'>
-                    {batafsil ? "" : <div className="border w-50 p-3 mx-3">
+                    {batafsil ? "" : <div className={`border w-50 p-3 mx-3`}>
                         <Form
                             form={form} layout="vertical" ref={formRef} colon={false}
                             onFinish={handleOk}
@@ -566,7 +560,7 @@ function One(props) {
                                 },
                             ]}
                         >
-                            <Form.Item
+                           <Form.Item
                                 label="Murojat mudatini belgilang"
                                 name="MurojatchiniDate"
                                 rules={[{
@@ -581,7 +575,6 @@ function One(props) {
                                     onChange={onChangeDate2}
                                 />
                             </Form.Item>
-
 
                             <Form.Item
                                 label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
@@ -607,12 +600,10 @@ function One(props) {
                             </Form.Item>
 
                             <Form.Item label="Murojatchi Familya Ism Sharif" name="FISH"
-                                       rules={[
-                                           {
-                                               required: true,
-                                               message: 'Malumot kiritilishi shart !!!'
-
-                                           },]}>
+                                       rules={[{
+                                           required: true,
+                                           message: 'Malumot kiritilishi shart !!!'
+                                       },]}>
                                 <Input type="text" name="FISH" placeholder="F.I.SH"
                                        onChange={(e) => {
                                            setAriza({...ariza, fullName: e.target.value})
@@ -631,26 +622,29 @@ function One(props) {
                                            setAriza({...ariza, phone: e.target.value})
                                        }}/>
                             </Form.Item>
-                            <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
-                                       name="MurojatYuboriladigan" rules={[
-                                {
-                                    required: true,
-                                    message: 'Malumot kiritilishi shart !!!'
-                                },]}>
-                                <Select className='w-100' showSearch name="MurojatYuboriladigan"
-                                        onChange={(e) => {
-                                            handleChangeDepartme(e)
-                                        }}
-                                        placeholder="Markaz / Bo'lim / Fakultet / Kafedra" optionFilterProp="children"
-                                        filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                        filterSort={(optionA, optionB) =>
-                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
-                                        options={Department && Department.map((item, index) => ({
-                                            value: item.id,
-                                            label: item.name
-                                        }))}
-                                />
-                            </Form.Item>
+
+
+                                <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
+                                           name="MurojatYuboriladigan" rules={[
+                                    {
+                                        required: true,
+                                        message: 'Malumot kiritilishi shart !!!'
+                                    },]}>
+                                    <Select className='w-100' showSearch name="MurojatYuboriladigan"
+                                            onChange={(e) => {
+                                                handleChangeDepartme(e)
+                                            }}
+                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                            options={Department && Department.map((item, index) => ({
+                                                value: item.id,
+                                                label: item.name
+                                            }))}
+                                    />
+                                </Form.Item>
 
                             <Form.Item
                                 name="xujjat" label="Murojat xujjat turi"
@@ -684,7 +678,7 @@ function One(props) {
                                 />
                             </Form.Item>
 
-                            <Form.Item
+                           <Form.Item
                                 name="text" label="Murojat mazmuni:"
                                 rules={[
                                     {
@@ -728,7 +722,6 @@ function One(props) {
                         </Form>
                     </div>}
                     <div className="w-50 border p-3 d-flex position-relative">
-
                         <div className="ariza border shadow">
                             <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
                                 <div className="d-flex">
@@ -770,7 +763,6 @@ function One(props) {
                                 d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
                                 d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
                         </button>
-
                     </div>
 
                     {batafsil ?
@@ -799,8 +791,8 @@ function One(props) {
                             }
                         </div> : ""}
                 </div>
-            </Modal>
 
+            </Modal>
             <Drawer
                 size={'large'} placement="right"
                 title={`"${FileDrower?.exchangeApp?.department?.name}" dan kelgan ma'lumotlar`}
@@ -885,7 +877,7 @@ function One(props) {
                 <Form.Item>
                     <button className="button1" type="submit">
                         <span className="button__text">Ma'lumotni yuklash</span>
-                        </button>
+                    </button>
                 </Form.Item>
 
             </Form>

@@ -3,6 +3,7 @@ import Navbar from "../componenta/navbar";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import '../style/home.scss'
+import '../style/HOME.css'
 import {Link} from "react-router-dom";
 import {ApiName} from "../APIname";
 import {ReactTyped} from "react-typed";
@@ -12,8 +13,8 @@ import {useTranslation} from "react-i18next";
 function Home(props) {
     useEffect(() => {
         AOS.init()
-
     });
+
     const { t } = useTranslation();
 
 
@@ -47,7 +48,7 @@ function Home(props) {
                         <div className="d-flex justify-content-between kirish">
                             {/*/!*${ApiName}*!/  http://localhost:3000/*/}
                             <a className='button'
-                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=${ApiName}/auth`}>
+                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=http://localhost:3000/auth`}>
                                 {t("Home.EnterPage")}
                             </a>
                             <Link className='button' to='/tekshirish'>

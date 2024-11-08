@@ -150,7 +150,6 @@ function AddDeportment(props) {
             setMessage("error Edite")
         })
     };
-    console.log(fulInfo)
     function getRoleUser() {
         let value
 

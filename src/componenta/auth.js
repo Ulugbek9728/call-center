@@ -15,7 +15,6 @@ function Auth(props) {
     const [sucsessText, setSucsessText] = useState('');
 
     const [loading, setLoading] = useState(false);
-    const [login, setLogin] = useState(false);
 
     useEffect(() => {
         getEmploee()
@@ -31,11 +30,10 @@ function Auth(props) {
         }).then((response) => {
             if (response.data.isSuccess === true) {
                 setLoading(false)
-                setLogin(true)
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
                 console.log(response.data.data)
                 if (response.data?.data?.currentRole === 'ROLE_OPERATOR') {
-                    navigate("/operator/addFile")
+                    navigate("/operator/TypeService")
                 }
                 if (response.data?.data?.currentRole === 'ROLE_RECTOR') {
                     navigate("/adminRector/getappeals")

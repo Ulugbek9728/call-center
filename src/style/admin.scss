@@ -75,6 +75,34 @@ $textColor: #02A36D;
 
   }
 }
+.modalAddNew1{
+  width: 50% !important;
+  min-height: 900px !important;
+  padding: 0;
+
+  .ant-modal-content {
+
+    height: 100%;
+
+    .ant-modal-body {
+      height: 90%;
+
+      .ariza {
+        width: 500px;
+        height: 680px !important;
+        overflow-y: auto;
+        margin-right: 30px;
+        text-align: justify;
+        font-family: "Gupter", serif !important;
+
+        .date {
+          margin-top: 30px !important;
+        }
+      }
+    }
+
+  }
+}
 
 .card-header {
   margin-bottom: 10px !important;
