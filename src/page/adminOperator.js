@@ -9,7 +9,7 @@ import {
 import {Layout, Menu, Input, Avatar} from 'antd';
 import "../style/admin.scss";
 
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {NavLink, Route, Routes, useNavigate} from "react-router-dom";
 import One from "./One";
 import AddDeportment from "./addDeportment";
 import GetList from "./getList";
@@ -151,7 +151,7 @@ function AdminOperator(props) {
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu mode="inline" defaultSelectedKeys={['1']}
-                      items={items.filter(item => item.access?.includes(fulInfo?.currentRole))}
+                      items={items.filter(item => (item.access?.includes(fulInfo?.currentRole)))}
                       onClick={(into) => {
                           if (into.key === "1") {
                               if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {

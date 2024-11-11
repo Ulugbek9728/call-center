@@ -51,7 +51,6 @@ function Auth(props) {
         }).catch((error) => {
             console.log(error);
             setLoading(false)
-            setMessage("Loginda xato")
 
         })
     }

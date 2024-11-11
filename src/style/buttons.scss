@@ -180,7 +180,36 @@
     transition-duration: 0.3s;
   }
 }
-
+.deletSmoll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background-color: rgb(255, 95, 95);
+  cursor: pointer;
+  border: none;
+  transition-duration: 0.3s;
+  &:hover .bin-top {
+    transform: rotate(45deg);
+  }
+  &:hover {
+    background-color: rgb(255, 0, 0);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+  .bin-bottom {
+    width: 11px;
+  }
+  .bin-top {
+    width: 13px;
+    transform-origin: right;
+    transition-duration: 0.3s;
+  }
+}
 
 .editBtn {
   width: 55px;
