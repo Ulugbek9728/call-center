@@ -211,7 +211,7 @@ function One(props) {
             render: (item, record, index) => (<>{index + 1}</>)
         },
         {
-            title: 'File turi',
+            title: 'Murojat turi',
             dataIndex: 'applicationType',
             width: 150,
         },
@@ -325,7 +325,6 @@ function One(props) {
                 </div>
             )
         },
-
     ];
 
     const propsss = {
@@ -791,7 +790,6 @@ function One(props) {
                             }
                         </div> : ""}
                 </div>
-
             </Modal>
             <Drawer
                 size={'large'} placement="right"

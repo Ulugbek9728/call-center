@@ -59,7 +59,7 @@ function AdminOperator(props) {
         },
         {
             label: "Kelgan Murojatlar",
-            key: "1",
+            key: "2",
             icon: <SnippetsOutlined/>,
             access: [ 'ROLE_RECTOR']
         },
@@ -71,7 +71,7 @@ function AdminOperator(props) {
         },
         {
             label: "Kelgan Murojatlar",
-            key: "2",
+            key: "1",
             icon: <DownloadOutlined/>,
             access: ['ROLE_DEPARTMENT']
         },
@@ -157,7 +157,7 @@ function AdminOperator(props) {
                               if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
                                   navigate("/operator/TypeService")
                               } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
-                                  navigate("/department/addFileDepartment")
+                                  navigate("/adminAll/getFileDepartment")
                               } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
                                   navigate("/adminAll/userAdd")
                               }
@@ -174,7 +174,7 @@ function AdminOperator(props) {
                                   navigate("/operator/addFile")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
-                                  navigate("/adminAll/getFileDepartment")
+                                  navigate("/department/addFileDepartment")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
                                   navigate("/adminRector/appeals")
