@@ -107,7 +107,6 @@ function AdminOperator(props) {
     }
     function openNewWindow() {
         newWindow = window.open('https://hemis.tdtu.uz/dashboard/logout', '_blank');
-
     }
 
     function closeWindow() {

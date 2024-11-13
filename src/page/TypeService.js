@@ -1,8 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Form, Input, Modal, Popconfirm, Select, Space,Table } from "antd";
+import {DatePicker, Form, Input, Modal, Popconfirm, Select, Space, Table} from "antd";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {toast} from "react-toastify";
+import ExelInplase from "../componenta/Exel_Inplase";
 
 function TypeService(props) {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
@@ -19,7 +20,9 @@ function TypeService(props) {
     });
 
     const [batafsil, setBatafsil] = useState(false);
-
+    const [SRC, setSRC] = useState({
+        DateList:[]
+    });
     const [open, setOpen] = useState(false);
     const [open1, setOpen1] = useState(false);
     const [messagee, setMessage] = useState('');
@@ -48,7 +51,11 @@ function TypeService(props) {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`},
             params: {
                 size: pageSize,
-                page: page-1
+                page: page-1,
+                typeOfServiceId:SRC?.typeOfServiceId,
+                query:SRC?.query,
+                fromDate:SRC?.DateList[0],
+                toDate:SRC?.DateList[1]
             }
         }).then((response) => {
             setAllServis(response.data?.data?.content)
@@ -81,6 +88,12 @@ function TypeService(props) {
         setMessage('')
         setSucsessText('')
     }, [messagee, sucsessText,]);
+
+    useEffect(() => {
+        getAllAriza(1, 20)
+        setMessage('')
+        setSucsessText('')
+    }, [messagee, sucsessText,SRC]);
 
     const handleOk = (value) => {
         console.log(value)
@@ -212,6 +225,10 @@ function TypeService(props) {
 
     const columns = [
         {
+            title: 'Murojat ID',
+            dataIndex: 'id',
+        },
+        {
             title: 'Murojatchini Kafedra, Bo\'lim, Markaz / Fakultet, Guruh',
             render: (item, record, index) => (<>{JSON.parse(item?.nameInfo).join(" ")}</>),
         },
@@ -226,6 +243,10 @@ function TypeService(props) {
         {
             title: 'Xizmat turi',
             render: (item, record, index) => (<>{item?.typeOfService?.name}</>)
+        },
+        {
+            title: 'Yaratilgan vaqti',
+            render: (item, record, index) => (<>{item?.creationDate?.replace('T', "/").split(".")[0]}</>)
         },
         {
             title: " ",
@@ -301,36 +322,33 @@ function TypeService(props) {
         },
     ];
 
-
-
+    console.log(SRC)
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <Space>
-                    <Select
-                        placeholder='Statusini tanlang'
+                    <DatePicker.RangePicker
+                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={(value, dateString)=> {
+                        setSRC({...SRC, DateList: dateString})
+                    }}/>
+                    <Select allowClear
+                        placeholder='Xizmat turi'
+                        onChange={(e) => {
+                            setSRC({...SRC, typeOfServiceId: e})
+                        }}
                         style={{
                             width: 200,
                         }}
-                        options={[
-                            {
-                                value: '',
-                                label: 'Hammasi',
-                            },
-                            {
-                                value: 'PROGRESS',
-                                label: 'Jarayonda',
-                            },
-                            {
-                                value: 'FINISHED',
-                                label: 'Tugatilgan',
-                            },
-                            {
-                                value: "COMMITTED",
-                                label: 'Yaratilgan',
-                            },
-                        ]}
+                        options={items?.map((item) => ({
+                            label: item?.name,
+                            value: item?.id,
+                        }))}
                     />
+
+                    <Input allowClear type="text" name="TypeServic" placeholder="FISH / Tel:"
+                           onChange={(e) => {
+                               setSRC({...SRC, query: e.target.value})
+                           }}/>
                 </Space>
                 <div className="d-flex">
                     <button type="button" className="button1 mx-2"
@@ -363,94 +381,6 @@ function TypeService(props) {
                     </button>
                 </div>
             </div>
-            <Modal className={'modalAddNew1'}
-                   title={batafsil ? "Murojat" : "Murojat yaratish"} open={open} footer={null}
-                   onCancel={() => {
-                       setOpen(false);
-                       setBatafsil(false)
-                       setEdite(false)
-                   }}>
-                <div className='d-flex justify-content-between'>
-                    {batafsil ? "" : <div className={`border w-100 p-3 mx-3`}>
-                        <Form
-                            form={form} layout="vertical" ref={formRef} colon={false}
-                            onFinish={handleOk}
-                        >
-                            <Form.Item
-                                label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
-                                name="nameInfo"
-                                rules={[{
-                                    required: true,
-                                    message: 'Malumot kiritilishi shart !!!'
-                                },]}>
-                                <Select
-                                    name="nameInfo" mode="tags"
-                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
-                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
-                                    options={Department && Department.map((item, index) => ({
-                                        value: item.name,
-                                        label: item.name
-                                    }))}
-                                />
-                            </Form.Item>
-
-                            <Form.Item label="Murojatchi Familya Ism Sharif" name="fullName"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Malumot kiritilishi shart !!!'
-                                       },]}>
-                                <Input type="text" name="fullName" placeholder="F.I.SH"/>
-                            </Form.Item>
-
-                            <Form.Item label="Murojatchi Telefon raqami" name="phone"
-                                       rules={[
-                                           {
-                                               required: true,
-                                               message: 'Malumot kiritilishi shart !!!'
-
-                                           },]}>
-                                <Input type="text" placeholder="+998(**) *** ** **" name="phone"/>
-                            </Form.Item>
-                            <Form.Item label="Xizmat turi" name="typeOfService"
-                                       rules={[{required: true, message: 'Malumot kiritilishi shart !!!'},]}>
-                                <Select
-                                    name='typeOfService'
-                                    placeholder="Joyida xal qilingan xizmat turini tanlang"
-                                    options={items?.map((item) => ({
-                                        label: item?.name,
-                                        value: item?.id,
-                                    }))}
-                                />
-                            </Form.Item>
-
-
-                            <Form.Item>
-                                <button className='button2' type='submit'>
-                                    <div className="svg-wrapper-1">
-                                        <div className="svg-wrapper">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                width="24"
-                                                height="24"
-                                            >
-                                                <path fill="none" d="M0 0h24v24H0z"></path>
-                                                <path
-                                                    fill="currentColor"
-                                                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                                                ></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <span>Ma'lumotni yuborish</span>
-                                </button>
-                            </Form.Item>
-                        </Form>
-                    </div>}
-                </div>
-            </Modal>
             <Modal className={'modalAddNew1'}
                    title={"Xizmat turini yaratish"}
                    open={open1}
@@ -555,8 +485,96 @@ function TypeService(props) {
                         }
                     </div>
                 </div>
-
             </Modal>
+            <Modal className={'modalAddNew1'}
+                   title={batafsil ? "Murojat" : "Murojat yaratish"} open={open} footer={null}
+                   onCancel={() => {
+                       setOpen(false);
+                       setBatafsil(false)
+                       setEdite(false)
+                   }}>
+                <div className='d-flex justify-content-between'>
+                    {batafsil ? "" : <div className={`border w-100 p-3 mx-3`}>
+                        <Form
+                            form={form} layout="vertical" ref={formRef} colon={false}
+                            onFinish={handleOk}
+                        >
+                            <Form.Item
+                                label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
+                                name="nameInfo"
+                                rules={[{
+                                    required: true,
+                                    message: 'Malumot kiritilishi shart !!!'
+                                },]}>
+                                <Select
+                                    name="nameInfo" mode="tags"
+                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
+                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                    options={Department && Department.map((item, index) => ({
+                                        value: item.name,
+                                        label: item.name
+                                    }))}
+                                />
+                            </Form.Item>
+
+                            <Form.Item label="Murojatchi Familya Ism Sharif" name="fullName"
+                                       rules={[{
+                                           required: true,
+                                           message: 'Malumot kiritilishi shart !!!'
+                                       },]}>
+                                <Input type="text" name="fullName" placeholder="F.I.SH"/>
+                            </Form.Item>
+
+                            <Form.Item label="Murojatchi Telefon raqami" name="phone"
+                                       rules={[
+                                           {
+                                               required: true,
+                                               message: 'Malumot kiritilishi shart !!!'
+
+                                           },]}>
+                                <Input type="text" placeholder="+998(**) *** ** **" name="phone"/>
+                            </Form.Item>
+                            <Form.Item label="Xizmat turi" name="typeOfService"
+                                       rules={[{required: true, message: 'Malumot kiritilishi shart !!!'},]}>
+                                <Select
+                                    name='typeOfService'
+                                    placeholder="Joyida xal qilingan xizmat turini tanlang"
+                                    options={items?.map((item) => ({
+                                        label: item?.name,
+                                        value: item?.id,
+                                    }))}
+                                />
+                            </Form.Item>
+
+
+                            <Form.Item>
+                                <button className='button2' type='submit'>
+                                    <div className="svg-wrapper-1">
+                                        <div className="svg-wrapper">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                            >
+                                                <path fill="none" d="M0 0h24v24H0z"></path>
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <span>Ma'lumotni yuborish</span>
+                                </button>
+                            </Form.Item>
+                        </Form>
+                    </div>}
+                </div>
+            </Modal>
+
             <Table columns={columns}
                    dataSource={AllServis?.map(item => {
                        return {...item, key: item.id}
@@ -569,6 +587,7 @@ function TypeService(props) {
                        }
                    }}
                     size="small" />
+            <ExelInplase/>
 
         </div>
     );

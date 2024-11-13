@@ -45,14 +45,9 @@ function Statistika(props) {
             type: 'pie'
         },
         title: {
-            text: "Murojatlar bo'yicha statistika",
+            text: "Bo'limlararo murojatlar bo'yicha statistika",
             align: 'center',
             marginBottom: 50
-        },
-        subtitle: {
-            text: '',
-            align: 'center',
-
         },
         plotOptions: {
             series: {
@@ -106,6 +101,47 @@ function Statistika(props) {
                 ]
             }
         ],
+    }
+    const options2 = {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: "Umumiy murojatlar bo'yicha statistika"
+        },
+
+        xAxis: {
+            categories: [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+                'Oct', 'Nov', 'Dec'
+            ]
+        },
+        yAxis: {
+            title: {
+                text: ''
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: 'Reggane',
+            data: [
+                16, 18, 23, 27, 32, 36, 39, 38, 35, 29,
+                22, 17
+            ]
+        }, {
+            name: 'Tallinn',
+            data: [
+                2, 3, 0, 4, 10, 14, 17, 16, 12, 6,
+                2, 1
+            ]
+        }]
     }
 
     const onChangeDate = (value, dateString) => {
@@ -168,69 +204,72 @@ function Statistika(props) {
 
     return (
         <div>
-            <Form form={form3} layout="vertical" ref={formRef} colon={false}
-                  style={{
-                      width: 400,
-                  }}
-                  onFinish={StatisticsGet}
-            >
-                <Form.Item label="Murojatlarni ikkita vaqt oralig'i mudatini belgilang"
-                           name="MurojatYuklash">
-                    <DatePicker.RangePicker style={{width: '100%',}}
-                                            name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
-                </Form.Item>
-                <Form.Item label="Murojatlarni xolatini belgilang" name="Murojatturi"
-                           rules={[{
-                               required: true,
-                               message: 'Malumot kiritilishi shart !!!'
-                           },]}>
-                    <Select
-                        name="Murojatturi"
-                        placeholder="Yuborilgan yoki Kelgan murojatlar"
-                        onChange={(e)=>setIscome(e)}
-                        options={[
-                            {
-                                value: 'false',
-                                label: 'Yuborilgan murojatlar',
-                            },
-                            {
-                                value: 'true',
-                                label: 'Kelgan murojatlar',
-                            },
-                        ]}
-                    />
-                </Form.Item>
-                {
-                    fulInfo?.roles?.includes("ROLE_ADMIN") ?
-                        <Form.Item label="Markaz / Bo'lim / Fakultet / Kafedradagi murojatlar"
-                                   name="MurojatYuboriladigan" rules={[{
-                            required: true,
-                            message: 'Malumot kiritilishi shart !!!'
-                        },]}>
-                            <Select className='w-100' showSearch name="MurojatYuboriladigan"
-                                onChange={(e) => {
-                                    setRollName(e)
-                                }}
-                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra" optionFilterProp="children"
-                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
-                                    options={Department && Department.map((item, index) => ({
-                                        value: item.id,
-                                        label: item.name
-                                    }))}
-                            />
-                        </Form.Item>
-                        :
-                        ''
-                }
-                <Form.Item>
-                    <button className='btn btn-success p-2 d-flex align-items-center justify-content-center'
-                            type="submit"
-                    >Ma'lumotni chaqirish
-                    </button>
-                </Form.Item>
-            </Form>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <Form form={form3} layout="vertical" ref={formRef} colon={false}
+                      style={{
+                          width: 400,
+                      }}
+                      onFinish={StatisticsGet}
+                >
+                    <Form.Item label="Murojatlarni ikkita vaqt oralig'i mudatini belgilang"
+                               name="MurojatYuklash">
+                        <DatePicker.RangePicker style={{width: '100%',}}
+                                                name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
+                    </Form.Item>
+                    <Form.Item label="Murojatlarni xolatini belgilang" name="Murojatturi"
+                               rules={[{
+                                   required: true,
+                                   message: 'Malumot kiritilishi shart !!!'
+                               },]}>
+                        <Select
+                            name="Murojatturi"
+                            placeholder="Yuborilgan yoki Kelgan murojatlar"
+                            onChange={(e)=>setIscome(e)}
+                            options={[
+                                {
+                                    value: 'false',
+                                    label: 'Yuborilgan murojatlar',
+                                },
+                                {
+                                    value: 'true',
+                                    label: 'Kelgan murojatlar',
+                                },
+                            ]}
+                        />
+                    </Form.Item>
+                    {
+                        fulInfo?.roles?.includes("ROLE_ADMIN") ?
+                            <Form.Item label="Markaz / Bo'lim / Fakultet / Kafedradagi murojatlar"
+                                       name="MurojatYuboriladigan" rules={[{
+                                required: true,
+                                message: 'Malumot kiritilishi shart !!!'
+                            },]}>
+                                <Select className='w-100' showSearch name="MurojatYuboriladigan"
+                                        onChange={(e) => {
+                                            setRollName(e)
+                                        }}
+                                        placeholder="Markaz / Bo'lim / Fakultet / Kafedra" optionFilterProp="children"
+                                        filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                        filterSort={(optionA, optionB) =>
+                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                        options={Department && Department.map((item, index) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        }))}
+                                />
+                            </Form.Item>
+                            :
+                            ''
+                    }
+                    <Form.Item>
+                        <button className='btn btn-success p-2 d-flex align-items-center justify-content-center'
+                                type="submit"
+                        >Ma'lumotni chaqirish
+                        </button>
+                    </Form.Item>
+                </Form>
+            </div>
+
 
 
             {loading ? <div className="loader">
@@ -269,7 +308,13 @@ function Statistika(props) {
             }
 
             <button className='btn btn-success mt-3'
-                    onClick={download} id='btnID'>Yuklab olish <FileJpgOutlined/></button>
+                    onClick={download} id='btnID'>Yuklab olish <FileJpgOutlined/>
+            </button>
+
+            <HighchartsReact
+                highcharts={Highcharts}
+                options={options2}
+            />
         </div>
     );
 }

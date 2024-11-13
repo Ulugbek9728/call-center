@@ -395,9 +395,7 @@ function One(props) {
         setAriza({...ariza, expDate: dateString})
     };
 
-    const onChangeDate = (value, dateString) => {
-        setDateListe(dateString)
-    };
+
     const onChange = () => {
         const departmentID = fulInfo.roles[0] === "ROLE_OPERATOR" ? 7777 : fulInfo.department.id
         axios.get(`${ApiName}/api/application/get-as-excel`, {
@@ -870,10 +868,12 @@ function One(props) {
                            },]}>
                     <DatePicker.RangePicker
                         // placeholder={["Bosh sana", 'Tugash sana']}
-                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={onChangeDate}/>
+                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={(value, dateString)=>{
+                        setDateListe(dateString)
+                        }}/>
                 </Form.Item>
                 <Form.Item>
-                    <button className="button1" type="submit">
+                    <button className="btn btn-success" type="submit">
                         <span className="button__text">Ma'lumotni yuklash</span>
                     </button>
                 </Form.Item>
