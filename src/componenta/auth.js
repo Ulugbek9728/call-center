@@ -36,13 +36,13 @@ function Auth(props) {
                     navigate("/operator/TypeService")
                 }
                 if (response.data?.data?.currentRole === 'ROLE_RECTOR') {
-                    navigate("/adminRector/getappeals")
+                    navigate("/adminRector/TypeService")
                 }
                 if (response.data?.data?.currentRole === 'ROLE_ADMIN') {
-                    navigate("/adminAll/userAdd")
+                    navigate("/adminAll/TypeService")
                 }
                 if (response.data?.data?.currentRole === 'ROLE_DEPARTMENT') {
-                    navigate("/department/addFileDepartment")
+                    navigate("/department/TypeService")
                 }
             } else {
                 setLoading(false)

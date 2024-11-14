@@ -248,6 +248,7 @@ function TypeService(props) {
             title: 'Yaratilgan vaqti',
             render: (item, record, index) => (<>{item?.creationDate?.replace('T', "/").split(".")[0]}</>)
         },
+        fulInfo.currentRole==="ROLE_OPERATOR" ?
         {
             title: " ",
             render: (item, record, index) => (
@@ -319,7 +320,7 @@ function TypeService(props) {
                     </Popconfirm>
                 </div>
             )
-        },
+        }:{}
     ];
 
     console.log(SRC)
@@ -350,13 +351,14 @@ function TypeService(props) {
                                setSRC({...SRC, query: e.target.value})
                            }}/>
                 </Space>
-                <div className="d-flex">
-                    <button type="button" className="button1 mx-2"
-                            onClick={() => {
-                                setOpen1(true)
-                            }}>
-                        <span className="button__text">Xizmat turini yaratish</span>
-                        <span className="button__icon">
+                {
+                    fulInfo.currentRole==="ROLE_OPERATOR" ? <div className="d-flex">
+                        <button type="button" className="button1 mx-2"
+                                onClick={() => {
+                                    setOpen1(true)
+                                }}>
+                            <span className="button__text">Xizmat turini yaratish</span>
+                            <span className="button__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
                                  strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
                                  fill="none" className="svg">
@@ -364,13 +366,13 @@ function TypeService(props) {
                                 <line y2="12" y1="12" x2="19" x1="5"/>
                             </svg>
                         </span>
-                    </button>
-                    <button type="button" className="button1"
-                            onClick={() => {
-                                setOpen(true)
-                            }}>
-                        <span className="button__text">Joyida hal qilingan murojat yaratish</span>
-                        <span className="button__icon">
+                        </button>
+                        <button type="button" className="button1"
+                                onClick={() => {
+                                    setOpen(true)
+                                }}>
+                            <span className="button__text">Joyida hal qilingan murojat yaratish</span>
+                            <span className="button__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
                                  strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
                                  fill="none" className="svg">
@@ -378,8 +380,10 @@ function TypeService(props) {
                                 <line y2="12" y1="12" x2="19" x1="5"/>
                             </svg>
                         </span>
-                    </button>
-                </div>
+                        </button>
+                    </div> : ''
+                }
+
             </div>
             <Modal className={'modalAddNew1'}
                    title={"Xizmat turini yaratish"}

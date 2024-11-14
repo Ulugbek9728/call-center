@@ -3,16 +3,17 @@ import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import domtoimage from 'dom-to-image-more';
 import {FileJpgOutlined} from '@ant-design/icons';
-
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {Select, DatePicker, Form} from "antd";
+import StatisticaInPlase from "../componenta/Statistica_In_plase";
 
 
 function Statistika(props) {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [form3] = Form.useForm();
     const formRef = useRef(null);
+    console.log(fulInfo)
 
     const [stati, setStatistics] = useState({
         totalApplications: 0,
@@ -102,47 +103,7 @@ function Statistika(props) {
             }
         ],
     }
-    const options2 = {
-        chart: {
-            type: 'line'
-        },
-        title: {
-            text: "Umumiy murojatlar bo'yicha statistika"
-        },
 
-        xAxis: {
-            categories: [
-                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-                'Oct', 'Nov', 'Dec'
-            ]
-        },
-        yAxis: {
-            title: {
-                text: ''
-            }
-        },
-        plotOptions: {
-            line: {
-                dataLabels: {
-                    enabled: true
-                },
-                enableMouseTracking: false
-            }
-        },
-        series: [{
-            name: 'Reggane',
-            data: [
-                16, 18, 23, 27, 32, 36, 39, 38, 35, 29,
-                22, 17
-            ]
-        }, {
-            name: 'Tallinn',
-            data: [
-                2, 3, 0, 4, 10, 14, 17, 16, 12, 6,
-                2, 1
-            ]
-        }]
-    }
 
     const onChangeDate = (value, dateString) => {
         setDateListe(dateString)
@@ -151,7 +112,6 @@ function Statistika(props) {
         DepartmenGet()
         if (fulInfo?.roles?.includes("ROLE_OPERATOR")) {
             setRollName(7777)
-            console.log('operator')
         } else if (fulInfo?.roles?.includes("ROLE_DEPARTMENT")) {
             setRollName(fulInfo?.department?.id)
         } else if (fulInfo?.roles?.includes("ROLE_ADMIN")) {
@@ -311,10 +271,11 @@ function Statistika(props) {
                     onClick={download} id='btnID'>Yuklab olish <FileJpgOutlined/>
             </button>
 
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={options2}
-            />
+            {
+                fulInfo?.currentRole==="ROLE_DEPARTMENT"? '':<StatisticaInPlase/>
+            }
+
+
         </div>
     );
 }

@@ -30,47 +30,40 @@ function AdminOperator(props) {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("myCat")));
     const [RollName, setRollName] = useState('');
 
-
-
     const items = [
         {
             label: "Joyida xal qilingan murojatlar",
             key: "1",
             icon: <CheckSquareOutlined />,
-            access: ['ROLE_OPERATOR']
+            access: ['ROLE_OPERATOR',"ROLE_ADMIN","ROLE_RECTOR"]
         },
         {
             label: "Yuborilgan murojatlar",
             key: "2",
             icon: <UploadOutlined/>,
-            access: ['ROLE_DEPARTMENT', 'ROLE_OPERATOR']
+            access: ['ROLE_OPERATOR',"ROLE_DEPARTMENT"]
         },
+
         {
             label: "Hodim qo'shish",
-            key: "1",
+            key: "2",
             icon: <UserAddOutlined/>,
             access: ['ROLE_ADMIN']
         },
         {
             label: "Murojatlar",
-            key: "2",
+            key: "3",
             icon: <SnippetsOutlined/>,
-            access: ['ROLE_ADMIN']
+            access: ['ROLE_ADMIN',"ROLE_RECTOR"]
         },
         {
-            label: "Kelgan Murojatlar",
-            key: "2",
-            icon: <SnippetsOutlined/>,
-            access: [ 'ROLE_RECTOR']
-        },
-        {
-            label: "Hamma Murojatlar ",
+            label: "Kelgan murojatlar",
             key: "2",
             icon: <SnippetsOutlined/>,
             access: [ 'ROLE_RECTOR']
         },
         {
-            label: "Kelgan Murojatlar",
+            label: "Kelgan murojatlar",
             key: "1",
             icon: <DownloadOutlined/>,
             access: ['ROLE_DEPARTMENT']
@@ -79,7 +72,13 @@ function AdminOperator(props) {
             label: "Statistika",
             key: "3",
             icon: <LineChartOutlined/>,
-            access: ['ROLE_DEPARTMENT', 'ROLE_ADMIN', 'ROLE_OPERATOR']
+            access: ['ROLE_DEPARTMENT', 'ROLE_OPERATOR']
+        },
+        {
+            label: "Statistika",
+            key: "4",
+            icon: <LineChartOutlined/>,
+            access: ['ROLE_ADMIN']
         },
 
     ];
@@ -129,9 +128,9 @@ function AdminOperator(props) {
                 navigate('/operator/TypeService')
 
             } else if (e === 'ROLE_RECTOR') {
-                navigate('/adminRector/getappeals')
+                navigate('/adminRector/TypeService')
             } else if (e === 'ROLE_ADMIN') {
-                navigate('/adminAll/userAdd')
+                navigate('/adminAll/TypeService')
 
             } else if (e === 'ROLE_DEPARTMENT') {
                 navigate('/department/addFileDepartment')
@@ -150,7 +149,9 @@ function AdminOperator(props) {
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
                 <Menu mode="inline" defaultSelectedKeys={['1']}
-                      items={items.filter(item => (item.access?.includes(fulInfo?.currentRole)))}
+                      items={items.filter(item => (
+                          item.access?.includes(fulInfo?.currentRole)
+                      ))}
                       onClick={(into) => {
                           if (into.key === "1") {
                               if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
@@ -158,16 +159,16 @@ function AdminOperator(props) {
                               } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/getFileDepartment")
                               } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/userAdd")
+                                  navigate("/adminAll/TypeService")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
-                                  navigate("/adminRector/getappeals")
+                                  navigate("/adminRector/TypeService")
                               }
 
                           }
                           else if (into.key === "2") {
                               if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/appeals")
+                                  navigate("/adminAll/userAdd")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
                                   navigate("/operator/addFile")
@@ -176,15 +177,26 @@ function AdminOperator(props) {
                                   navigate("/department/addFileDepartment")
                               }
                               else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
-                                  navigate("/adminRector/appeals")
+                                  navigate("/adminRector/getappeals")
+
                               }
                           } else if (into.key === "3") {
                               if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/statistika")
+                                  navigate("/adminAll/appeals")
+
                               } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
                                   navigate("/adminAll/statistika")
                               } else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
                                   navigate("/operator/statistika")
+                              }
+                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
+                                  navigate("/adminRector/appeals")
+                              }
+                          }
+                          else if (into.key === "4") {
+                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
+                                  navigate("/adminAll/statistika")
+
                               }
                           }
 
