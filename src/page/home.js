@@ -9,7 +9,6 @@ import {ApiName} from "../APIname";
 import {ReactTyped} from "react-typed";
 import {useTranslation} from "react-i18next";
 
-
 function Home(props) {
     useEffect(() => {
         AOS.init()
