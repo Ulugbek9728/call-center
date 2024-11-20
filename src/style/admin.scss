@@ -206,6 +206,29 @@ $textColor: #02A36D;
   }
 }
 
+.verticalMenu {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color:#f5f5f5 ;
+  a {
+    margin-top: 10px;
+    padding: 12px 0 10px 20px;
+    width: 100%;
+    background-color:white ;
+    border-radius: 5px;
+
+
+    color: black;
+    font-size: 16px;
+  }
+  .active {
+    color: white;
+    background-color: #06a3da;
+    width: 100%;
+  }
+}
+
 
 
 @keyframes rotate {

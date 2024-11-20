@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {
     UploadOutlined,
-    UserOutlined, LineChartOutlined,CheckSquareOutlined,
+    UserOutlined, LineChartOutlined, CheckSquareOutlined,
     DownloadOutlined, UserAddOutlined, SnippetsOutlined, LogoutOutlined,
 } from '@ant-design/icons';
 
 
-import {Layout, Menu, Input, Avatar} from 'antd';
+import {Layout, Input, Avatar} from 'antd';
 import "../style/admin.scss";
 
 import {NavLink, Route, Routes, useNavigate} from "react-router-dom";
@@ -31,54 +31,104 @@ function AdminOperator(props) {
     const [RollName, setRollName] = useState('');
 
     const items = [
+        //operator
         {
             label: "Joyida xal qilingan murojatlar",
             key: "1",
-            icon: <CheckSquareOutlined />,
-            access: ['ROLE_OPERATOR',"ROLE_ADMIN","ROLE_RECTOR"]
+            icon: <CheckSquareOutlined/>,
+            access: ['ROLE_OPERATOR'],
+            nav:"/operator/TypeService"
         },
         {
             label: "Yuborilgan murojatlar",
             key: "2",
             icon: <UploadOutlined/>,
-            access: ['ROLE_OPERATOR',"ROLE_DEPARTMENT"]
+            access: ['ROLE_OPERATOR'],
+            nav:"/operator/addFile"
+        },
+        {
+            label: "Statistika",
+            key: "3",
+            icon: <LineChartOutlined/>,
+            access: ['ROLE_OPERATOR'],
+            nav:"/operator/statistika"
         },
 
+        //bo'lim
         {
-            label: "Hodim qo'shish",
+            label: "Yuborilgan murojatlar",
+            key: "1",
+            icon: <UploadOutlined/>,
+            access: ["ROLE_DEPARTMENT"],
+            nav:"/department/addFileDepartment"
+        },
+        {
+            label: "Kelgan murojatlar",
             key: "2",
-            icon: <UserAddOutlined/>,
-            access: ['ROLE_ADMIN']
+            icon: <DownloadOutlined/>,
+            access: ['ROLE_DEPARTMENT'],
+            nav:"/department/getFileDepartment"
+        },
+        {
+            label: "Statistika",
+            key: "3",
+            icon: <LineChartOutlined/>,
+            access: ['ROLE_DEPARTMENT'],
+            nav:"/department/statistika"
+        },
+
+        //rector
+        {
+            label: "Joyida xal qilingan murojatlar",
+            key: "1",
+            icon: <CheckSquareOutlined/>,
+            access: ["ROLE_RECTOR"],
+            nav:"/adminRector/TypeService"
+        },
+        {
+            label: "Kelgan murojatlar",
+            key: "2",
+            icon: <SnippetsOutlined/>,
+            access: ['ROLE_RECTOR'],
+            nav:"/adminRector/getappeals"
         },
         {
             label: "Murojatlar",
             key: "3",
             icon: <SnippetsOutlined/>,
-            access: ['ROLE_ADMIN',"ROLE_RECTOR"]
+            access: ["ROLE_RECTOR"],
+            nav:"/adminRector/appeals"
         },
+
+        //admin
         {
-            label: "Kelgan murojatlar",
-            key: "2",
-            icon: <SnippetsOutlined/>,
-            access: [ 'ROLE_RECTOR']
-        },
-        {
-            label: "Kelgan murojatlar",
+            label: "Joyida xal qilingan murojatlar",
             key: "1",
-            icon: <DownloadOutlined/>,
-            access: ['ROLE_DEPARTMENT']
+            icon: <CheckSquareOutlined/>,
+            access: ["ROLE_ADMIN"],
+            nav:"/adminAll/TypeService"
         },
         {
-            label: "Statistika",
+            label: "Hodim qo'shish",
+            key: "2",
+            icon: <UserAddOutlined/>,
+            access: ['ROLE_ADMIN'],
+            nav:"/adminAll/userAdd"
+
+        },
+        {
+            label: "Murojatlar",
             key: "3",
-            icon: <LineChartOutlined/>,
-            access: ['ROLE_DEPARTMENT', 'ROLE_OPERATOR']
+            icon: <SnippetsOutlined/>,
+            access: ['ROLE_ADMIN'],
+            nav:"/adminAll/appeals"
         },
         {
             label: "Statistika",
             key: "4",
             icon: <LineChartOutlined/>,
-            access: ['ROLE_ADMIN']
+            access: ['ROLE_ADMIN'],
+            nav:"/adminAll/statistika"
         },
 
     ];
@@ -91,7 +141,7 @@ function AdminOperator(props) {
         } else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
             setRollName('Rektor')
 
-        }else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
+        } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
             setRollName('ADMINI')
         }
     }, [])
@@ -99,11 +149,12 @@ function AdminOperator(props) {
     let newWindow;
 
     function LogOut() {
-            openNewWindow(); // Yangi oynani ochish
-            setTimeout(closeWindow, 100); // 0.1 sekunddan so'ng oynani yopish
+        openNewWindow(); // Yangi oynani ochish
+        setTimeout(closeWindow, 100); // 0.1 sekunddan so'ng oynani yopish
         localStorage.removeItem("myCat");
 
     }
+
     function openNewWindow() {
         newWindow = window.open('https://hemis.tdtu.uz/dashboard/logout', '_blank');
     }
@@ -115,13 +166,14 @@ function AdminOperator(props) {
 
     function changeRole(e) {
         let value
-        axios.post(`${ApiName}/api/change-role/${e}`,'',
+        axios.post(`${ApiName}/api/change-role/${e}`, '',
             {headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}}
-        ).then((res)=>{
+        ).then((res) => {
             console.log(res)
-            value={...fulInfo,
-                currentRole:e,
-                accessToken:res?.data?.data?.accessToken
+            value = {
+                ...fulInfo,
+                currentRole: e,
+                accessToken: res?.data?.data?.accessToken
             }
             localStorage.setItem("myCat", JSON.stringify(value));
             if (e === 'ROLE_OPERATOR') {
@@ -139,7 +191,7 @@ function AdminOperator(props) {
             window.location.reload()
 
 
-        }).catch((error)=>{
+        }).catch((error) => {
             console.log(error)
         })
     }
@@ -148,60 +200,16 @@ function AdminOperator(props) {
     return (
         <Layout>
             <Sider style={{height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0,}}>
-                <Menu mode="inline" defaultSelectedKeys={['1']}
-                      items={items.filter(item => (
-                          item.access?.includes(fulInfo?.currentRole)
-                      ))}
-                      onClick={(into) => {
-                          if (into.key === "1") {
-                              if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
-                                  navigate("/operator/TypeService")
-                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
-                                  navigate("/adminAll/getFileDepartment")
-                              } else if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/TypeService")
-                              }
-                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
-                                  navigate("/adminRector/TypeService")
-                              }
+                <div className='verticalMenu'>
+                    {items.filter(item => item.access?.includes(fulInfo?.currentRole))
+                        .map(item => (
 
-                          }
-                          else if (into.key === "2") {
-                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/userAdd")
-                              }
-                              else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
-                                  navigate("/operator/addFile")
-                              }
-                              else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
-                                  navigate("/department/addFileDepartment")
-                              }
-                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
-                                  navigate("/adminRector/getappeals")
-
-                              }
-                          } else if (into.key === "3") {
-                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/appeals")
-
-                              } else if (fulInfo?.currentRole?.includes("ROLE_DEPARTMENT")) {
-                                  navigate("/adminAll/statistika")
-                              } else if (fulInfo?.currentRole?.includes("ROLE_OPERATOR")) {
-                                  navigate("/operator/statistika")
-                              }
-                              else if (fulInfo?.currentRole?.includes("ROLE_RECTOR")) {
-                                  navigate("/adminRector/appeals")
-                              }
-                          }
-                          else if (into.key === "4") {
-                              if (fulInfo?.currentRole?.includes("ROLE_ADMIN")) {
-                                  navigate("/adminAll/statistika")
-
-                              }
-                          }
-
-
-                      }}/>
+                            <NavLink key={item.key} to={`${item.nav}`}>
+                                <span className='mx-2'>{item.label}</span>
+                            </NavLink>
+                            )
+                        )}
+                </div>
             </Sider>
             <Layout className="site-layout" style={{marginLeft: 220,}}>
                 <Header>
@@ -221,7 +229,8 @@ function AdminOperator(props) {
                                         :
                                         <div className="btn btn-secondary dropdown-toggle img p-0"
                                              id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                             aria-expanded="false"><img width={50} src={fulInfo?.imageUrl} alt="userImg"/>
+                                             aria-expanded="false"><img width={50} src={fulInfo?.imageUrl}
+                                                                        alt="userImg"/>
                                         </div>
                                 }
 
@@ -230,17 +239,26 @@ function AdminOperator(props) {
                                           className='dropdown-item'>{fulInfo?.fullName}
                                     </span>
                                     {
-                                        fulInfo?.roles.map((item,index)=>(
-                                            <span key={index} style={{height: 40, alignItems: "center", display: "flex", cursor:"pointer"}} className='dropdown-item'
-                                            onClick={()=>{changeRole(item)}}>
-                                        {item ==='ROLE_DEPARTMENT'? "BO'LIM ADMIN":item==='ROLE_RECTOR'? 'RECTOR' : item==='ROLE_ADMIN'? 'ADMIN' :item==='ROLE_OPERATOR'? 'OPERATOR' :''}
+                                        fulInfo?.roles.map((item, index) => (
+                                            <span key={index}
+                                                  style={{
+                                                      height: 40,
+                                                      alignItems: "center",
+                                                      display: "flex",
+                                                      cursor: "pointer"
+                                                  }}
+                                                  className='dropdown-item'
+                                                  onClick={() => {
+                                                      changeRole(item)
+                                                  }}>
+                                        {item === 'ROLE_DEPARTMENT' ? "BO'LIM ADMIN" : item === 'ROLE_RECTOR' ? 'RECTOR' : item === 'ROLE_ADMIN' ? 'ADMIN' : item === 'ROLE_OPERATOR' ? 'OPERATOR' : ''}
                                     </span>
                                         ))
                                     }
 
                                     <a style={{height: 40, alignItems: "center", display: "flex"}}
                                        className='dropdown-item' onClick={LogOut}
-                                       href="#">PLATFORMADAN CHIQISH <LogoutOutlined className='mx-4' /></a>
+                                       href="#">PLATFORMADAN CHIQISH <LogoutOutlined className='mx-4'/></a>
 
                                 </div>
 
@@ -266,7 +284,8 @@ function AdminOperator(props) {
                 </Content>
             </Layout>
         </Layout>
-    );
+    )
+        ;
 }
 
 export default AdminOperator;

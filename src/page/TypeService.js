@@ -234,11 +234,11 @@ function TypeService(props) {
             render: (item, record, index) => (<>{index + 1}</>)
         },
         {
-            title: 'Murojat ID',
+            title: 'Murojaat ID',
             dataIndex: 'id',
         },
         {
-            title: 'Murojatchini Kafedra, Bo\'lim, Markaz / Fakultet, Guruh',
+            title: 'Murojaatchini Kafedra, Bo\'lim, Markaz / Fakultet, Guruh',
             render: (item, record, index) => (<>{JSON.parse(item?.nameInfo).join(" ")}</>),
         },
         {
@@ -274,7 +274,6 @@ function TypeService(props) {
                                         typeOfService: item.typeOfService?.id,
                                     });
                                     setEediteApplicationID(item?.id)
-                                    console.log(item)
                                 }}>
                             <svg height="1em" viewBox="0 0 512 512">
                                 <path
@@ -284,8 +283,8 @@ function TypeService(props) {
                         </button>
 
                         <Popconfirm
-                            title="Murojatni o'chirish"
-                            description="Murojatni o'chirishni tasdiqlaysizmi?"
+                            title="Murojaatni o'chirish"
+                            description="Murojaatni o'chirishni tasdiqlaysizmi?"
                             onConfirm={(e) => Delete(item.id)}
                             okText="Ha" cancelText="Yo'q"
                         >
@@ -379,7 +378,7 @@ function TypeService(props) {
                                 onClick={() => {
                                     setOpen(true)
                                 }}>
-                            <span className="button__text">Joyida hal qilingan murojat yaratish</span>
+                            <span className="button__text">Joyida hal qilingan murojaat yaratish</span>
                             <span className="button__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" strokeWidth="2"
                                  strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" height="24"
@@ -499,7 +498,7 @@ function TypeService(props) {
                 </div>
             </Modal>
             <Modal className={'modalAddNew1'}
-                   title={batafsil ? "Murojat" : "Murojat yaratish"} open={open} footer={null}
+                   title={batafsil ? "Murojaat" : "Murojaat yaratish"} open={open} footer={null}
                    onCancel={() => {
                        setOpen(false);
                        setBatafsil(false)
@@ -512,7 +511,7 @@ function TypeService(props) {
                             onFinish={handleOk}
                         >
                             <Form.Item
-                                label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
+                                label="Murojaatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
                                 name="nameInfo"
                                 rules={[{
                                     required: true,
@@ -531,7 +530,7 @@ function TypeService(props) {
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Murojatchi Familya Ism Sharif" name="fullName"
+                            <Form.Item label="Murojaatchi Familya Ism Sharif" name="fullName"
                                        rules={[{
                                            required: true,
                                            message: 'Malumot kiritilishi shart !!!'
@@ -539,7 +538,7 @@ function TypeService(props) {
                                 <Input type="text" name="fullName" placeholder="F.I.SH"/>
                             </Form.Item>
 
-                            <Form.Item label="Murojatchi Telefon raqami" name="phone"
+                            <Form.Item label="Murojaatchi Telefon raqami" name="phone"
                                        rules={[
                                            {
                                                required: true,

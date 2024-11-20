@@ -36,7 +36,7 @@ function ExelInplase(props) {
             <Form form={form} layout="vertical" ref={formRef} colon={false}
                   onFinish={onChange}
             >
-                <Form.Item label="Murojatlarni yuklash mudatini belgilang"
+                <Form.Item label="Murojaatlarni yuklash mudatini belgilang"
                            name="MurojatYuklash"
                            rules={[{
                                required: true,
