@@ -229,6 +229,23 @@ $textColor: #02A36D;
   }
 }
 
+.otp{
+  input{
+    border: 1px solid gainsboro!important;
+    border-radius: 20%;
+    width: 50px!important;
+    height: 50px!important;
+    margin-right: 5px;
+    font-size: 30px;
+    &:focus{
+      outline: none!important;
+      border: 2px solid #06a3da!important;
+    }
+  }
+
+
+}
+
 
 
 @keyframes rotate {

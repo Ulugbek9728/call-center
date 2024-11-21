@@ -3,17 +3,19 @@ import {useReactToPrint} from 'react-to-print';
 
 import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
-    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input, Divider
+    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input,
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
-    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined, PlusOutlined
+    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined,
 } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
 import {toast} from "react-toastify";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import OtpInput from 'react-otp-input';
+
 
 dayjs.extend(customParseFormat);
 
@@ -21,6 +23,7 @@ function One(props) {
     const formRef = useRef(null);
     const [form] = Form.useForm();
     const [form1] = Form.useForm();
+    const [form2] = Form.useForm();
 
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
@@ -68,6 +71,10 @@ function One(props) {
     });
     const [open1, setOpen1] = useState(false);
     const [DateListe, setDateListe] = useState(['', '']);
+    const [verificatio, setVerificatio] = useState(false);
+    const [verifiResponse, setverifiResponse] = useState({});
+    const [otp, setOtp] = useState('');
+
 
     function arizaFileList(id) {
         axios.get(`${ApiName}/api/v1/exchange-application/files-by-application`, {
@@ -90,7 +97,7 @@ function One(props) {
 
 
     useEffect(() => {
-        if (fulInfo?.roles?.includes('ROLE_DEPARTMENT')) {
+        if (fulInfo?.currentRole?.includes('ROLE_DEPARTMENT')) {
             setAriza({...ariza, fullName: fulInfo.fullName})
         }
         DepartmenGet()
@@ -176,9 +183,12 @@ function One(props) {
                     headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
                 }).then((response) => {
                     if (response.data.message === "Success") {
+                        setVerificatio(true)
+                        toast.warning("Tasdiqlash kodini kiriting")
+                        console.log(response?.data?.data)
+                        setverifiResponse(response?.data?.data)
                         form.resetFields()
-                        setOpen(false);
-                        setSucsessText('Murojat yuborildi')
+                        // setOpen(false);
                         setAriza({
                             fullName: '',
                             applicationType: 'Ariza',
@@ -198,7 +208,7 @@ function One(props) {
                         })
                     }
                 }).catch((error) => {
-                    setMessage('File error')
+                    setMessage('Error')
                 })
             }
         }
@@ -432,6 +442,38 @@ function One(props) {
         })
     };
 
+    const verificationPost = () => {
+        if (otp.length===6){
+            console.log(verifiResponse)
+            axios.post(`${ApiName}/api/application/verify-otp`, {
+                phone:verifiResponse?.phone,
+                code:otp,
+                applicationId:verifiResponse?.id
+            }, {
+                headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
+            }).then((response) => {
+                console.log(response)
+                if (response?.data?.isSuccess === true) {
+                    setVerificatio(false)
+                    form2.resetFields()
+                    setOpen(false);
+                    setOtp('')
+                    setSucsessText("Murojaat tasdiqlandi")
+                }
+                else {
+                    setMessage(response?.data?.message)
+                    setOtp('')
+                }
+            }).catch((error) => {
+                setMessage('Error')
+            })
+        }
+        else {
+            toast.warning("Tasdiqlash kodini to'liq kiriting")
+        }
+    }
+
+
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -500,6 +542,7 @@ function One(props) {
                    title={batafsil ? "Murojat" : "Murojat yaratish"} open={open} footer={null}
                    onCancel={() => {
                        setOpen(false);
+                       setVerificatio(false)
                        setBatafsil(false)
                        setEdite(false)
                        setAriza({
@@ -521,273 +564,292 @@ function One(props) {
                            files: []
                        })
                    }}>
-                <div className='d-flex justify-content-between'>
-                    {batafsil ? "" : <div className={`border w-50 p-3 mx-3`}>
-                        <Form
-                            form={form} layout="vertical" ref={formRef} colon={false}
-                            onFinish={handleOk}
-                            fields={[
-                                {
-                                    name: "MurojatchiniBo'limi",
-                                    value: !ariza.nameInfo || ariza.nameInfo === "" ? [] : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
-                                },
-                                {
-                                    name: "FISH",
-                                    value: ariza?.fullName
-                                },
-                                {
-                                    name: "Tel",
-                                    value: ariza?.phone
-                                },
-                                {
-                                    name: "MurojatYuboriladigan",
-                                    value: ariza?.toDepartment?.name
-                                },
-                                {
-                                    name: "xujjat",
-                                    value: ariza?.applicationType
-                                },
-                                {
-                                    name: "text",
-                                    value: ariza?.description
-                                },
-                                {
-                                    name: "MurojatchiniDate",
-                                    value: edite || ariza.expDate ? dayjs(new Date(ariza.expDate)) : ariza.expDate
-                                },
-                            ]}
-                        >
-                           <Form.Item
-                                label="Murojat mudatini belgilang"
-                                name="MurojatchiniDate"
-                                rules={[{
-                                    required: true,
-                                    message: 'Malumot kiritilishi shart !!!'
-                                },]}>
-                                <DatePicker
-                                    name="MurojatchiniDate"
-                                    format="YYYY-MM-DD"
-                                    style={{width: '100%'}}
-                                    disabledDate={disabledDate}
-                                    onChange={onChangeDate2}
-                                />
-                            </Form.Item>
+                {
+                    !verificatio ? <div className='d-flex justify-content-between'>
+                            {batafsil ? "" : <div className={`border w-50 p-3 mx-3`}>
+                                <Form
+                                    form={form} layout="vertical" ref={formRef} colon={false}
+                                    onFinish={handleOk}
+                                    fields={[
+                                        {
+                                            name: "MurojatchiniBo'limi",
+                                            value: !ariza.nameInfo || ariza.nameInfo === "" ? [] : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                        },
+                                        {
+                                            name: "FISH",
+                                            value: ariza?.fullName
+                                        },
+                                        {
+                                            name: "Tel",
+                                            value: ariza?.phone
+                                        },
+                                        {
+                                            name: "MurojatYuboriladigan",
+                                            value: ariza?.toDepartment?.name
+                                        },
+                                        {
+                                            name: "xujjat",
+                                            value: ariza?.applicationType
+                                        },
+                                        {
+                                            name: "text",
+                                            value: ariza?.description
+                                        },
+                                        {
+                                            name: "MurojatchiniDate",
+                                            value: edite || ariza.expDate ? dayjs(new Date(ariza.expDate)) : ariza.expDate
+                                        },
+                                    ]}
+                                >
+                                    <Form.Item
+                                        label="Murojat mudatini belgilang"
+                                        name="MurojatchiniDate"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Malumot kiritilishi shart !!!'
+                                        },]}>
+                                        <DatePicker
+                                            name="MurojatchiniDate"
+                                            format="YYYY-MM-DD"
+                                            style={{width: '100%'}}
+                                            disabledDate={disabledDate}
+                                            onChange={onChangeDate2}
+                                        />
+                                    </Form.Item>
 
-                            <Form.Item
-                                label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
-                                name="MurojatchiniBo'limi"
-                                rules={[{
-                                    required: true,
-                                    message: 'Malumot kiritilishi shart !!!'
-                                },]}>
-                                <Select
-                                    name="MurojatchiniBo'limi" mode="tags"
-                                    placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
-                                    onChange={(e) => {
-                                        setAriza({...ariza, nameInfo: JSON.stringify(e)})
-                                    }}
-                                    filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
-                                    options={Department && Department.map((item, index) => ({
-                                        value: item.name,
-                                        label: item.name
-                                    }))}
-                                />
-                            </Form.Item>
-
-                            <Form.Item label="Murojatchi Familya Ism Sharif" name="FISH"
-                                       rules={[{
-                                           required: true,
-                                           message: 'Malumot kiritilishi shart !!!'
-                                       },]}>
-                                <Input type="text" name="FISH" placeholder="F.I.SH"
-                                       onChange={(e) => {
-                                           setAriza({...ariza, fullName: e.target.value})
-                                       }}/>
-                            </Form.Item>
-
-                            <Form.Item label="Murojatchi Telefon raqami" name="Tel"
-                                       rules={[
-                                           {
-                                               required: true,
-                                               message: 'Malumot kiritilishi shart !!!'
-
-                                           },]}>
-                                <Input type="text" placeholder="+998(**) *** ** **" name="Tel"
-                                       onChange={(e) => {
-                                           setAriza({...ariza, phone: e.target.value})
-                                       }}/>
-                            </Form.Item>
-
-
-                                <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
-                                           name="MurojatYuboriladigan" rules={[
-                                    {
-                                        required: true,
-                                        message: 'Malumot kiritilishi shart !!!'
-                                    },]}>
-                                    <Select className='w-100' showSearch name="MurojatYuboriladigan"
+                                    <Form.Item
+                                        label="Murojatchini Kafedra, Bo'lim, Markaz / Fakultet, Guruh"
+                                        name="MurojatchiniBo'limi"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Malumot kiritilishi shart !!!'
+                                        },]}>
+                                        <Select
+                                            name="MurojatchiniBo'limi" mode="tags"
+                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
                                             onChange={(e) => {
-                                                handleChangeDepartme(e)
+                                                setAriza({...ariza, nameInfo: JSON.stringify(e)})
                                             }}
-                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
-                                            optionFilterProp="children"
                                             filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
                                             filterSort={(optionA, optionB) =>
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
                                             options={Department && Department.map((item, index) => ({
-                                                value: item.id,
+                                                value: item.name,
                                                 label: item.name
                                             }))}
-                                    />
-                                </Form.Item>
+                                        />
+                                    </Form.Item>
 
-                            <Form.Item
-                                name="xujjat" label="Murojat xujjat turi"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Malumot kiritilishi shart !!!'
-                                    },]}>
-                                <Select name="xujjat" className='w-100'
-                                        onChange={(e) => {
-                                            setAriza({...ariza, applicationType: e})
-                                        }}
-                                        style={{
-                                            width: 120,
-                                        }} allowClear
-                                        options={[
-                                            {
-                                                value: 'Ariza',
+                                    <Form.Item label="Murojatchi Familya Ism Sharif" name="FISH"
+                                               rules={[{
+                                                   required: true,
+                                                   message: 'Malumot kiritilishi shart !!!'
+                                               },]}>
+                                        <Input type="text" name="FISH" placeholder="F.I.SH"
+                                               onChange={(e) => {
+                                                   setAriza({...ariza, fullName: e.target.value})
+                                               }}/>
+                                    </Form.Item>
 
-                                            },
-                                            {
-                                                value: 'Bildirgi'
-                                            },
-                                            {
-                                                value: 'Tushuntirish xati',
-                                            },
-                                            {
-                                                value: 'Xat',
-                                            },
-                                        ]}
-                                />
-                            </Form.Item>
+                                    <Form.Item label="Murojatchi Telefon raqami" name="Tel"
+                                               rules={[{required: true, message: 'Malumot kiritilishi shart !!!'}]}>
+                                        <Input maxLength={13} type="text" placeholder="+998(**) *** ** **" name="Tel"
+                                               onChange={(e) => {
+                                                   setAriza({...ariza, phone: e.target.value})
+                                               }}/>
+                                    </Form.Item>
 
-                           <Form.Item
-                                name="text" label="Murojat mazmuni:"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Malumot kiritilishi shart !!!'
-                                    },]}>
+                                    <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
+                                               name="MurojatYuboriladigan"
+                                               rules={[{
+                                                   required: true,
+                                                   message: 'Malumot kiritilishi shart !!!'
+                                               },]}>
+                                        <Select className='w-100' showSearch name="MurojatYuboriladigan"
+                                                onChange={(e) => {
+                                                    handleChangeDepartme(e)
+                                                }}
+                                                placeholder="Markaz / Bo'lim / Fakultet / Kafedra"
+                                                optionFilterProp="children"
+                                                filterOption={(input, option) => (option?.label?.toLowerCase() ?? '').startsWith(input.toLowerCase())}
+                                                filterSort={(optionA, optionB) =>
+                                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                                options={Department && Department.map((item, index) => ({
+                                                    value: item.id,
+                                                    label: item.name
+                                                }))}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="xujjat" label="Murojat xujjat turi"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Malumot kiritilishi shart !!!'
+                                            },]}>
+                                        <Select name="xujjat" className='w-100'
+                                                onChange={(e) => {
+                                                    setAriza({...ariza, applicationType: e})
+                                                }}
+                                                style={{
+                                                    width: 120,
+                                                }} allowClear
+                                                options={[
+                                                    {
+                                                        value: 'Ariza',
+
+                                                    },
+                                                    {
+                                                        value: 'Bildirgi'
+                                                    },
+                                                    {
+                                                        value: 'Tushuntirish xati',
+                                                    },
+                                                    {
+                                                        value: 'Xat',
+                                                    },
+                                                ]}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="text" label="Murojat mazmuni:"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Malumot kiritilishi shart !!!'
+                                            },]}>
                                 <textarea className="form-control" rows="8" id="comment" name="text"
                                           onChange={(e) => {
                                               setAriza({...ariza, description: e.target.value})
                                           }}/>
-                            </Form.Item>
+                                    </Form.Item>
 
-                            {edite ? '' : <Form.Item name='file'>
-                                <Upload name='file' {...propsss}>
-                                    <Button icon={<UploadOutlined/>}>File yuklash</Button>
-                                </Upload>
-                            </Form.Item>}
+                                    {edite ? '' : <Form.Item name='file'>
+                                        <Upload name='file' {...propsss}>
+                                            <Button icon={<UploadOutlined/>}>File yuklash</Button>
+                                        </Upload>
+                                    </Form.Item>}
 
 
-                            <Form.Item>
-                                <button className='button2' type='submit'>
-                                    <div className="svg-wrapper-1">
-                                        <div className="svg-wrapper">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                width="24"
-                                                height="24"
-                                            >
-                                                <path fill="none" d="M0 0h24v24H0z"></path>
-                                                <path
-                                                    fill="currentColor"
-                                                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                                                ></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <span>Ma'lumotni yuborish</span>
-                                </button>
-                            </Form.Item>
-                        </Form>
-                    </div>}
-                    <div className="w-50 border p-3 d-flex position-relative">
-                        <div className="ariza border shadow">
-                            <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
-                                <div className="d-flex">
-                                    <div className="w-50"></div>
-                                    <div className="w-50">
-                                        Islom Karimov nomidagi Toshkent davlat texnika universiteti rektori akademik
-                                        S.M.Turabdjanovga <span>
+                                    <Form.Item>
+                                        <button className='button2' type='submit'>
+                                            <div className="svg-wrapper-1">
+                                                <div className="svg-wrapper">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        width="24"
+                                                        height="24"
+                                                    >
+                                                        <path fill="none" d="M0 0h24v24H0z"></path>
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span>Ma'lumotni yuborish</span>
+                                        </button>
+                                    </Form.Item>
+                                </Form>
+                            </div>}
+                            <div className="w-50 border p-3 d-flex position-relative">
+                                <div className="ariza border shadow">
+                                    <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
+                                        <div className="d-flex">
+                                            <div className="w-50"></div>
+                                            <div className="w-50">
+                                                Islom Karimov nomidagi Toshkent davlat texnika universiteti rektori akademik
+                                                S.M.Turabdjanovga <span>
                                             {
                                                 !ariza.nameInfo || ariza.nameInfo === "" ? '' : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
                                             } {ariza.fullName}
                                         </span> dan
-                                    </div>
-                                </div>
-                                <h4 className="text-center mt-3">
-                                    {ariza.applicationType}
-                                </h4>
-                                <div style={{textAlign: "justify"}}>{ariza.description !== '' ? ariza.description :
-                                    <Skeleton/>}
-                                </div>
-                                <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
-                                <div>
-                                    <b>Tel raqami:</b><br/>
-                                    {ariza.phone}
-                                </div>
-                                <div>
-                                    <b>Murojat raqami:</b> <br/>
-                                    {ariza.id}
-                                </div>
-                            </div>
-                        </div>
-                        <button className="button1" type="button"
-                                style={{position: "absolute", bottom: 60, right: 40}}
-                                onClick={handlePrint}>
-                            <span className="button__text">Yuklab olish <br/> pechat qilish</span>
-                            <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35"
-                                                                id="bdd05811-e15d-428c-bb53-8661459f9307"
-                                                                data-name="Layer 2" className="svg"><path
-                                d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
-                                d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
-                                d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
-                        </button>
-                    </div>
-
-                    {batafsil ?
-                        <div className="border p-2 mx-2 w-50">
-                            {
-                                ItemFileListe === '' ? <Empty/> :
-                                    ItemFileListe && ItemFileListe.map((item, index) => {
-                                        return <div className="" key={index}>
-                                            <div className="card-header" onClick={() => {
-                                                setFileDrower(item)
-                                                setOpen1(true)
-                                            }}>
-                                                <h6 className="mb-0 d-flex justify-content-between">
-                                                    <p className='w-50 px-3'>{item.exchangeApp.department.name} </p>
-                                                    <ArrowRightOutlined/>
-                                                    <p className='w-50 px-3'> {item.exchangeApp.toDepartment.name}</p>
-
-                                                </h6>
-                                                <CaretRightOutlined/>
-                                            </div>
-
-                                            <div>
                                             </div>
                                         </div>
-                                    })
-                            }
-                        </div> : ""}
-                </div>
+                                        <h4 className="text-center mt-3">
+                                            {ariza.applicationType}
+                                        </h4>
+                                        <div style={{textAlign: "justify"}}>{ariza.description !== '' ? ariza.description :
+                                            <Skeleton/>}
+                                        </div>
+                                        <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
+                                        <div>
+                                            <b>Tel raqami:</b><br/>
+                                            {ariza.phone}
+                                        </div>
+                                        <div>
+                                            <b>Murojat raqami:</b> <br/>
+                                            {ariza.id}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="button1" type="button"
+                                        style={{position: "absolute", bottom: 60, right: 40}}
+                                        onClick={handlePrint}>
+                                    <span className="button__text">Yuklab olish <br/> pechat qilish</span>
+                                    <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 35 35"
+                                                                        id="bdd05811-e15d-428c-bb53-8661459f9307"
+                                                                        data-name="Layer 2" className="svg"><path
+                                        d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path><path
+                                        d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
+                                        d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
+                                </button>
+                            </div>
+
+                            {batafsil ?
+                                <div className="border p-2 mx-2 w-50">
+                                    {
+                                        ItemFileListe === '' ? <Empty/> :
+                                            ItemFileListe && ItemFileListe.map((item, index) => {
+                                                return <div className="" key={index}>
+                                                    <div className="card-header" onClick={() => {
+                                                        setFileDrower(item)
+                                                        setOpen1(true)
+                                                    }}>
+                                                        <h6 className="mb-0 d-flex justify-content-between">
+                                                            <p className='w-50 px-3'>{item.exchangeApp.department.name} </p>
+                                                            <ArrowRightOutlined/>
+                                                            <p className='w-50 px-3'> {item.exchangeApp.toDepartment.name}</p>
+
+                                                        </h6>
+                                                        <CaretRightOutlined/>
+                                                    </div>
+
+                                                    <div>
+                                                    </div>
+                                                </div>
+                                            })
+                                    }
+                                </div> : ""}
+                        </div> :
+                        <div className="d-flex align-items-center justify-content-center">
+                            <Form form={form2} layout="vertical" ref={formRef} colon={false}>
+                                <div className="otp">
+                                <Form.Item label="Tasdiqlash kodini kiriting">
+                                        <OtpInput
+                                            value={otp}
+                                            onChange={setOtp}
+                                            numInputs={6}
+                                            placeholder={"******"}
+                                            renderSeparator={<span>-</span>}
+                                            renderInput={(props) => <input {...props} />}
+                                        />
+                                </Form.Item>
+                                </div>
+
+
+                                    <Button type="primary" onClick={verificationPost}>Tasdiqlash</Button>
+
+                            </Form>
+                        </div>
+                }
+
+
             </Modal>
             <Drawer
                 size={'large'} placement="right"
@@ -868,9 +930,9 @@ function One(props) {
                            },]}>
                     <DatePicker.RangePicker
                         // placeholder={["Bosh sana", 'Tugash sana']}
-                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={(value, dateString)=>{
+                        name="MurojatYuklash" format="YYYY-MM-DD" onChange={(value, dateString) => {
                         setDateListe(dateString)
-                        }}/>
+                    }}/>
                 </Form.Item>
                 <Form.Item>
                     <button className="btn btn-success" type="submit">
