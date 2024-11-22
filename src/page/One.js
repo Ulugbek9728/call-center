@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
-
 import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
     message, Empty, Drawer, Form, DatePicker, Popconfirm, Input,
@@ -15,12 +14,14 @@ import {toast} from "react-toastify";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OtpInput from 'react-otp-input';
+import {Editor} from '@tinymce/tinymce-react';
 
 
 dayjs.extend(customParseFormat);
 
 function One(props) {
     const formRef = useRef(null);
+    const tinyRef = useRef(null);
     const [form] = Form.useForm();
     const [form1] = Form.useForm();
     const [form2] = Form.useForm();
@@ -94,7 +95,6 @@ function One(props) {
         const result = Department.filter((word) => word.id === e);
         setAriza({...ariza, toDepartment: result[0]})
     };
-
 
     useEffect(() => {
         if (fulInfo?.currentRole?.includes('ROLE_DEPARTMENT')) {
@@ -345,8 +345,8 @@ function One(props) {
         },
 
         onChange(info) {
-            if (info.file.status === 'removed') {
-                const result = ariza.files.filter((idAll) => idAll?.id !== info?.file?.response?.id);
+            if (info?.file?.status === 'removed') {
+                const result = ariza?.files?.filter((idAll) => idAll?.id !== info?.file?.response?.id);
                 setAriza({...ariza, files: result})
                 axios.delete(`${ApiName}/api/v1/attach/${info?.file?.response?.id}`, {
                     headers: {"Authorization": `Bearer ${fulInfo?.accessToken}`}
@@ -355,14 +355,14 @@ function One(props) {
                 }).catch((error) => {
                     message.error(`${info.file.name} file delete failed.`);
                 })
-            } else if (info.file.status === "done") {
-                ariza.files.push({
-                        fileId: info.file.response.id,
+            } else if (info?.file?.status === "done") {
+                ariza?.files.push({
+                        fileId: info?.file?.response?.id,
                     }
                 )
-                message.success(`${info.file.name} File uploaded successfully`);
-            } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} File upload failed.`);
+                message.success(`${info?.file?.name} File uploaded successfully`);
+            } else if (info?.file?.status === 'error') {
+                message.error(`${info?.file?.name} File upload failed.`);
             }
         },
 
@@ -443,12 +443,12 @@ function One(props) {
     };
 
     const verificationPost = () => {
-        if (otp.length===6){
+        if (otp.length === 6) {
             console.log(verifiResponse)
             axios.post(`${ApiName}/api/application/verify-otp`, {
-                phone:verifiResponse?.phone,
-                code:otp,
-                applicationId:verifiResponse?.id
+                phone: verifiResponse?.phone,
+                code: otp,
+                applicationId: verifiResponse?.id
             }, {
                 headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
             }).then((response) => {
@@ -459,21 +459,18 @@ function One(props) {
                     setOpen(false);
                     setOtp('')
                     setSucsessText("Murojaat tasdiqlandi")
-                }
-                else {
+                } else {
                     setMessage(response?.data?.message)
                     setOtp('')
                 }
             }).catch((error) => {
                 setMessage('Error')
             })
-        }
-        else {
+        } else {
             toast.warning("Tasdiqlash kodini to'liq kiriting")
         }
     }
-
-
+    console.log(ariza)
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -593,7 +590,7 @@ function One(props) {
                                         },
                                         {
                                             name: "text",
-                                            value: ariza?.description
+                                            value: ariza?.description || ''
                                         },
                                         {
                                             name: "MurojatchiniDate",
@@ -715,15 +712,29 @@ function One(props) {
 
                                     <Form.Item
                                         name="text" label="Murojat mazmuni:"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Malumot kiritilishi shart !!!'
-                                            },]}>
-                                <textarea className="form-control" rows="8" id="comment" name="text"
-                                          onChange={(e) => {
-                                              setAriza({...ariza, description: e.target.value})
-                                          }}/>
+                                        rules={[{required: true, message: 'Malumot kiritilishi shart !!!'},]}>
+                                        <Editor
+                                            apiKey='lz45wcy30h07262uctvyefas1jge012e0q3sbimcsfloward'
+                                            onEditorChange={(content) => {
+                                                form.setFieldValue('text', content)
+                                                setAriza({...ariza, description: content})
+                                            }}
+                                            value={ariza?.description}
+                                            init={{
+                                                height: 300,
+                                                menubar: false,
+                                                plugins: [
+                                                    'advlist', 'autolink', 'lists', 'link', 'charmap', 'preview',
+                                                    'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                                                    'insertdatetime', 'media', 'table', 'wordcount'
+                                                ],
+                                                toolbar: 'undo redo | blocks | ' +
+                                                    'bold italic forecolor | alignleft aligncenter ' +
+                                                    'alignright alignjustify | bullist numlist outdent indent ',
+                                                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                                            }}
+                                        />
+
                                     </Form.Item>
 
                                     {edite ? '' : <Form.Item name='file'>
@@ -758,7 +769,7 @@ function One(props) {
                             </div>}
                             <div className="w-50 border p-3 d-flex position-relative">
                                 <div className="ariza border shadow">
-                                    <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
+                                    <div ref={componentRef} style={{ padding: '45px'}}>
                                         <div className="d-flex">
                                             <div className="w-50"></div>
                                             <div className="w-50">
@@ -773,9 +784,12 @@ function One(props) {
                                         <h4 className="text-center mt-3">
                                             {ariza.applicationType}
                                         </h4>
-                                        <div style={{textAlign: "justify"}}>{ariza.description !== '' ? ariza.description :
-                                            <Skeleton/>}
-                                        </div>
+                                        {
+                                            ariza.description !== '' ?
+                                                <div dangerouslySetInnerHTML={{__html: ariza.description}}/>
+                                                :
+                                                <Skeleton/>
+                                        }
                                         <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
                                         <div>
                                             <b>Tel raqami:</b><br/>
@@ -830,7 +844,7 @@ function One(props) {
                         <div className="d-flex align-items-center justify-content-center">
                             <Form form={form2} layout="vertical" ref={formRef} colon={false}>
                                 <div className="otp">
-                                <Form.Item label="Tasdiqlash kodini kiriting">
+                                    <Form.Item label="Tasdiqlash kodini kiriting">
                                         <OtpInput
                                             value={otp}
                                             onChange={setOtp}
@@ -839,11 +853,11 @@ function One(props) {
                                             renderSeparator={<span>-</span>}
                                             renderInput={(props) => <input {...props} />}
                                         />
-                                </Form.Item>
+                                    </Form.Item>
                                 </div>
 
 
-                                    <Button type="primary" onClick={verificationPost}>Tasdiqlash</Button>
+                                <Button type="primary" onClick={verificationPost}>Tasdiqlash</Button>
 
                             </Form>
                         </div>
