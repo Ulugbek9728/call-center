@@ -270,8 +270,13 @@ function GetListRector(props) {
                                 <h4 className="text-center mt-3">
                                     {ariza.applicationType}
                                 </h4>
-                                <div style={{textAlign: "justify"}}>{ariza.description !== '' ? ariza.description :
-                                    <Skeleton/>}
+                                <div style={{textAlign: "justify"}}>
+                                    {
+                                        ariza.description !== '' ?
+                                            <div dangerouslySetInnerHTML={{__html: ariza.description}}/>
+                                            :
+                                            <Skeleton/>
+                                    }
                                 </div>
                                 <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
                                 <div>
@@ -366,9 +371,7 @@ function GetListRector(props) {
 
                 </ol>
                 <h6>Izoh</h6>
-                <p className='border p-3'>
-                    {FileDrower?.exchangeApp?.description}
-                </p>
+                <div className='border p-3' dangerouslySetInnerHTML={{__html: FileDrower?.exchangeApp?.description}}/>
             </Drawer>
 
             <Table

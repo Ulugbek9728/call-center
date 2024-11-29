@@ -18,6 +18,7 @@ import GetListRector from "./getListRector";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import TypeService from "./TypeService";
+import {toast} from "react-toastify";
 
 
 const {} = Input;
@@ -163,7 +164,6 @@ function AdminOperator(props) {
         newWindow.close(); // Yangi oynani yopish
         navigate("/")
     }
-
     function changeRole(e) {
         let value
         axios.post(`${ApiName}/api/change-role/${e}`, '',
@@ -178,21 +178,15 @@ function AdminOperator(props) {
             localStorage.setItem("myCat", JSON.stringify(value));
             if (e === 'ROLE_OPERATOR') {
                 navigate('/operator/TypeService')
-
-            } else if (e === 'ROLE_RECTOR') {
-                navigate('/adminRector/TypeService')
-            } else if (e === 'ROLE_ADMIN') {
-                navigate('/adminAll/TypeService')
-
-            } else if (e === 'ROLE_DEPARTMENT') {
-                navigate('/department/addFileDepartment')
-
             }
+            else if (e === 'ROLE_RECTOR') {navigate('/adminRector/TypeService')}
+            else if (e === 'ROLE_ADMIN') {navigate('/adminAll/TypeService')}
+            else if (e === 'ROLE_DEPARTMENT') {navigate('/department/addFileDepartment')}
             window.location.reload()
-
 
         }).catch((error) => {
             console.log(error)
+            toast.error(error?.response?.data?.message)
         })
     }
 

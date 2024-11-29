@@ -21,11 +21,9 @@ dayjs.extend(customParseFormat);
 
 function One(props) {
     const formRef = useRef(null);
-    const tinyRef = useRef(null);
     const [form] = Form.useForm();
     const [form1] = Form.useForm();
     const [form2] = Form.useForm();
-
     const componentRef = useRef();
     const handlePrint = useReactToPrint({content: () => componentRef.current,});
 
@@ -45,9 +43,10 @@ function One(props) {
     const [open, setOpen] = useState(false);
     const [batafsil, setBatafsil] = useState(false);
     const [edite, setEdite] = useState(false);
+
     const [ariza, setAriza] = useState({
         fullName: '',
-        nameInfo: '[]',
+        nameInfo:fulInfo?.currentRole==="ROLE_DEPARTMENT"? `["${fulInfo?.department?.name}"]`: '[]',
         applicationType: 'Ariza',
         phone: '',
         expDate: null,
@@ -75,7 +74,6 @@ function One(props) {
     const [verificatio, setVerificatio] = useState(false);
     const [verifiResponse, setverifiResponse] = useState({});
     const [otp, setOtp] = useState('');
-
 
     function arizaFileList(id) {
         axios.get(`${ApiName}/api/v1/exchange-application/files-by-application`, {
@@ -254,7 +252,7 @@ function One(props) {
             render: (item, record, index) => (<>{item.fromOperator?.fullName}</>),
         },
         {
-            title: "Batafsil",
+            title: " ",
             render: (item, record, index) => (
                 <div className='d-flex justify-content-between' style={{width: 150}}>
                     <button className='btn btn-success' onClick={(e) => {
@@ -276,6 +274,7 @@ function One(props) {
                                     description: item.description,
                                     toDepartment: item.toDepartment,
                                 });
+                                console.log(item)
                                 setOpen(true);
                                 setEdite(true)
                             }}>
@@ -405,7 +404,6 @@ function One(props) {
         setAriza({...ariza, expDate: dateString})
     };
 
-
     const onChange = () => {
         const departmentID = fulInfo.roles[0] === "ROLE_OPERATOR" ? 7777 : fulInfo.department.id
         axios.get(`${ApiName}/api/application/get-as-excel`, {
@@ -470,7 +468,6 @@ function One(props) {
             toast.warning("Tasdiqlash kodini to'liq kiriting")
         }
     }
-    console.log(ariza)
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -544,7 +541,7 @@ function One(props) {
                        setEdite(false)
                        setAriza({
                            fullName: '',
-                           nameInfo: '',
+                           nameInfo: fulInfo?.currentRole==="ROLE_DEPARTMENT"? `["${fulInfo?.department?.name}"]`: '[]',
                            applicationType: 'Ariza',
                            phone: '',
                            expDate: '',
@@ -623,6 +620,7 @@ function One(props) {
                                         },]}>
                                         <Select
                                             name="MurojatchiniBo'limi" mode="tags"
+                                            disabled={fulInfo?.currentRole === "ROLE_DEPARTMENT"}
                                             placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
                                             onChange={(e) => {
                                                 setAriza({...ariza, nameInfo: JSON.stringify(e)})
@@ -882,9 +880,7 @@ function One(props) {
 
                 </ol>
                 <h6>Ma'lumot</h6>
-                <p className='border p-3'>
-                    {FileDrower?.exchangeApp?.description}
-                </p>
+                <div className='border p-3' dangerouslySetInnerHTML={{__html: FileDrower?.exchangeApp?.description}}/>
             </Drawer>
 
             <Table
