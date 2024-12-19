@@ -402,9 +402,7 @@ function AddDeportment(props) {
                                     value: 'ROLE_DEPARTMENT',
                                     label: "Markaz / Bo'lim / Fakultet / Kafedra"
                                 }
-                            ]}
-                    />
-
+                            ]}/>
                 </form>
             </Modal>
             {open1 ? (<Modal className='w-25' title={"Hodimni ro'lini o'zgartirish"} open={open1} onOk={handleOk1}

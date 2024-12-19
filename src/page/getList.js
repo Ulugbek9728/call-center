@@ -1,25 +1,63 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    Input, Space, Steps, Table, Modal, Skeleton,
-    Segmented, Upload, Button, message, Select, Empty, Drawer, Form, DatePicker,
+    Input, Space, Spin, Table, Modal, Skeleton, Tag, Segmented, Upload, Button, message, Select, Empty,
+    Drawer, Form, DatePicker,
 } from "antd";
 
 import {
-    UploadOutlined,
-    CaretRightOutlined,
-    ArrowRightOutlined,
-    ClockCircleOutlined,
-    CheckOutlined,
-    CloseOutlined
+    UploadOutlined, CaretRightOutlined, ArrowRightOutlined, CalendarOutlined, CheckOutlined, PushpinOutlined,
+    CloseOutlined, ClockCircleOutlined
 } from "@ant-design/icons";
 import axios from "axios";
 import {ApiName} from "../APIname";
 import {useReactToPrint} from "react-to-print";
 import {toast} from "react-toastify";
-import button from "bootstrap/js/src/button";
 
 const {Search} = Input;
 
+
+function appStatusList(item, exchangesApp) {
+    const result = exchangesApp
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        .filter(innerItem => innerItem?.department)
+        .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
+
+    return result.length > 0 ?
+        < div>
+            < CheckOutlined
+                style={
+                    {
+                        marginRight:"13px",
+                        padding: "5px",
+                        borderRadius: "50%",
+                        backgroundColor: "#1ca01f",
+                        color: "white"}
+                }
+            />
+            <span >{result[0].createdDate.split('T')[0]}</span>
+        </div> :
+        <ClockCircleOutlined
+            style={{
+                padding: "5px",
+                borderRadius: "50%",
+                backgroundColor: "#d69a33",
+                color: "white"
+            }}
+        />
+}
+function appStatusList2(item, exchangesApp) {
+    const result = exchangesApp
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        .filter(innerItem => innerItem?.department)
+        .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
+    return result.length > 0 ?
+        < div>
+           <span>{result[0].department?.name}: {result[0]?.from?.shortName}</span>
+            <span > {result[0].createdDate.split('T')[0]}</span>
+        </div> :
+        <span>{item.toDepartment?.name}</span>
+
+}
 
 function GetList(props) {
     const formRef = useRef(null);
@@ -79,7 +117,6 @@ function GetList(props) {
     });
     const [DateListe, setDateListe] = useState(['', '']);
 
-
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
         const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options)
@@ -87,7 +124,10 @@ function GetList(props) {
     }, [Open]);
 
     const handleOk = () => {
-        axios.post(`${ApiName}/api/v1/exchange-application`, arizaSend, {
+        axios.post(`${ApiName}/api/v1/exchange-application`, {
+            ...arizaSend,
+            exchangeType: ariza?.toDepartment?.id !== fulInfo?.department?.id ? "ACCEPTED_VERIFICATION" : arizaSend.exchangeType
+        }, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
         }).then((response) => {
             form.resetFields()
@@ -147,7 +187,6 @@ function GetList(props) {
                     total: response.data.data.totalElements
                 }
             })
-            console.log(response.data.data.content)
         }).catch((error) => {
             console.log(error)
         });
@@ -160,10 +199,11 @@ function GetList(props) {
             render: (item, record, index) => (<>{index + 1}</>)
         },
         {
-            title: 'File turi',
+            title: 'Murojat turi',
             dataIndex: 'applicationType',
             width: 150,
         },
+
         Table.EXPAND_COLUMN,
         {
             title: "Bo'lim / Markaz",
@@ -171,12 +211,14 @@ function GetList(props) {
         },
         {
             title: 'Murojat tasdiqlanganligi',
-            render: (item)=>(
-                item.isApproved? <CheckOutlined style={{fontSize:"20px"}} />: <CloseOutlined style={{fontSize:"20px"}}/>
+            render: (item) => (
+                item.isApproved ? <CheckOutlined style={{fontSize: "20px"}}/> :
+                    <CloseOutlined style={{fontSize: "20px"}}/>
             )
         },
+
         {
-            title: 'File ID raqami',
+            title: 'Murojat raqami',
             dataIndex: 'id',
         },
         {
@@ -197,8 +239,8 @@ function GetList(props) {
                         ...arizaSend,
                         applicationId: item.id
                     })
-                    console.log(item)
                     arizaFileList(item.id)
+
                     setOpen(true)
                 }}>
                     Ko'rish
@@ -272,7 +314,6 @@ function GetList(props) {
             console.log(error)
         });
     }
-    
 
     useEffect(() => {
         DepartmenGet()
@@ -302,11 +343,10 @@ function GetList(props) {
             console.log(error)
         });
     };
+
     const onChangeDate = (value, dateString) => {
         setDateListe(dateString)
     };
-
-
 
     function notify() {
         if (sucsessText !== '') {
@@ -342,24 +382,24 @@ function GetList(props) {
                     {
                         fulInfo?.currentRole !== "ROLE_DEPARTMENT" ?
                             <Select
-                            placeholder='Yuborilgna murojat / Kelgan murojat'
-                            style={{
-                                width: 300,
-                            }} value={SRC.isCome}
-                            onChange={(e) => {
-                                setSRC({...SRC, isCome: e})
-                            }}
-                            options={[
-                                {
-                                    value: false,
-                                    label: 'Yuborilgna murojat',
-                                },
-                                {
-                                    value: true,
-                                    label: 'Kelgan murojat',
-                                },
-                            ]}
-                        /> : ''
+                                placeholder='Yuborilgna murojat / Kelgan murojat'
+                                style={{
+                                    width: 300,
+                                }} value={SRC.isCome}
+                                onChange={(e) => {
+                                    setSRC({...SRC, isCome: e})
+                                }}
+                                options={[
+                                    {
+                                        value: false,
+                                        label: 'Yuborilgna murojat',
+                                    },
+                                    {
+                                        value: true,
+                                        label: 'Kelgan murojat',
+                                    },
+                                ]}
+                            /> : ''
                     }
                     <Select
                         placeholder='Statusini tanlang'
@@ -372,21 +412,20 @@ function GetList(props) {
                         options={[
                             {
                                 value: '',
-                                label: 'Hammasi',
+                                label: 'Hamma murojatlar',
                             },
                             {
-                                value: "COMMITTED",
-                                label: 'Yaratilgan',
+                                value: "WAIT_FOR_VERIFICATION",
+                                label: 'Yangi murojatlar',
                             },
                             {
                                 value: 'PROGRESS',
-                                label: 'Jarayonda',
+                                label: 'Jarayondagi murojalar',
                             },
                             {
                                 value: 'FINISHED',
-                                label: 'Tugatilgan',
+                                label: 'Tugatilgan murojatlar',
                             },
-
                         ]}
                     />
 
@@ -414,11 +453,15 @@ function GetList(props) {
             }}>
                 <div className="d-flex justify-content-between">
                     <div className="w-50 border p-3 d-flex position-relative">
-
                         <div className="ariza border shadow">
                             <div ref={componentRef} style={{fontSize: '14px', padding: '45px'}}>
                                 <div className="d-flex">
-                                    <div className="w-50"></div>
+                                    <div style={{rotate: "-45deg"}}
+                                         className="w-50 d-flex align-items-center justify-content-center">
+                                        {ariza?.approveData ?
+                                            <i>S.M.Turabdjanov <br/> {ariza?.approveData?.approveData.slice(0, 10)}
+                                            </i> : ""}
+                                    </div>
                                     <div className="w-50">
                                         Islom Karimov nomidagi Toshkent davlat texnika universiteti rektori akademik
                                         S.M.Turabdjanovga <span>
@@ -446,6 +489,29 @@ function GetList(props) {
                                     <b>Murojat raqami:</b> <br/>
                                     {ariza.id}
                                 </div>
+                                <div className="mt-3">
+                                    <b>Murojatni tasdiqlovchi bo'limlar:</b>
+                                    <ol className="">
+                                        {
+                                            ariza?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
+
+                                                 <li className="">{
+                                                     appStatusList2(item, ariza.exchangesApp)
+                                                 }</li>
+                                            )).slice(1)
+                                        }
+
+                                    </ol>
+                                </div>
+                                <div className="mt-3">
+                                    <b>Murojatni yakunlovchi bo'lim:</b>
+                                    <ol className="">
+                                        {
+                                            <li className="">{ariza?.toDepartment?.name}</li>
+                                        }
+
+                                    </ol>
+                                </div>
                             </div>
                         </div>
                         <button className="button1" type="button"
@@ -459,7 +525,6 @@ function GetList(props) {
                                 d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path><path
                                 d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path></svg></span>
                         </button>
-
                     </div>
 
                     <div className="w-50 px-4">
@@ -499,7 +564,9 @@ function GetList(props) {
                                         },
                                         {
                                             label: "Boshqa bo'limga o'tkazish",
-                                            value: "SEND"
+                                            value: "SEND",
+                                            disabled:true
+                                                // ariza?.toDepartment?.id !== fulInfo?.department?.id
                                         },
                                     ]}
                                     value={arizaSend.exchangeType}
@@ -577,7 +644,7 @@ function GetList(props) {
                                         </button>
                                     </Form.Item>
                                 </Form>
-                            </div>:''}
+                            </div> : ''}
                     </div>
 
                 </div>
@@ -608,7 +675,6 @@ function GetList(props) {
             <Table
                 columns={columns}
                 pagination={{
-
                     total: tableParams.pagination.total,
                     onChange: (page, pageSize) => {
                         arizaGetList(page, pageSize);
@@ -617,29 +683,50 @@ function GetList(props) {
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
-                            <Steps direction="vertical"
-                                   current={record.status !== "FINISHED" ? record?.exchangesApp?.length : record?.exchangesApp?.length + 1}
-                                   status="wait"
-                                   items={
-                                       [...record?.exchangesApp?.map(item => (
-                                           {
-                                               title: item?.department?.name,
-                                               description: item?.toDepartment?.name
-                                           }
-                                       )),
-                                           {
-                                               title: `Murojatga javob berish mudati ${record?.expDate}`,
-                                               description: record.status !== "FINISHED" ?
-                                                   ''
-                                                   :
-                                                   `Murojatga javob berilgan sana 
-                                                   ${record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}`,
-                                               icon: record.status !== "FINISHED" ?
-                                                   <ClockCircleOutlined className="timeline-clock-icon"/> : '',
-                                           }
-                                       ]
-                                   }
-                            />
+                            <div>
+                                <div className='d-flex gap-3 mt-3'>
+                                    <PushpinOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span>{record?.exchangesApp[0]?.department?.name}</span><ArrowRightOutlined/>
+                                        <span>{record?.exchangesApp[0]?.toDepartment?.name}</span>
+                                    </div>
+                                </div>
+                                {
+                                    record?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
+                                        <div className='d-flex gap-3 mt-3'>
+                                            {
+                                                appStatusList(item, record.exchangesApp)
+                                            }
+                                            <div className="d-flex gap-3">
+                                                <span>{item?.department?.name}</span><ArrowRightOutlined/>
+                                                <span>{item?.toDepartment?.name}</span>
+
+                                            </div>
+                                        </div>)).slice(1)
+                                }
+
+
+                                <div className='d-flex gap-3 mt-3'>
+                                    <CalendarOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span> Murojatga javob berish mudati {record?.expDate}</span>
+                                        <ArrowRightOutlined/>
+                                        {record.status !== "FINISHED" ?
+                                            <Spin/> :
+                                            <span> Murojatga javob berilgan sana {record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}</span>}
+                                    </div>
+                                </div>
+                            </div>
                         )
                     }
                 }}

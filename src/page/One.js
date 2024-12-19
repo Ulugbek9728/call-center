@@ -2,11 +2,11 @@ import React, {useEffect, useState, useRef} from 'react';
 import {useReactToPrint} from 'react-to-print';
 import {
     Space, Table, Select, Modal, Upload, Button, Steps, Skeleton,
-    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input,
+    message, Empty, Drawer, Form, DatePicker, Popconfirm, Input, Spin,
 } from 'antd';
 import {
     UploadOutlined, ClockCircleOutlined, CaretRightOutlined,
-    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined,
+    EyeOutlined, CheckOutlined, CloseOutlined, ArrowRightOutlined, PushpinOutlined, CalendarOutlined,
 } from '@ant-design/icons';
 import {ApiName} from "../APIname";
 import axios from "axios";
@@ -16,8 +16,53 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OtpInput from 'react-otp-input';
 import {Editor} from '@tinymce/tinymce-react';
 
-
 dayjs.extend(customParseFormat);
+
+
+function appStatusList(item, exchangesApp) {
+    const result = exchangesApp
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        .filter(innerItem => innerItem?.department)
+        .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
+
+    return result.length > 0 ?
+        < div>
+            < CheckOutlined
+                style={
+                    {
+                        marginRight: "13px",
+                        padding: "5px",
+                        borderRadius: "50%",
+                        backgroundColor: "#1ca01f",
+                        color: "white"
+                    }
+                }
+            />
+            <span>{result[0].createdDate.split('T')[0]}</span>
+        </div> :
+        <ClockCircleOutlined
+            style={{
+                padding: "5px",
+                borderRadius: "50%",
+                backgroundColor: "#d69a33",
+                color: "white"
+            }}
+        />
+}
+
+function appStatusList2(item, exchangesApp) {
+    const result = exchangesApp
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        .filter(innerItem => innerItem?.department)
+        .filter(innerItem => innerItem?.department.id === item?.id);
+    return result?.length > 0 ?
+        < div>
+            <span>{result[0].department?.name}: {result[0]?.from?.shortName}</span>
+            <span> {result[0].createdDate.split('T')[0]}</span>
+        </div> :
+        <span>{item?.name}</span>
+
+}
 
 function One(props) {
     const formRef = useRef(null);
@@ -46,7 +91,7 @@ function One(props) {
 
     const [ariza, setAriza] = useState({
         fullName: '',
-        nameInfo:fulInfo?.currentRole==="ROLE_DEPARTMENT"? `["${fulInfo?.department?.name}"]`: '[]',
+        nameInfo: fulInfo?.currentRole === "ROLE_DEPARTMENT" ? `["${fulInfo?.department?.name}"]` : '[]',
         applicationType: 'Ariza',
         phone: '',
         expDate: null,
@@ -93,7 +138,6 @@ function One(props) {
         const result = Department.filter((word) => word.id === e);
         setAriza({...ariza, toDepartment: result[0]})
     };
-
     useEffect(() => {
         if (fulInfo?.currentRole?.includes('ROLE_DEPARTMENT')) {
             setAriza({...ariza, fullName: fulInfo.fullName})
@@ -155,6 +199,7 @@ function One(props) {
                         phone: '',
                         expDate: '',
                         description: '',
+                        confirmatoryDepartments: [],
                         toDepartment: {
                             id: '',
                             nam: '',
@@ -186,10 +231,10 @@ function One(props) {
                         console.log(response?.data?.data)
                         setverifiResponse(response?.data?.data)
                         form.resetFields()
-                        // setOpen(false);
                         setAriza({
                             fullName: '',
                             applicationType: 'Ariza',
+                            confirmatoryDepartments: [],
                             phone: '',
                             expDate: '',
                             description: '',
@@ -211,7 +256,6 @@ function One(props) {
             }
         }
     };
-
     const columns = [
         {
             title: '№',
@@ -257,7 +301,10 @@ function One(props) {
                 <div className='d-flex justify-content-between' style={{width: 150}}>
                     <button className='btn btn-success' onClick={(e) => {
                         arizaFileList(item.id)
-                        setAriza(item)
+                        setAriza({
+                            ...item,
+                            confirmatoryDepartments: item?.exchangesApp?.filter(innerItem => innerItem.exchangeType === 'FOR_VERIFICATION').map((item) => (item.toDepartment))
+                        })
                         setBatafsil(true)
                         setOpen(true)
                     }}><EyeOutlined/></button>
@@ -273,8 +320,9 @@ function One(props) {
                                     expDate: item.expDate,
                                     description: item.description,
                                     toDepartment: item.toDepartment,
+                                    exchangesApp: item.exchangesApp,
+                                    confirmatoryDepartments: item?.exchangesApp.filter(innerItem => innerItem.exchangeType === 'FOR_VERIFICATION').map((innerItem) => (innerItem.toDepartment))
                                 });
-                                console.log(item)
                                 setOpen(true);
                                 setEdite(true)
                             }}>
@@ -335,7 +383,6 @@ function One(props) {
             )
         },
     ];
-
     const propsss = {
         name: 'file',
         action: `${ApiName}/api/v1/attach/upload`,
@@ -366,7 +413,6 @@ function One(props) {
         },
 
     };
-
     useEffect(() => {
         const date = new Date();
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
@@ -379,7 +425,6 @@ function One(props) {
         }
 
     }, [batafsil, edite]);
-
     useEffect(() => {
         notify();
         setMessage('')
@@ -399,11 +444,9 @@ function One(props) {
         // Can not select days before today and today
         return current && current < dayjs().endOf('day');
     };
-
     const onChangeDate2 = (value, dateString) => {
         setAriza({...ariza, expDate: dateString})
     };
-
     const onChange = () => {
         const departmentID = fulInfo.roles[0] === "ROLE_OPERATOR" ? 7777 : fulInfo.department.id
         axios.get(`${ApiName}/api/application/get-as-excel`, {
@@ -425,7 +468,6 @@ function One(props) {
             console.log(error)
         });
     };
-
     const Delete = (e) => {
         axios.delete(`${ApiName}/api/application/${e}`, {
             headers: {"Authorization": `Bearer ${fulInfo.accessToken}`}
@@ -439,7 +481,6 @@ function One(props) {
             setMessage("O'chirishda xatolik")
         })
     };
-
     const verificationPost = () => {
         if (otp.length === 6) {
             console.log(verifiResponse)
@@ -541,11 +582,12 @@ function One(props) {
                        setEdite(false)
                        setAriza({
                            fullName: '',
-                           nameInfo: fulInfo?.currentRole==="ROLE_DEPARTMENT"? `["${fulInfo?.department?.name}"]`: '[]',
+                           nameInfo: fulInfo?.currentRole === "ROLE_DEPARTMENT" ? `["${fulInfo?.department?.name}"]` : '[]',
                            applicationType: 'Ariza',
                            phone: '',
                            expDate: '',
                            description: '',
+                           confirmatoryDepartments: [],
                            toDepartment: {
                                id: '',
                                nam: '',
@@ -568,6 +610,10 @@ function One(props) {
                                         {
                                             name: "MurojatchiniBo'limi",
                                             value: !ariza.nameInfo || ariza.nameInfo === "" ? [] : JSON.parse(ariza.nameInfo)?.map(i => ` ${i}`)
+                                        },
+                                        {
+                                            name: "Departments",
+                                            value: !ariza.confirmatoryDepartments || ariza.confirmatoryDepartments === "" ? [] : ariza.confirmatoryDepartments?.map(i => `${i.name}`)
                                         },
                                         {
                                             name: "FISH",
@@ -602,13 +648,8 @@ function One(props) {
                                             required: true,
                                             message: 'Malumot kiritilishi shart !!!'
                                         },]}>
-                                        <DatePicker
-                                            name="MurojatchiniDate"
-                                            format="YYYY-MM-DD"
-                                            style={{width: '100%'}}
-                                            disabledDate={disabledDate}
-                                            onChange={onChangeDate2}
-                                        />
+                                        <DatePicker name="MurojatchiniDate" format="YYYY-MM-DD" style={{width: '100%'}}
+                                                    disabledDate={disabledDate} onChange={onChangeDate2}/>
                                     </Form.Item>
 
                                     <Form.Item
@@ -653,8 +694,28 @@ function One(props) {
                                                    setAriza({...ariza, phone: e.target.value})
                                                }}/>
                                     </Form.Item>
+                                    <Form.Item
+                                        label="Tasdiqlovchi Fakultet, Kafedra, Bo'lim, Markazlar "
+                                        name="Departments">
+                                        <Select
+                                            name="Departments" mode="tags"
+                                            placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
+                                            onChange={(id) => {
+                                                setAriza({
+                                                    ...ariza,
+                                                    confirmatoryDepartments: Department.filter((item) => id.includes(item.name))
+                                                })
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                            options={Department && Department.map((item, index) => ({
+                                                value: item?.name,
+                                                label: item?.name
+                                            }))}
+                                        />
+                                    </Form.Item>
 
-                                    <Form.Item label="Murojat yuboriladigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
+                                    <Form.Item label="Murojat Yakunlaydigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
                                                name="MurojatYuboriladigan"
                                                rules={[{
                                                    required: true,
@@ -683,13 +744,10 @@ function One(props) {
                                                 required: true,
                                                 message: 'Malumot kiritilishi shart !!!'
                                             },]}>
-                                        <Select name="xujjat" className='w-100'
+                                        <Select name="xujjat" className='w-100' allowClear style={{width: 120,}}
                                                 onChange={(e) => {
                                                     setAriza({...ariza, applicationType: e})
                                                 }}
-                                                style={{
-                                                    width: 120,
-                                                }} allowClear
                                                 options={[
                                                     {
                                                         value: 'Ariza',
@@ -734,14 +792,11 @@ function One(props) {
                                         />
 
                                     </Form.Item>
-
                                     {edite ? '' : <Form.Item name='file'>
                                         <Upload name='file' {...propsss}>
                                             <Button icon={<UploadOutlined/>}>File yuklash</Button>
                                         </Upload>
                                     </Form.Item>}
-
-
                                     <Form.Item>
                                         <button className='button2' type='submit'>
                                             <div className="svg-wrapper-1">
@@ -767,9 +822,14 @@ function One(props) {
                             </div>}
                             <div className="w-50 border p-3 d-flex position-relative">
                                 <div className="ariza border shadow">
-                                    <div ref={componentRef} style={{ padding: '45px'}}>
+                                    <div ref={componentRef} style={{padding: '45px'}}>
                                         <div className="d-flex">
-                                            <div className="w-50"></div>
+                                            <div style={{rotate: "-45deg"}}
+                                                 className="w-50 d-flex align-items-center justify-content-center">
+                                                {ariza?.approveData ?
+                                                    <i>S.M.Turabdjanov <br/> {ariza?.approveData?.approveData.slice(0, 10)}
+                                                    </i> : ""}
+                                            </div>
                                             <div className="w-50">
                                                 Islom Karimov nomidagi Toshkent davlat texnika universiteti rektori akademik
                                                 S.M.Turabdjanovga <span>
@@ -788,14 +848,38 @@ function One(props) {
                                                 :
                                                 <Skeleton/>
                                         }
-                                        <div className='date ' style={{marginTop: "30px"}}>sana: {Datee}</div>
+
+                                        <div className='date' style={{marginTop: "30px"}}><b>Murojat yaratilgan
+                                            sana:</b> {Datee}</div>
                                         <div>
-                                            <b>Tel raqami:</b><br/>
-                                            {ariza.phone}
+                                            <b>Tel:</b>{ariza.phone}
                                         </div>
                                         <div>
-                                            <b>Murojat raqami:</b> <br/>
-                                            {ariza.id}
+                                            <b>Murojat raqami:</b>{ariza.id}
+                                        </div>
+                                        <div className="mt-3">
+                                            <b>Murojatni tasdiqlovchi bo'limlar:</b>
+                                            <ol className="">
+                                                {
+                                                    ariza?.confirmatoryDepartments?.map(item => (
+                                                        <li className="">
+                                                            {
+                                                                appStatusList2(item, ariza?.exchangesApp)
+                                                            }
+                                                        </li>
+                                                    ))
+                                                }
+
+                                            </ol>
+                                        </div>
+                                        <div className="mt-3">
+                                            <b>Murojatni yakunlovchi bo'lim:</b>
+                                            <ol className="">
+                                                {
+                                                    <li className="">{ariza?.toDepartment?.name}</li>
+                                                }
+
+                                            </ol>
                                         </div>
                                     </div>
                                 </div>
@@ -895,29 +979,51 @@ function One(props) {
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
-                            <Steps direction="vertical"
-                                   current={record.status !== "FINISHED" ? record?.exchangesApp?.length : record?.exchangesApp?.length + 1}
-                                   status="wait"
-                                   items={
-                                       [...record?.exchangesApp?.map(item => (
-                                           {
-                                               title: item?.department?.name,
-                                               description: item?.toDepartment?.name
-                                           }
-                                       )),
-                                           {
-                                               title: `Murojatga javob berish mudati ${record?.expDate}`,
-                                               description: record.status !== "FINISHED" ?
-                                                   ''
-                                                   :
-                                                   `Murojatga javob berilgan sana 
-                                                   ${record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}`,
-                                               icon: record.status !== "FINISHED" ?
-                                                   <ClockCircleOutlined className="timeline-clock-icon"/> : '',
-                                           }
-                                       ]
-                                   }
-                            />
+                            <div>
+                                <div className='d-flex gap-3 mt-3'>
+                                    <PushpinOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span>{record?.exchangesApp[0]?.department?.name}</span><ArrowRightOutlined/>
+                                        <span>{record?.exchangesApp[0]?.toDepartment?.name}</span>
+                                    </div>
+                                </div>
+
+                                {
+                                    record?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
+                                        <div className='d-flex gap-3 mt-3'>
+                                            {
+                                                appStatusList(item, record.exchangesApp)
+                                            }
+                                            <div className="d-flex gap-3">
+                                                <span>{item?.department?.name}</span><ArrowRightOutlined/>
+                                                <span>{item?.toDepartment?.name}</span>
+
+                                            </div>
+                                        </div>)).slice(1)
+                                }
+
+
+                                <div className='d-flex gap-3 mt-3'>
+                                    <CalendarOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span> Murojatga javob berish mudati {record?.expDate}</span>
+                                        <ArrowRightOutlined/>
+                                        {record.status !== "FINISHED" ?
+                                            <Spin/> :
+                                            <span> Murojatga javob berilgan sana {record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}</span>}
+                                    </div>
+                                </div>
+                            </div>
                         )
                     }
                 }}

@@ -146,9 +146,7 @@ function AdminOperator(props) {
             setRollName('ADMINI')
         }
     }, [])
-
     let newWindow;
-
     function LogOut() {
         openNewWindow(); // Yangi oynani ochish
         setTimeout(closeWindow, 100); // 0.1 sekunddan so'ng oynani yopish

@@ -84,7 +84,6 @@ function Auth(props) {
             </div>}
 
         </>
-
     );
 }
 
