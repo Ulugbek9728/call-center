@@ -715,7 +715,7 @@ function One(props) {
                                         />
                                     </Form.Item>
 
-                                    <Form.Item label="Murojat Yakunlaydigan Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
+                                    <Form.Item label="Ijrosini ta'minlovchi Markaz / Bo'lim / Fakultet / Kafedrani tanlang"
                                                name="MurojatYuboriladigan"
                                                rules={[{
                                                    required: true,
@@ -858,7 +858,7 @@ function One(props) {
                                             <b>Murojat raqami:</b>{ariza.id}
                                         </div>
                                         <div className="mt-3">
-                                            <b>Murojatni tasdiqlovchi bo'limlar:</b>
+                                            <b>Murojatni tasdiqlovchi Markaz / Bo'lim / Fakultet / Kafedra:</b>
                                             <ol className="">
                                                 {
                                                     ariza?.confirmatoryDepartments?.map(item => (
@@ -873,7 +873,7 @@ function One(props) {
                                             </ol>
                                         </div>
                                         <div className="mt-3">
-                                            <b>Murojatni yakunlovchi bo'lim:</b>
+                                            <b>Ijrosini ta'minlovchi Markaz / Bo'lim / Fakultet / Kafedra:</b>
                                             <ol className="">
                                                 {
                                                     <li className="">{ariza?.toDepartment?.name}</li>

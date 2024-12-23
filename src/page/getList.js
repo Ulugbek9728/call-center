@@ -18,12 +18,11 @@ const {Search} = Input;
 
 function appStatusList(item, exchangesApp) {
     const result = exchangesApp
-        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION'||'BACK')
         .filter(innerItem => innerItem?.department)
         .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
-
     return result.length > 0 ?
-        < div>
+        < div >
             < CheckOutlined
                 style={
                     {
@@ -36,6 +35,7 @@ function appStatusList(item, exchangesApp) {
             />
             <span >{result[0].createdDate.split('T')[0]}</span>
         </div> :
+
         <ClockCircleOutlined
             style={{
                 padding: "5px",
@@ -47,9 +47,10 @@ function appStatusList(item, exchangesApp) {
 }
 function appStatusList2(item, exchangesApp) {
     const result = exchangesApp
-        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION'|| innerItem.exchangeType === 'BACK')
         .filter(innerItem => innerItem?.department)
         .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
+
     return result.length > 0 ?
         < div>
            <span>{result[0].department?.name}: {result[0]?.from?.shortName}</span>
@@ -216,7 +217,6 @@ function GetList(props) {
                     <CloseOutlined style={{fontSize: "20px"}}/>
             )
         },
-
         {
             title: 'Murojat raqami',
             dataIndex: 'id',
@@ -225,7 +225,6 @@ function GetList(props) {
             title: 'Murojatchi',
             dataIndex: 'fullName',
         },
-
         {
             title: 'Masul hodim',
             render: (item, record, index) => (<>{item.fromOperator?.fullName}</>),
@@ -697,8 +696,8 @@ function GetList(props) {
                                     </div>
                                 </div>
                                 {
-                                    record?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
-                                        <div className='d-flex gap-3 mt-3'>
+                                    record?.exchangesApp?.filter(item => ['BACK','SEND','FOR_VERIFICATION'].includes(item.exchangeType)).map(item => (
+                                        <div className='d-flex gap-3 mt-3' key={item.id}>
                                             {
                                                 appStatusList(item, record.exchangesApp)
                                             }

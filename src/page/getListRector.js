@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
     Input, Steps, Table, Modal, Skeleton,
-    Button, message, Empty, Drawer, Form, DatePicker,
+    Button, message, Empty, Drawer, Form, DatePicker, Spin,
 } from "antd";
 
 import {
     CaretRightOutlined,
     ArrowRightOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined, PushpinOutlined, CalendarOutlined, CheckOutlined
 } from "@ant-design/icons";
 import axios from "axios";
 import {ApiName} from "../APIname";
@@ -16,7 +16,35 @@ import {toast} from "react-toastify";
 
 const {Search} = Input;
 
+function appStatusList(item, exchangesApp) {
+    const result = exchangesApp
+        ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION')
+        .filter(innerItem => innerItem?.department)
+        .filter(innerItem => innerItem?.department.id === item?.toDepartment?.id);
 
+    return result.length > 0 ?
+        < div>
+            < CheckOutlined
+                style={
+                    {
+                        marginRight:"13px",
+                        padding: "5px",
+                        borderRadius: "50%",
+                        backgroundColor: "#1ca01f",
+                        color: "white"}
+                }
+            />
+            <span >{result[0].createdDate.split('T')[0]}</span>
+        </div> :
+        <ClockCircleOutlined
+            style={{
+                padding: "5px",
+                borderRadius: "50%",
+                backgroundColor: "#d69a33",
+                color: "white"
+            }}
+        />
+}
 function GetListRector(props) {
     const formRef = useRef(null);
     const [form] = Form.useForm();
@@ -75,7 +103,6 @@ function GetListRector(props) {
     });
     const [DateListe, setDateListe] = useState(['', '']);
 
-
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
         const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options)
@@ -85,7 +112,6 @@ function GetListRector(props) {
     useEffect(() => {
         arizaGetList(1, 10)
     }, [sucsessText, SRC,]);
-
 
     function arizaGetList(page, pageSize) {
         axios.get(`${ApiName}/api/application/list-of-approve-applications`, {
@@ -343,7 +369,7 @@ function GetListRector(props) {
                                             maskClosable: true
                                         });
                                     }}
-                            > Qabul qilish
+                            > Mas'ulga yo'naltirish
                             </button>
                         </div>
 
@@ -385,29 +411,50 @@ function GetListRector(props) {
                 expandable={{
                     expandedRowRender: (record) => {
                         return (
-                            <Steps direction="vertical"
-                                   current={record.status !== "FINISHED" ? record?.exchangesApp?.length : record?.exchangesApp?.length + 1}
-                                   status="wait"
-                                   items={
-                                       [...record?.exchangesApp?.map(item => (
-                                           {
-                                               title: item?.department?.name,
-                                               description: item?.toDepartment?.name
-                                           }
-                                       )),
-                                           {
-                                               title: `Murojatga javob berish mudati ${record?.expDate}`,
-                                               description: record.status !== "FINISHED" ?
-                                                   ''
-                                                   :
-                                                   `Murojatga javob berilgan sana 
-                                                   ${record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}`,
-                                               icon: record.status !== "FINISHED" ?
-                                                   <ClockCircleOutlined className="timeline-clock-icon"/> : '',
-                                           }
-                                       ]
-                                   }
-                            />
+                            <div>
+                                <div className='d-flex gap-3 mt-3'>
+                                    <PushpinOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span>{record?.exchangesApp[0]?.department?.name}</span><ArrowRightOutlined/>
+                                        <span>{record?.exchangesApp[0]?.toDepartment?.name}</span>
+                                    </div>
+                                </div>
+                                {
+                                    record?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
+                                        <div className='d-flex gap-3 mt-3'>
+                                            {
+                                                appStatusList(item, record.exchangesApp)
+                                            }
+                                            <div className="d-flex gap-3">
+                                                <span>{item?.department?.name}</span><ArrowRightOutlined/>
+                                                <span>{item?.toDepartment?.name}</span>
+
+                                            </div>
+                                        </div>)).slice(1)
+                                }
+
+
+                                <div className='d-flex gap-3 mt-3'>
+                                    <CalendarOutlined style={{
+                                        padding: "5px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#06a3da",
+                                        color: "white"
+                                    }}/>
+                                    <div className="d-flex gap-3">
+                                        <span> Murojatga javob berish mudati {record?.expDate}</span>
+                                        <ArrowRightOutlined/>
+                                        {record.status !== "FINISHED" ?
+                                            <Spin/> :
+                                            <span> Murojatga javob berilgan sana {record.exchangesApp[record.exchangesApp.length - 1]?.createdDate?.split('T')[0]}</span>}
+                                    </div>
+                                </div>
+                            </div>
                         )
                     }
                 }}
