@@ -76,7 +76,7 @@ function TypeService(props) {
     }
 
     function DepartmenGet() {
-        axios.get(`https://api-id.tdtu.uz/api/department?structureCode=ALL`, {}).then((response) => {
+        axios.get(`${ApiName}/api/department?structureCode=ALL`, {}).then((response) => {
             setDepartment(response.data);
         }).catch((error) => {
             console.log(error)
