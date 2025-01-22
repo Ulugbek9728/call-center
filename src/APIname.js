@@ -1,5 +1,5 @@
-const ApiName = 'https://api-r-office.tdtu.uz';
+// const ApiName = 'https://api-r-office.tdtu.uz';
 
-// const ApiName = 'http://192.168.19.66:8080';
+const ApiName = 'http://192.168.21.238:8080';
 
 export {ApiName}

@@ -45,6 +45,7 @@ function appStatusList(item, exchangesApp) {
             }}
         />
 }
+
 function appStatusList2(item, exchangesApp) {
     const result = exchangesApp
         ?.filter(innerItem => innerItem.exchangeType === 'ACCEPTED_VERIFICATION'|| innerItem.exchangeType === 'BACK')
@@ -117,7 +118,7 @@ function GetList(props) {
         isCome: true
     });
     const [DateListe, setDateListe] = useState(['', '']);
-
+    console.log(fulInfo)
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
         const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options)
@@ -708,8 +709,6 @@ function GetList(props) {
                                             </div>
                                         </div>)).slice(1)
                                 }
-
-
                                 <div className='d-flex gap-3 mt-3'>
                                     <CalendarOutlined style={{
                                         padding: "5px",
@@ -733,7 +732,8 @@ function GetList(props) {
                     return {...item, key: item.id}
                 })}
                 rowClassName={(record) => {
-                    return record.status
+                    return fulInfo?.currentRole ==="ROLE_ADMIN"? record.status :
+                    record.exchangesApp.filter(item => item.exchangeType === 'ACCEPTED_VERIFICATION').length > 0 ? 'FINISHED' : ''
                 }}
             />
 
