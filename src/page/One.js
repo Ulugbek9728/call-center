@@ -136,7 +136,15 @@ function One(props) {
 
     const handleChangeDepartme = (e) => {
         const result = Department.filter((word) => word.id === e);
-        setAriza({...ariza, toDepartment: result[0]})
+        setAriza({
+            ...ariza,
+            exchangesApp: ariza.exchangesApp?.map((item) =>
+                item.toDepartment.id === ariza?.toDepartment?.id
+                    ? { ...item, toDepartment: result[0] || null }
+                    : item
+            ),
+            toDepartment: result[0] || null
+        });
     };
     useEffect(() => {
         if (fulInfo?.currentRole?.includes('ROLE_DEPARTMENT')) {
@@ -149,7 +157,6 @@ function One(props) {
     function DepartmenGet() {
         axios.get(`${ApiName}/api/department?structureCode=ALL`, {}).then((response) => {
             setDepartment(response.data);
-            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -544,7 +551,7 @@ function One(props) {
                                 label: 'Hammasi',
                             },
                             {
-                                value: 'PROGRESS',
+                                value: 'COMMITTED',
                                 label: 'Jarayonda',
                             },
                             {
@@ -552,7 +559,7 @@ function One(props) {
                                 label: 'Tugatilgan',
                             },
                             {
-                                value: "COMMITTED",
+                                value: "WAIT_FOR_VERIFICATION",
                                 label: 'Yaratilgan',
                             },
                         ]}
@@ -614,7 +621,7 @@ function One(props) {
                                         },
                                         {
                                             name: "Departments",
-                                            value: !ariza.confirmatoryDepartments || ariza.confirmatoryDepartments === "" ? [] : ariza.confirmatoryDepartments?.map(i => `${i.name}`)
+                                            value: !ariza.confirmatoryDepartments || ariza.confirmatoryDepartments === "" ? [] : ariza.confirmatoryDepartments?.filter(i=> true)?.map(i => `${i.name}`)
                                         },
                                         {
                                             name: "FISH",
@@ -699,7 +706,8 @@ function One(props) {
                                         label="Tasdiqlovchi Fakultet, Kafedra, Bo'lim, Markazlar "
                                         name="Departments">
                                         <Select
-                                            name="Departments" mode="tags"
+                                            // disabled={edite}
+                                            name="DepartmentsDepartments" mode="tags"
                                             placeholder="Markaz / Bo'lim / Fakultet / Kafedra / Guruh"
                                             onChange={(id) => {
                                                 setAriza({
@@ -862,8 +870,8 @@ function One(props) {
                                             <b>Murojatni tasdiqlovchi Markaz / Bo'lim / Fakultet / Kafedra:</b>
                                             <ol className="">
                                                 {
-                                                    ariza?.confirmatoryDepartments?.map(item => (
-                                                        <li className="">
+                                                    ariza?.confirmatoryDepartments?.map((item,index) => (
+                                                        <li className="" key={index}>
                                                             {
                                                                 appStatusList2(item, ariza?.exchangesApp)
                                                             }
@@ -990,12 +998,12 @@ function One(props) {
                                     }}/>
                                     <div className="d-flex gap-3">
                                         <span>{record?.exchangesApp[0]?.department?.name}</span><ArrowRightOutlined/>
-                                        <span>{record?.exchangesApp[0]?.toDepartment?.name}</span>
+                                        <span>{record?.exchangesApp.find((item) => item.exchangeType === "SEND")?.toDepartment?.name}</span>
                                     </div>
                                 </div>
 
                                 {
-                                    record?.exchangesApp?.filter(item => item.exchangeType !== 'ACCEPTED_VERIFICATION').map(item => (
+                                    record?.exchangesApp?.filter(item => ['FOR_VERIFICATION'].includes(item.exchangeType)).map(item => (
                                         <div className='d-flex gap-3 mt-3'>
                                             {
                                                 appStatusList(item, record.exchangesApp)
@@ -1005,7 +1013,7 @@ function One(props) {
                                                 <span>{item?.toDepartment?.name}</span>
 
                                             </div>
-                                        </div>)).slice(1)
+                                        </div>))
                                 }
 
 

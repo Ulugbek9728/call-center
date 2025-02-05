@@ -118,7 +118,6 @@ function GetList(props) {
         isCome: true
     });
     const [DateListe, setDateListe] = useState(['', '']);
-    console.log(fulInfo)
     useEffect(() => {
         const options = {day: '2-digit', month: '2-digit', year: 'numeric'}
         const formattedDate = new Date(ariza?.createdDate).toLocaleDateString('en-US', options)
@@ -249,10 +248,8 @@ function GetList(props) {
     ];
 
     const propss = {
-
         name: 'file',
         action: `${ApiName}/api/v1/attach/upload`,
-
         headers: {
             authorization: `Bearer ${fulInfo?.accessToken}`,
         },
@@ -419,7 +416,7 @@ function GetList(props) {
                                 label: 'Yangi murojatlar',
                             },
                             {
-                                value: 'PROGRESS',
+                                value: 'COMMITTED',
                                 label: 'Jarayondagi murojalar',
                             },
                             {
@@ -693,11 +690,11 @@ function GetList(props) {
                                     }}/>
                                     <div className="d-flex gap-3">
                                         <span>{record?.exchangesApp[0]?.department?.name}</span><ArrowRightOutlined/>
-                                        <span>{record?.exchangesApp[0]?.toDepartment?.name}</span>
+                                        <span>{record?.exchangesApp.find((item) => item.exchangeType === "SEND")?.toDepartment?.name}</span>
                                     </div>
                                 </div>
                                 {
-                                    record?.exchangesApp?.filter(item => ['BACK','SEND','FOR_VERIFICATION'].includes(item.exchangeType)).map(item => (
+                                    record?.exchangesApp?.filter(item => ['FOR_VERIFICATION'].includes(item.exchangeType)).map(item => (
                                         <div className='d-flex gap-3 mt-3' key={item.id}>
                                             {
                                                 appStatusList(item, record.exchangesApp)
@@ -707,7 +704,7 @@ function GetList(props) {
                                                 <span>{item?.toDepartment?.name}</span>
 
                                             </div>
-                                        </div>)).slice(1)
+                                        </div>))
                                 }
                                 <div className='d-flex gap-3 mt-3'>
                                     <CalendarOutlined style={{
@@ -732,8 +729,10 @@ function GetList(props) {
                     return {...item, key: item.id}
                 })}
                 rowClassName={(record) => {
-                    return fulInfo?.currentRole ==="ROLE_ADMIN"? record.status :
-                    record.exchangesApp.filter(item => item.exchangeType === 'ACCEPTED_VERIFICATION').length > 0 ? 'FINISHED' : ''
+                    return fulInfo?.currentRole ==="ROLE_ADMIN"|| fulInfo?.currentRole ==="ROLE_RECTOR" ? record.status :
+                    // item?.toDepartment?.id === fulInfo?.department?.id && item.exchangeType === 'ACCEPTED_VERIFICATION' || item.exchangeType ==="BACK").length > 0 ? 'FINISHED' : ''
+                    record.exchangesApp.filter(item => item.exchangeType === 'ACCEPTED_VERIFICATION' || item.exchangeType === 'BACK')
+                        .filter(item=>item?.department?.id === fulInfo?.department?.id).length > 0 ? 'FINISHED' : ''
                 }}
             />
 

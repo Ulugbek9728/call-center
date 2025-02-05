@@ -44,13 +44,15 @@ function Auth(props) {
                 if (response.data?.data?.currentRole === 'ROLE_DEPARTMENT') {
                     navigate("/department/TypeService")
                 }
-            } else {
+            }
+            else {
                 setLoading(false)
                 setMessage(response.data.message)
             }
         }).catch((error) => {
             console.log(error);
             setLoading(false)
+            setMessage(error?.message)
 
         })
     }
