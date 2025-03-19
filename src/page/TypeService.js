@@ -34,7 +34,6 @@ function TypeService(props) {
     const [editeApplicationID, setEediteApplicationID] = useState('');
 
     const [AllServis, setAllServis] = useState(null);
-
     const [Department, setDepartment] = useState([]);
     const [items, setItems] = useState([]);
 
@@ -85,7 +84,7 @@ function TypeService(props) {
 
     useEffect(() => {
         getTyupeAriza()
-        getAllAriza(1, 20)
+        getAllAriza(1, tableParams.pagination.pageSize)
         DepartmenGet()
         notify();
         setMessage('')
@@ -93,12 +92,6 @@ function TypeService(props) {
         form1.resetFields()
         form2.resetFields()
     }, [messagee, sucsessText,]);
-
-    useEffect(() => {
-        getAllAriza(1, 20)
-        setMessage('')
-        setSucsessText('')
-    }, [messagee, sucsessText, SRC]);
 
     const handleOk = (value) => {
         console.log(value)
@@ -503,6 +496,7 @@ function TypeService(props) {
                        setOpen(false);
                        setBatafsil(false)
                        setEdite(false)
+                       form.resetFields();
                    }}>
                 <div className='d-flex justify-content-between'>
                     {batafsil ? "" : <div className={`border w-100 p-3 mx-3`}>
@@ -626,7 +620,7 @@ function TypeService(props) {
                    })}
                    pagination={{
                        total: tableParams.pagination.total,
-                       pageSize: 20,
+                       pageSize: tableParams.pagination.pageSize,
                        onChange: (page, pageSize) => {
                            getAllAriza(page, pageSize);
                        }

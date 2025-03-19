@@ -143,7 +143,7 @@ function GetList(props) {
     };
 
     useEffect(() => {
-        arizaGetList(1, 10)
+        arizaGetList(1, tableParams.pagination.pageSize);
     }, [sucsessText, SRC,]);
 
     useEffect(() => {
@@ -180,6 +180,7 @@ function GetList(props) {
                 page: page - 1
             }
         }).then((response) => {
+            console.log(response.data)
             setArizaList(response.data.data.content)
             setTableParams({
                 ...tableParams,
@@ -668,11 +669,11 @@ function GetList(props) {
                 <h6>Izoh</h6>
                 <div className='border p-3' dangerouslySetInnerHTML={{__html: FileDrower?.exchangeApp?.description}}/>
             </Drawer>
-
             <Table
                 columns={columns}
                 pagination={{
                     total: tableParams.pagination.total,
+                    pageSize: tableParams.pagination.pageSize,
                     onChange: (page, pageSize) => {
                         arizaGetList(page, pageSize);
                     }

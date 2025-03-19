@@ -31,7 +31,6 @@ function Auth(props) {
             if (response.data.isSuccess === true) {
                 setLoading(false)
                 localStorage.setItem("myCat", JSON.stringify(response.data.data));
-                console.log(response.data.data)
                 if (response.data?.data?.currentRole === 'ROLE_OPERATOR') {
                     navigate("/operator/TypeService")
                 }

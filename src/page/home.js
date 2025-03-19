@@ -45,9 +45,9 @@ function Home(props) {
                         </div>
 
                         <div className="d-flex justify-content-between kirish">
-                            {/*/!https://r-office.tdtu.uz    http://localhost:3000/*/}
+                            {/*/!ApiName http://localhost:3000/*/}
                             <a className='button'
-                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=${ApiName}/auth`}>
+                               href={`https://hemis.tdtu.uz/oauth/authorize?response_type=code&client_id=4&state=auth_state&redirect_uri=ApiName/auth`}>
                                 {t("Home.EnterPage")}
                             </a>
                             <Link className='button' to='/tekshirish'>

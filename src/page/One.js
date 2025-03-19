@@ -151,7 +151,7 @@ function One(props) {
             setAriza({...ariza, fullName: fulInfo.fullName})
         }
         DepartmenGet()
-        arizaGetList(1, 20)
+        arizaGetList(1, tableParams.pagination.pageSize)
     }, [sucsessText, SRC]);
 
     function DepartmenGet() {
@@ -980,7 +980,7 @@ function One(props) {
                 columns={columns}
                 pagination={{
                     total: tableParams.pagination.total,
-                    pageSize: 20,
+                    pageSize: tableParams.pagination.pageSize,
                     onChange: (page, pageSize) => {
                         arizaGetList(page, pageSize);
                     }
